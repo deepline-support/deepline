@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aspen | Deepline Support</title>
+  <meta name="description" content="Aspen support videos.">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Aspen</h1>
+      <p class="page-overview">
+        This page contains three support videos covering the Aspen workflow.
+        English subtitles are enabled by default.
+      </p>
+    </header>
+
+    <section>
+      <h2>01 / Video One</h2>
+      <p class="video-overview">
+        Add a short overview of the first video here.
+      </p>
+      <video controls preload="metadata" playsinline>
+        <source src="./media/video-1.mp4" type="video/mp4">
+        <track kind="subtitles" src="./subtitles/video-1-en.vtt" srclang="en" label="English" default>
+        Your browser does not support HTML5 video.
+      </video>
+    </section>
+
+    <section>
+      <h2>02 / Video Two</h2>
+      <p class="video-overview">
+        Add a short overview of the second video here.
+      </p>
+      <video controls preload="metadata" playsinline>
+        <source src="./media/video-2.mp4" type="video/mp4">
+        <track kind="subtitles" src="./subtitles/video-2-en.vtt" srclang="en" label="English" default>
+        Your browser does not support HTML5 video.
+      </video>
+    </section>
+
+    <section>
+      <h2>03 / Video Three</h2>
+      <p class="video-overview">
+        Add a short overview of the third video here.
+      </p>
+      <video controls preload="metadata" playsinline>
+        <source src="./media/video-3.mp4" type="video/mp4">
+        <track kind="subtitles" src="./subtitles/video-3-en.vtt" srclang="en" label="English" default>
+        Your browser does not support HTML5 video.
+      </video>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll("video").forEach((video) => {
+      const showSubtitles = () => {
+        if (video.textTracks && video.textTracks.length > 0) {
+          video.textTracks[0].mode = "showing";
+        }
+      };
+
+      showSubtitles();
+      video.addEventListener("loadedmetadata", showSubtitles, { once: true });
+    });
+  </script>
+</body>
+</html>
