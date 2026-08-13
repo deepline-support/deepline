@@ -5890,6 +5890,7 @@
       let x = innerWidth / 2;
       let y = innerHeight / 2;
       let target = null;
+      let mobileLockedRect = null;
       let modeStart = performance.now();
       let from = FREE.map(p => ({...p}));
       let current = FREE.map(p => ({...p}));
@@ -5940,12 +5941,20 @@
       function goals() {
         if (!target || !target.isConnected) return FREE;
 
-        const r = target.classList.contains('cursor-snap-text')
-          ? getTightTextRect(target)
-          : target.getBoundingClientRect();
+        const isMobile = window.innerWidth <= 960;
 
-        const padX = target.classList.contains('cursor-snap-text') ? 10 : 0;
-        const padY = target.classList.contains('cursor-snap-text') ? 7 : 0;
+        const r = isMobile && mobileLockedRect
+          ? mobileLockedRect
+          : (
+              target.classList.contains('cursor-snap-text')
+                ? getTightTextRect(target)
+                : target.getBoundingClientRect()
+            );
+
+        const padX =
+          !isMobile && target.classList.contains('cursor-snap-text') ? 10 : 0;
+        const padY =
+          !isMobile && target.classList.contains('cursor-snap-text') ? 7 : 0;
 
         return [
           {x:r.left-padX-x, y:r.top-padY-y},
@@ -5956,7 +5965,13 @@
       }
 
       function snapTo(next) {
-        if (next === target) return;
+        const sameTarget = next === target;
+
+        // Desktop keeps the original no-op behaviour.
+        // Mobile re-taps may occur at a different point on the same card,
+        // so allow the cursor geometry to refresh from that new physical tap.
+        if (sameTarget && window.innerWidth > 960) return;
+
         from = current.map(p => ({...p}));
         target = next;
         modeStart = performance.now();
@@ -5965,22 +5980,8 @@
       }
 
       function frame(now) {
-        // Mobile targets are tap-locked. Keep the cursor physically attached
-        // to the SAME selected card / Start a Project control as the document
-        // moves beneath it. Scrolling never changes the selected target.
-        if (
-          window.innerWidth <= 960 &&
-          target &&
-          target.isConnected
-        ) {
-          const r = target.getBoundingClientRect();
-
-          if (r.width > 0 && r.height > 0) {
-            x = r.left + (r.width / 2);
-            y = r.top + (r.height / 2);
-          }
-        }
-
+        // On mobile x/y and the snapped rectangle are deliberately frozen
+        // between physical taps. Scrolling must never move the cursor.
         cursor.style.transform = `translate3d(${x}px,${y}px,0)`;
 
         const g = goals();
@@ -6044,6 +6045,7 @@
       // Desktop retains the original "what is beneath the cursor now?"
       // behaviour. Mobile deliberately does not re-detect on scroll.
       window.addEventListener('scroll', () => {
+        // Mobile cursor state is a frozen snapshot between taps.
         if (window.innerWidth <= 960) return;
 
         const node = document.elementFromPoint(x, y);
@@ -6056,13 +6058,34 @@
         // Hidden on initial load; the first physical tap/touch reveals it.
         document.documentElement.classList.add('mobile-cursor-started');
 
+        // Freeze the actual tap position in viewport coordinates.
+        // Nothing except another physical tap changes these values.
         x = clientX;
         y = clientY;
 
-        // Mobile detectTarget() intentionally returns ONLY:
-        // service cards and Start a Project mailto controls.
-        // A tap anywhere else releases the current snap.
-        snapTo(detectTarget(node));
+        const nextTarget = detectTarget(node);
+
+        if (nextTarget) {
+          const r = nextTarget.getBoundingClientRect();
+
+          // Snapshot the target's CURRENT viewport rectangle. Do not read the
+          // element rect again while scrolling: this is what makes the whole
+          // cursor (dot + brackets) remain perfectly stationary.
+          mobileLockedRect = {
+            left: r.left,
+            top: r.top,
+            right: r.right,
+            bottom: r.bottom,
+            width: r.width,
+            height: r.height
+          };
+        } else {
+          mobileLockedRect = null;
+        }
+
+        // Valid mobile targets remain cards + Start a Project controls only.
+        // Tapping elsewhere releases target mode at the new fixed tap point.
+        snapTo(nextTarget);
       };
 
       document.addEventListener('pointerdown', event => {
