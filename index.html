@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Deepline — remote multidisciplinary support, digital systems and creative direction for NGOs and independent organisations." />
+  <meta name="description" content="Deepline - remote multidisciplinary support, digital systems and creative direction for NGOs and independent organisations." />
   <meta name="theme-color" content="#050505" />
-  <title>Deepline — Remote multidisciplinary support</title>
+  <title>Deepline - Remote multidisciplinary support</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23050505'/%3E%3Cpath d='M12 21h22c11 0 18 5 18 11s-7 11-18 11H12' fill='none' stroke='%23f4f4ef' stroke-width='5'/%3E%3C/svg%3E" />
   <style>
     :root {
@@ -91,8 +91,38 @@
       transition: color .2s ease;
     }
     .nav-links a:hover, .nav-links a:focus-visible { color: var(--ink); }
-    .nav-cta { color: var(--ink) !important; }
-    .nav-cta::after { content: " ↗"; color: var(--signal); }
+    .nav-cta {
+      color: var(--ink) !important;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 8px;
+      isolation: isolate;
+      overflow: hidden;
+    }
+    .nav-cta::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: #fff;
+      transform: scaleX(0);
+      transform-origin: left center;
+      mix-blend-mode: difference;
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .nav-cta:hover::before,
+    .nav-cta:focus-visible::before {
+      transform: scaleX(1);
+    }
+    .nav-cta::after {
+      content: " ↗";
+      color: var(--signal);
+      transition: color .3s cubic-bezier(.4,0,.2,1);
+    }
+    .nav-cta:hover::after,
+    .nav-cta:focus-visible::after { color: var(--ink); }
 
 
     .wordmark-intro {
@@ -254,17 +284,12 @@
     .service h3 { margin: 0 0 8px; font-size: clamp(34px, 3.2vw, 51px); letter-spacing: -.05em; font-weight: 520; }
     .service .tagline { margin: 0 0 32px; color: #d6d6d1; font-size: 16px; }
     .service ul { list-style: none; padding: 0; margin: 0; color: var(--muted); line-height: 1.85; font-size: 14px; }
-    .service li { display: flex; align-items: center; gap: 9px; }
+    .service li { display: flex; align-items: baseline; gap: 8px; }
     .service li::before {
-      content: "✓";
-      width: 17px;
-      height: 17px;
-      border: 1px solid #4e4e49;
-      border-radius: 50%;
-      display: inline-grid;
-      place-items: center;
-      color: #d9d9d3;
-      font-size: 9px;
+      content: ">";
+      color: #cfcfc9;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: .92em;
       line-height: 1;
       flex: 0 0 auto;
     }
@@ -378,13 +403,31 @@
     .contact h2 { margin: 20px 0 36px; max-width: 1100px; font-size: clamp(55px, 9vw, 138px); line-height: .88; letter-spacing: -.065em; font-weight: 500; }
     .contact h2 span { color: #777770; }
     .email {
-      display: inline-block;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
       padding-bottom: 4px;
-      border-bottom: 1px solid var(--line-strong);
       font-size: clamp(18px, 2.2vw, 30px);
       letter-spacing: -.02em;
     }
-    .email:hover { border-color: var(--signal); }
+    .email::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: .05em;
+      background: currentColor;
+      pointer-events: none;
+      transform: scaleX(0);
+      transform-origin: right center;
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .email:hover::before,
+    .email:focus-visible::before {
+      transform: scaleX(1);
+      transform-origin: left center;
+    }
     footer { display: flex; justify-content: space-between; gap: 24px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
 
     .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
@@ -394,7 +437,7 @@
 
 
 
-    /* Tactical target cursor — fixed overlay, no framework/runtime dependency. */
+    /* Tactical target cursor - fixed overlay, no framework/runtime dependency. */
     html.target-cursor-ready,
     html.target-cursor-ready * {
       cursor: none !important;
@@ -516,63 +559,5297 @@
       *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
       .reveal { opacity: 1; transform: none; }
     }
+
+    /* --- Requested composition pass --- */
+    body {
+      background: #050505;
+    }
+
+    header {
+      position: absolute;
+      inset: 0 0 auto 0;
+      z-index: 80;
+      background: transparent;
+      border: 0;
+      backdrop-filter: none;
+    }
+    .nav {
+      min-height: 62px;
+      justify-content: flex-end;
+      padding-top: 10px;
+    }
+    .nav-cta {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      overflow: hidden;
+      isolation: isolate;
+      padding: 11px 20px;
+      background: #080808;
+      color: var(--ink) !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10px !important;
+      line-height: 1;
+      letter-spacing: .14em !important;
+      text-transform: uppercase;
+    }
+    .nav-cta span {
+      position: relative;
+      z-index: 1;
+    }
+    .nav-cta::after { content: none !important; }
+    .nav-cta::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: #fff;
+      pointer-events: none;
+      transform: scaleX(0);
+      transform-origin: left center;
+      mix-blend-mode: difference;
+      will-change: transform;
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .nav-cta:hover::before,
+    .nav-cta:focus-visible::before {
+      transform: scaleX(1);
+    }
+
+    .wordmark-intro {
+      min-height: 292px;
+      padding: 88px var(--pad) 30px;
+      border: 0;
+      display: grid;
+      place-items: center;
+    }
+    .wordmark {
+      font-family: Bahnschrift, "DIN Alternate", "Arial Narrow", sans-serif;
+      font-size: clamp(62px, 7.8vw, 122px);
+      line-height: .9;
+      letter-spacing: .13em;
+      font-weight: 400;
+      transform: translateX(.065em);
+    }
+
+    /* Global panel sits directly under the wordmark, with the globe behind the copy. */
+    .global {
+      min-height: 390px;
+      border: 0;
+      overflow: visible;
+      position: relative;
+      z-index: 1;
+    }
+    .global .shell {
+      position: relative;
+      display: block;
+      min-height: 390px;
+      width: min(100%, 1120px);
+      padding-inline: var(--pad);
+    }
+    .global-copy {
+      position: absolute;
+      left: var(--pad);
+      top: 105px;
+      z-index: 5;
+      padding: 0;
+      max-width: 900px;
+    }
+    .global-copy h2 {
+      margin: 0 0 5px;
+      font-size: clamp(25px, 2.2vw, 34px);
+      line-height: 1.1;
+      letter-spacing: -.035em;
+      font-weight: 470;
+    }
+    .global-copy p {
+      margin: 0;
+      max-width: 920px;
+      color: #d0d0ca;
+      font-size: clamp(14px, 1.2vw, 17px);
+      line-height: 1.45;
+    }
+    .global-copy .global-range {
+      margin-top: 25px;
+      font-size: clamp(19px, 1.8vw, 27px);
+      color: #e0e0db;
+      letter-spacing: -.025em;
+    }
+    .global-stat,
+    .global-copy .eyebrow {
+      display: none !important;
+    }
+
+    .globe-stage {
+      position: absolute;
+      inset: -20px -30px 0 105px;
+      min-height: 430px;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .globe-stage::before {
+      right: 4%;
+      top: 56%;
+      width: min(850px, 67vw);
+      background: radial-gradient(circle, rgba(255,255,255,.055), transparent 72%);
+    }
+    #globe {
+      right: 0;
+      top: 59%;
+      width: min(890px, 69vw);
+      height: min(890px, 69vw);
+    }
+    .globe-fallback {
+      right: 2%;
+      top: 59%;
+      width: min(840px, 65vw);
+    }
+    .globe-note { display: none; }
+
+    /* Cards overlap the globe, like the supplied layout reference. */
+    #services {
+      position: relative;
+      z-index: 8;
+      margin-top: -76px;
+      padding: 0 var(--pad) 82px;
+    }
+    #services .section-head { display: none; }
+    #services .services {
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      background: rgba(5,5,5,.985);
+      border: 1px solid var(--line);
+    }
+    .service {
+      min-height: 0;
+      aspect-ratio: 1 / 1.08;
+      padding: 20px 22px 24px;
+      background: rgba(5,5,5,.96);
+    }
+    .service:hover {
+      background: #0a0a0a;
+    }
+    .service-number {
+      margin-bottom: 22px;
+      font-size: 9px;
+    }
+    .service h3 {
+      margin-bottom: 6px;
+      font-size: clamp(27px, 2.3vw, 36px);
+    }
+    .service .tagline {
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+    .service ul {
+      font-size: 12px;
+      line-height: 1.52;
+    }
+    .price {
+      padding-top: 20px;
+    }
+    .price small {
+      font-size: 8px;
+    }
+    .price strong {
+      font-size: clamp(28px, 2.6vw, 38px);
+    }
+    .pricing-disclaimer {
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding-inline: 0;
+      border-bottom: 0;
+      padding-top: 12px;
+      font-size: 9px;
+    }
+
+    /* Preserve the rest of the previous site after the opening composition. */
+    .hero {
+      border-top: 1px solid var(--line);
+    }
+
+    /* Link000: exact directional underline sweep for the footer email. */
+    .email {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding-bottom: 4px;
+      border: 0 !important;
+    }
+    .email::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: .05em;
+      background: currentColor;
+      pointer-events: none;
+      transform: scaleX(0);
+      transform-origin: right center;
+      will-change: transform;
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .email:hover::before,
+    .email:focus-visible::before {
+      transform: scaleX(1);
+      transform-origin: left center;
+    }
+
+    /* Target cursor: only hide the native cursor once the overlay is already live. */
+    html.deepline-cursor-live,
+    html.deepline-cursor-live a,
+    html.deepline-cursor-live button,
+    html.deepline-cursor-live .cursor-target {
+      cursor: none !important;
+    }
+    .dl-cursor {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 0;
+      z-index: 2147483647;
+      pointer-events: none;
+      opacity: 1;
+      visibility: visible;
+      transform: translate3d(50vw,50vh,0);
+      will-change: transform;
+    }
+    .dl-cursor-dot {
+      position: absolute;
+      left: -2px;
+      top: -2px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #f4f4ef;
+    }
+    .dl-cursor-rotor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+    .dl-cursor-corner {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(244,244,239,.9);
+      will-change: transform;
+    }
+    .dl-cursor-corner.tl { border-right: 0; border-bottom: 0; }
+    .dl-cursor-corner.tr { border-left: 0; border-bottom: 0; }
+    .dl-cursor-corner.br { border-left: 0; border-top: 0; }
+    .dl-cursor-corner.bl { border-right: 0; border-top: 0; }
+    .dl-cursor.is-target .dl-cursor-corner { border-color: #fff; }
+    .dl-cursor.is-target .dl-cursor-dot { background: #fff; }
+
+    /* Disable the superseded cursor implementation if it remains in markup. */
+    .target-cursor-overlay { display: none !important; }
+    html.target-cursor-ready,
+    html.target-cursor-ready * { cursor: auto !important; }
+
+    @media (max-width: 960px) {
+      .wordmark-intro { min-height: 250px; padding-top: 82px; }
+      .global { min-height: 420px; overflow: hidden; }
+      .global .shell { min-height: 420px; }
+      .global-copy { top: 76px; left: var(--pad); max-width: 90%; }
+      .globe-stage {
+        inset: 0 -30% 0 18%;
+        margin: 0;
+        min-height: 440px;
+      }
+      #globe {
+        right: -4%;
+        top: 63%;
+        width: min(840px, 105vw);
+        height: min(840px, 105vw);
+      }
+      #services { margin-top: -68px; }
+      .service { aspect-ratio: auto; min-height: 320px; }
+    }
+
+    @media (max-width: 680px) {
+      .wordmark-intro {
+        min-height: 220px;
+        padding-top: 88px;
+        padding-bottom: 22px;
+      }
+      .wordmark {
+        font-size: clamp(48px, 16vw, 88px);
+        letter-spacing: .08em;
+        transform: translateX(.04em);
+      }
+      .global {
+        min-height: 430px;
+      }
+      .global .shell {
+        min-height: 430px;
+      }
+      .global-copy {
+        top: 54px;
+      }
+      .global-copy p:first-of-type {
+        max-width: 92%;
+      }
+      .global-copy .global-range {
+        max-width: 78%;
+      }
+      .globe-stage {
+        inset: 44px -60% 0 8%;
+        min-height: 420px;
+      }
+      #globe {
+        right: -10%;
+        top: 68%;
+        width: 145vw;
+        height: 145vw;
+      }
+      #services {
+        margin-top: -58px;
+        padding-inline: 16px;
+      }
+      .service {
+        min-height: 305px;
+      }
+      .pricing-disclaimer {
+        padding-inline: 4px;
+      }
+    }
+
+
+    /* Opening composition should be immediate, not reveal-faded. */
+    #global .global-copy,
+    #services .service {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    /* These two micro-interactions are intentional even when reduced-motion is set. */
+    @media (prefers-reduced-motion: reduce) {
+      .nav-cta::before,
+      .email::before {
+        transition: transform .3s cubic-bezier(.4,0,.2,1) !important;
+      }
+    }
+
+
+    /* --- Globe placement refinement: centred, behind the opening composition, unclipped. --- */
+    .wordmark-intro {
+      position: relative;
+      z-index: 6;
+    }
+
+    .global {
+      position: relative;
+      z-index: 1;
+      overflow: visible !important;
+      isolation: auto;
+    }
+
+    .global .shell {
+      position: relative;
+      overflow: visible !important;
+    }
+
+    .global-copy {
+      z-index: 6;
+    }
+
+    .globe-stage {
+      position: absolute;
+      left: 50% !important;
+      right: auto !important;
+      top: -8px !important;
+      bottom: auto !important;
+      width: min(1120px, 100vw);
+      height: 920px;
+      min-height: 0;
+      transform: translateX(-50%);
+      margin: 0 !important;
+      overflow: visible !important;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .globe-stage::before {
+      left: 50% !important;
+      right: auto !important;
+      top: 390px !important;
+      width: min(980px, 90vw);
+      transform: translate(-50%, -50%) !important;
+      background: radial-gradient(circle, rgba(255,255,255,.05), transparent 72%);
+    }
+
+    #globe {
+      left: 50% !important;
+      right: auto !important;
+      top: 0 !important;
+      width: min(980px, 90vw);
+      height: min(980px, 90vw);
+      transform: translateX(-50%) !important;
+      opacity: .98;
+      overflow: visible !important;
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+    }
+
+    #globe canvas {
+      overflow: visible !important;
+    }
+
+    .globe-fallback {
+      left: 50% !important;
+      right: auto !important;
+      top: 0 !important;
+      width: min(940px, 86vw);
+      transform: translateX(-50%) !important;
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+      opacity: .12;
+    }
+
+    #services {
+      position: relative;
+      z-index: 10;
+    }
+
+    @media (max-width: 960px) {
+      .global {
+        overflow: visible !important;
+      }
+
+      .globe-stage {
+        left: 50% !important;
+        right: auto !important;
+        top: -2px !important;
+        width: 112vw;
+        height: 820px;
+        transform: translateX(-50%) !important;
+        overflow: visible !important;
+      }
+
+      #globe {
+        left: 50% !important;
+        right: auto !important;
+        top: 0 !important;
+        width: min(900px, 108vw);
+        height: min(900px, 108vw);
+        transform: translateX(-50%) !important;
+      }
+
+      .globe-fallback {
+        left: 50% !important;
+        right: auto !important;
+        top: 0 !important;
+        width: min(850px, 102vw);
+        transform: translateX(-50%) !important;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .globe-stage {
+        top: 6px !important;
+        width: 132vw;
+        height: 700px;
+      }
+
+      #globe {
+        width: 126vw;
+        height: 126vw;
+      }
+
+      .globe-fallback {
+        width: 120vw;
+      }
+    }
+
+
+    /* Fade out the lower third of the globe smoothly to transparent. */
+    #globe {
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,1) 62%,
+        rgba(0,0,0,.92) 69%,
+        rgba(0,0,0,.65) 76%,
+        rgba(0,0,0,.28) 86%,
+        rgba(0,0,0,0) 100%
+      ) !important;
+      mask-image: linear-gradient(
+        to bottom,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,1) 62%,
+        rgba(0,0,0,.92) 69%,
+        rgba(0,0,0,.65) 76%,
+        rgba(0,0,0,.28) 86%,
+        rgba(0,0,0,0) 100%
+      ) !important;
+    }
+
+    .globe-fallback {
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,1) 62%,
+        rgba(0,0,0,.92) 69%,
+        rgba(0,0,0,.65) 76%,
+        rgba(0,0,0,.28) 86%,
+        rgba(0,0,0,0) 100%
+      ) !important;
+      mask-image: linear-gradient(
+        to bottom,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,1) 62%,
+        rgba(0,0,0,.92) 69%,
+        rgba(0,0,0,.65) 76%,
+        rgba(0,0,0,.28) 86%,
+        rgba(0,0,0,0) 100%
+      ) !important;
+    }
+
+
+    /* --- Grid / scale refinement --- */
+
+    /* Three-mode stack now uses the exact full grid width, edge-to-edge. */
+    #services {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+
+    #services .services {
+      width: 100% !important;
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    /* Keep the small FX note readable even though the cards themselves are full bleed. */
+    #services .pricing-disclaimer {
+      width: min(100%, var(--max));
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: var(--pad);
+      padding-right: var(--pad);
+    }
+
+    /* Globe +15%, preserving its centred crown position beneath the wordmark. */
+    .globe-stage {
+      width: min(1288px, 115vw) !important;
+    }
+
+    .globe-stage::before {
+      width: min(1127px, 103.5vw) !important;
+    }
+
+    #globe {
+      width: min(1127px, 103.5vw) !important;
+      height: min(1127px, 103.5vw) !important;
+    }
+
+    .globe-fallback {
+      width: min(1081px, 98.9vw) !important;
+    }
+
+    /* Wordmark -10% while retaining Bahnschrift and the existing tracking/weight. */
+    .wordmark {
+      font-size: clamp(56px, 7.02vw, 110px) !important;
+    }
+
+    @media (max-width: 960px) {
+      .globe-stage {
+        width: 128.8vw !important;
+      }
+
+      #globe {
+        width: min(1035px, 124.2vw) !important;
+        height: min(1035px, 124.2vw) !important;
+      }
+
+      .globe-fallback {
+        width: min(978px, 117.3vw) !important;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .wordmark {
+        font-size: clamp(43px, 14.4vw, 79px) !important;
+      }
+
+      .globe-stage {
+        width: 151.8vw !important;
+      }
+
+      #globe {
+        width: 144.9vw !important;
+        height: 144.9vw !important;
+      }
+
+      .globe-fallback {
+        width: 138vw !important;
+      }
+    }
+
+
+    /* --- Scale + card crop refinement --- */
+
+    /* Globe: +30% from the current scale. */
+    .globe-stage {
+      width: min(1674px, 149.5vw) !important;
+    }
+
+    .globe-stage::before {
+      width: min(1465px, 134.55vw) !important;
+    }
+
+    #globe {
+      width: min(1465px, 134.55vw) !important;
+      height: min(1465px, 134.55vw) !important;
+    }
+
+    .globe-fallback {
+      width: min(1405px, 128.57vw) !important;
+    }
+
+    /* Wordmark: -25% from the current scale. */
+    .wordmark {
+      font-size: clamp(42px, 5.265vw, 82.5px) !important;
+    }
+
+    /* Cards: substantially less dead space; content feels cropped-in and deliberate. */
+    .service {
+      aspect-ratio: 1 / .78 !important;
+      min-height: 0 !important;
+      padding: 16px 20px 18px !important;
+    }
+.service h3 {
+      margin-bottom: 4px !important;
+    }
+
+    .service .tagline {
+      margin-bottom: 16px !important;
+    }
+
+    .service ul {
+      line-height: 1.42 !important;
+    }
+
+    .price {
+      padding-top: 12px !important;
+    }
+
+    @media (max-width: 960px) {
+      .globe-stage {
+        width: 167.44vw !important;
+      }
+
+      #globe {
+        width: min(1346px, 161.46vw) !important;
+        height: min(1346px, 161.46vw) !important;
+      }
+
+      .globe-fallback {
+        width: min(1271px, 152.49vw) !important;
+      }
+
+      .service {
+        aspect-ratio: auto !important;
+        min-height: 285px !important;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .wordmark {
+        font-size: clamp(32px, 10.8vw, 59px) !important;
+      }
+
+      .globe-stage {
+        width: 197.34vw !important;
+      }
+
+      #globe {
+        width: 188.37vw !important;
+        height: 188.37vw !important;
+      }
+
+      .globe-fallback {
+        width: 179.4vw !important;
+      }
+
+      .service {
+        min-height: 275px !important;
+        padding: 16px 18px 18px !important;
+      }
+    }
+
+
+    /* Wordmark replay animation baseline. JS drives each re-entry explicitly. */
+    .wordmark-motion {
+      display: block;
+      opacity: 0;
+      transform: translate3d(0, 34px, 0);
+      will-change: transform, opacity;
+    }
+
+
+    /* --- Reintroduced translucent topbar --- */
+    .site-topbar {
+      position: fixed !important;
+      inset: 0 0 auto 0 !important;
+      z-index: 1000 !important;
+      height: 64px;
+      background: rgba(5,5,5,.68) !important;
+      border-bottom: 1px solid rgba(255,255,255,.08) !important;
+      -webkit-backdrop-filter: blur(16px) saturate(115%) !important;
+      backdrop-filter: blur(16px) saturate(115%) !important;
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translate3d(0,-14px,0);
+      transition:
+        opacity .34s cubic-bezier(.22,.61,.36,1),
+        transform .34s cubic-bezier(.22,.61,.36,1),
+        visibility 0s linear .34s;
+      will-change: opacity, transform;
+    }
+
+    .site-topbar.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translate3d(0,0,0);
+      transition:
+        opacity .34s cubic-bezier(.22,.61,.36,1),
+        transform .34s cubic-bezier(.22,.61,.36,1),
+        visibility 0s linear 0s;
+    }
+
+    .topbar-inner {
+      width: 100%;
+      height: 64px;
+      padding: 0 var(--pad);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .topbar-wordmark {
+      position: relative;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      color: var(--ink);
+      font-family: Bahnschrift, "DIN Alternate", "Arial Narrow", sans-serif;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 400;
+      letter-spacing: .14em;
+      text-decoration: none;
+    }
+
+    .site-topbar .nav-cta {
+      margin-left: auto;
+      background: rgba(8,8,8,.58);
+    }
+
+    @media (max-width: 680px) {
+      .site-topbar,
+      .topbar-inner {
+        height: 58px;
+      }
+
+      .topbar-wordmark {
+        font-size: 12px;
+        letter-spacing: .12em;
+      }
+
+      .site-topbar .nav-cta {
+        padding: 9px 12px !important;
+        font-size: 9px !important;
+      }
+    }
+
+
+    /* --- Topbar refinement --- */
+
+    /* Pure opacity fade: no vertical slide. */
+    .site-topbar {
+      transform: none !important;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity .46s cubic-bezier(.22,.61,.36,1),
+        visibility 0s linear .46s !important;
+      will-change: opacity;
+    }
+
+    .site-topbar.is-visible {
+      transform: none !important;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition:
+        opacity .46s cubic-bezier(.22,.61,.36,1),
+        visibility 0s linear 0s !important;
+    }
+
+    /* Same wordmark typography as the main DEEPLINE mark, only scaled down. */
+    .topbar-wordmark {
+      font-family: Bahnschrift, "DIN Alternate", "Arial Narrow", sans-serif !important;
+      font-weight: 400 !important;
+      letter-spacing: .13em !important;
+      line-height: .9 !important;
+      font-size: 14px !important;
+      transform: translateX(.065em);
+      white-space: nowrap;
+    }
+
+    /* Main-page Start a project remains visible at the top-right before the bar appears. */
+    .wordmark-intro {
+      position: relative;
+    }
+
+    .main-page-cta {
+      position: absolute !important;
+      top: 10px;
+      right: var(--pad);
+      z-index: 20;
+      margin: 0 !important;
+    }
+
+    @media (max-width: 680px) {
+      /* Main wordmark uses .08em tracking at this breakpoint, so the bar does too. */
+      .topbar-wordmark {
+        font-size: 12px !important;
+        letter-spacing: .08em !important;
+        transform: translateX(.04em);
+      }
+
+      .main-page-cta {
+        top: 10px;
+        right: var(--pad);
+        padding: 9px 12px !important;
+        font-size: 9px !important;
+      }
+    }
+
+
+    /* --- Full-screen card fit, tuned to the supplied 1648×900 reference --- */
+    @media (min-width: 961px) {
+      #services {
+        padding-bottom: 0 !important;
+      }
+
+      #services .services {
+        align-items: stretch;
+      }
+
+      .service {
+        position: relative;
+        height: clamp(188px, 22.2vh, 218px) !important;
+        min-height: 0 !important;
+        aspect-ratio: auto !important;
+        padding: 15px 18px 14px !important;
+        overflow: hidden;
+      }
+
+      .service h3 {
+        margin: 0 0 3px !important;
+        font-size: clamp(25px, 2vw, 32px) !important;
+        line-height: 1 !important;
+      }
+
+      .service .tagline {
+        margin: 0 0 12px !important;
+        font-size: 10.5px !important;
+        line-height: 1.25 !important;
+      }
+
+      .service ul {
+        width: 58%;
+        margin: 0 !important;
+        font-size: 10px !important;
+        line-height: 1.34 !important;
+      }
+
+      .service li {
+        gap: 6px !important;
+      }
+
+      .service li::before {
+        font-size: .82em !important;
+      }
+
+      .price {
+        position: absolute !important;
+        right: 18px;
+        bottom: 15px;
+        width: 32%;
+        padding: 0 !important;
+        margin: 0 !important;
+        text-align: left;
+      }
+
+      .price small {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 7.5px !important;
+        line-height: 1.1;
+        letter-spacing: .1em;
+      }
+
+      .price strong {
+        display: block;
+        font-size: clamp(30px, 2.75vw, 43px) !important;
+        line-height: .92 !important;
+        letter-spacing: -.045em;
+        white-space: nowrap;
+      }
+
+      .price strong span {
+        font-size: .48em !important;
+        letter-spacing: -.02em;
+      }
+
+      .pricing-disclaimer {
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+        font-size: 7.5px !important;
+        line-height: 1.25 !important;
+      }
+    }
+
+    /* A little extra compression on shorter laptop-height viewports. */
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service {
+        height: 176px !important;
+        padding-top: 12px !important;
+        padding-bottom: 11px !important;
+      }
+
+      .service h3 {
+        font-size: 24px !important;
+      }
+
+      .service .tagline {
+        margin-bottom: 8px !important;
+        font-size: 9.5px !important;
+      }
+
+      .service ul {
+        font-size: 9px !important;
+        line-height: 1.28 !important;
+      }
+
+      .price {
+        bottom: 12px;
+      }
+
+      .price strong {
+        font-size: 32px !important;
+      }
+    }
+
+
+    /* --- Card content scale-up: use the compact footprint more assertively --- */
+    @media (min-width: 961px) {
+      .service {
+        padding: 16px 20px 15px !important;
+      }
+
+      .service h3 {
+        font-size: clamp(30px, 2.35vw, 38px) !important;
+        line-height: .98 !important;
+        letter-spacing: -.035em !important;
+        margin-bottom: 5px !important;
+      }
+
+      .service .tagline {
+        font-size: clamp(12px, .9vw, 14px) !important;
+        line-height: 1.22 !important;
+        margin-bottom: 13px !important;
+      }
+
+      .service ul {
+        width: 61% !important;
+        font-size: clamp(11px, .82vw, 13px) !important;
+        line-height: 1.38 !important;
+      }
+
+      .service li {
+        gap: 7px !important;
+      }
+
+      .service li::before {
+        font-size: .92em !important;
+      }
+
+      .price {
+        right: 20px !important;
+        bottom: 16px !important;
+        width: 34% !important;
+      }
+
+      .price small {
+        margin-bottom: 9px !important;
+        font-size: clamp(8px, .58vw, 10px) !important;
+        line-height: 1.12 !important;
+      }
+
+      .price strong {
+        font-size: clamp(38px, 3.15vw, 50px) !important;
+        line-height: .9 !important;
+      }
+
+      .price strong span {
+        font-size: .46em !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service h3 {
+        font-size: 28px !important;
+      }
+
+      .service .tagline {
+        font-size: 11px !important;
+      }
+
+      .service ul {
+        font-size: 10px !important;
+        line-height: 1.3 !important;
+      }
+
+      .price small {
+        font-size: 8px !important;
+      }
+
+      .price strong {
+        font-size: 38px !important;
+      }
+    }
+
+
+    /* --- Opening viewport lock: cards finish exactly at the bottom edge --- */
+    @media (min-width: 961px) {
+      :root {
+        --opening-wordmark-h: 292px;
+        --opening-card-h: clamp(188px, 22.2svh, 218px);
+        --opening-card-overlap: 76px;
+      }
+
+      .wordmark-intro {
+        min-height: var(--opening-wordmark-h) !important;
+      }
+
+      #global.global,
+      #global.global .shell {
+        min-height: calc(
+          100svh
+          - var(--opening-wordmark-h)
+          - var(--opening-card-h)
+          + var(--opening-card-overlap)
+        ) !important;
+      }
+
+      #services {
+        margin-top: calc(-1 * var(--opening-card-overlap)) !important;
+      }
+
+      #services .service {
+        height: var(--opening-card-h) !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      :root {
+        --opening-card-h: 176px;
+      }
+    }
+
+
+    /* --- Service-card contextual copy over the globe --- */
+    .global-copy [data-global-title],
+    .global-copy [data-global-body],
+    .global-copy [data-global-range] {
+      will-change: opacity, transform;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .service[data-context] {
+        cursor: none;
+      }
+    }
+
+
+    /* --- Card space refinement: taglines become prominent and sit above pricing --- */
+    @media (min-width: 961px) {
+      .service {
+        position: relative;
+      }
+
+      .service .tagline {
+        position: absolute !important;
+        right: 20px;
+        bottom: 88px;
+        width: 34%;
+        margin: 0 !important;
+        font-size: clamp(15px, 1.15vw, 18px) !important;
+        line-height: 1.08 !important;
+        letter-spacing: -.025em;
+        color: #e6e6e0 !important;
+      }
+
+      .service ul {
+        width: 58% !important;
+        margin-top: 13px !important;
+      }
+
+      .price {
+        right: 20px !important;
+        bottom: 15px !important;
+        width: 34% !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service .tagline {
+        bottom: 76px;
+        font-size: 14px !important;
+      }
+
+      .service ul {
+        margin-top: 9px !important;
+      }
+
+      .price {
+        bottom: 11px !important;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .service .tagline {
+        position: static !important;
+      }
+    }
+
+
+    /* --- Card middle-space refinement: taglines occupy the centre column --- */
+    @media (min-width: 961px) {
+      .service {
+        display: block;
+        position: relative;
+      }
+
+      .service h3 {
+        width: 52%;
+      }
+
+      .service ul {
+        width: 46% !important;
+        margin-top: 13px !important;
+      }
+
+      /* Give the tagline its own middle column instead of stacking it over price. */
+      .service .tagline {
+        position: absolute !important;
+        left: 50%;
+        right: auto !important;
+        top: 50%;
+        bottom: auto !important;
+        width: 23% !important;
+        margin: 0 !important;
+        transform: translateY(-50%);
+        font-size: clamp(18px, 1.45vw, 23px) !important;
+        line-height: 1.04 !important;
+        letter-spacing: -.035em;
+        color: #ededE7 !important;
+        text-wrap: balance;
+      }
+
+      /* Price becomes a dedicated right column. */
+      .price {
+        right: 20px !important;
+        bottom: 16px !important;
+        width: 22% !important;
+      }
+
+      .price small {
+        margin-bottom: 9px !important;
+      }
+
+      .price strong {
+        font-size: clamp(38px, 3vw, 48px) !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service ul {
+        width: 45% !important;
+      }
+
+      .service .tagline {
+        left: 49%;
+        width: 24% !important;
+        font-size: 16px !important;
+      }
+
+      .price {
+        width: 23% !important;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .service .tagline {
+        position: static !important;
+        transform: none !important;
+        width: auto !important;
+      }
+    }
+
+
+    /* --- Tagline alignment + cleaner price numerals --- */
+    @media (min-width: 961px) {
+      /*
+       * Align each centre-column tagline on the same horizontal row
+       * as the first capability item while keeping it to a single line.
+       */
+      .service .tagline {
+        left: 50% !important;
+        right: 24% !important;
+        top: clamp(58px, 4.05vw, 66px) !important;
+        bottom: auto !important;
+        width: auto !important;
+        transform: none !important;
+        white-space: nowrap !important;
+        text-wrap: nowrap !important;
+        overflow: visible;
+        font-size: clamp(17px, 1.3vw, 21px) !important;
+        line-height: 1 !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service .tagline {
+        left: 49% !important;
+        right: 24% !important;
+        top: 49px !important;
+        width: auto !important;
+        transform: none !important;
+        white-space: nowrap !important;
+        font-size: 15px !important;
+      }
+    }
+
+
+    /* --- Top-of-site faded grid behind the opening wordmark --- */
+    .wordmark-intro {
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .wordmark-intro::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(244,244,239,.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(244,244,239,.055) 1px, transparent 1px);
+      background-size: 44px 44px, 44px 44px;
+      background-position: center center;
+      opacity: .28;
+      -webkit-mask-image: radial-gradient(circle at 50% 38%, rgba(0,0,0,1) 0%, rgba(0,0,0,.84) 36%, rgba(0,0,0,.4) 66%, rgba(0,0,0,0) 100%);
+      mask-image: radial-gradient(circle at 50% 38%, rgba(0,0,0,1) 0%, rgba(0,0,0,.84) 36%, rgba(0,0,0,.4) 66%, rgba(0,0,0,0) 100%);
+    }
+
+    .wordmark-intro::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(255,255,255,.06), transparent 42%),
+        linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,.08) 58%, rgba(5,5,5,.48) 100%);
+      opacity: .78;
+    }
+
+    .wordmark-intro > * {
+      position: relative;
+      z-index: 1;
+    }
+
+
+    /* --- Grid/globe stacking fix --- */
+    .wordmark-intro {
+      overflow: visible !important;
+      isolation: auto !important;
+      background: transparent !important;
+    }
+
+    /* Keep only the fine grid lines; do not place a dark overlay above the globe. */
+    .wordmark-intro::before {
+      z-index: 0 !important;
+      opacity: .28 !important;
+    }
+
+    .wordmark-intro::after {
+      content: none !important;
+      display: none !important;
+    }
+
+    .wordmark-intro > * {
+      position: relative;
+      z-index: 2 !important;
+    }
+
+    #global.global,
+    #global.global .shell,
+    .globe-stage {
+      overflow: visible !important;
+    }
+
+    .globe-stage {
+      z-index: 1 !important;
+    }
+
+    #globe {
+      opacity: .98 !important;
+      visibility: visible !important;
+    }
+
+
+    /* --- Card typography / diagonal balance refinement --- */
+    @media (min-width: 961px) {
+      /* Give the capability list more visual weight without increasing card height. */
+      .service ul {
+        width: 47% !important;
+        font-size: clamp(13px, .95vw, 15px) !important;
+        line-height: 1.34 !important;
+      }
+
+      .service li {
+        gap: 7px !important;
+      }
+
+      .service li::before {
+        font-size: .96em !important;
+      }
+
+      /*
+       * Place the single-line tagline around the visual midpoint of the
+       * title → price diagonal, rather than locking it to the first bullet row.
+       */
+      .service .tagline {
+        left: 52% !important;
+        right: auto !important;
+        top: 54% !important;
+        bottom: auto !important;
+        width: auto !important;
+        transform: translate(-50%, -50%) !important;
+        white-space: nowrap !important;
+        text-wrap: nowrap !important;
+        text-align: center !important;
+        font-size: clamp(18px, 1.35vw, 22px) !important;
+        line-height: 1 !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service ul {
+        font-size: 11.5px !important;
+        line-height: 1.3 !important;
+      }
+
+      .service .tagline {
+        left: 52% !important;
+        top: 53% !important;
+        transform: translate(-50%, -50%) !important;
+        font-size: 16px !important;
+      }
+    }
+
+
+    /* --- Card spacing refinement: protect capability column + pull pricing inward --- */
+    @media (min-width: 961px) {
+      /* Shift taglines farther into the centre-right so they never sit over the capability list. */
+      .service .tagline {
+        left: 65% !important;
+        top: 52% !important;
+        transform: translate(-50%, -50%) !important;
+        white-space: nowrap !important;
+      }
+
+      /* Give the price block more breathing room from the card edge. */
+      .price {
+        right: 36px !important;
+        width: 22% !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service .tagline {
+        left: 64% !important;
+        top: 51% !important;
+      }
+
+      .price {
+        right: 32px !important;
+      }
+    }
+
+
+    /* --- Pricing edge alignment + larger pricing labels --- */
+    @media (min-width: 961px) {
+      /*
+       * Right-align the pricing column so the right edge of £1000
+       * lands on exactly the same guide as the end of "/mo".
+       */
+      .price {
+        right: 36px !important;
+        width: 24% !important;
+        text-align: right !important;
+      }
+
+      .price small {
+        font-size: clamp(10px, .72vw, 12px) !important;
+        line-height: 1.05 !important;
+        letter-spacing: .11em !important;
+        margin-bottom: 9px !important;
+        text-align: right !important;
+      }
+
+      .price strong {
+        display: block !important;
+        width: 100% !important;
+        text-align: right !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .price {
+        right: 32px !important;
+      }
+
+      .price small {
+        font-size: 9px !important;
+      }
+    }
+
+
+    /* --- Exact tagline row alignment + single-line pricing labels --- */
+    @media (min-width: 961px) {
+      .service .tagline {
+        /* JS sets this to the exact top edge of each card's first bullet row. */
+        top: var(--tagline-first-bullet-y, 66px) !important;
+        left: 65% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        white-space: nowrap !important;
+        text-wrap: nowrap !important;
+        line-height: 1 !important;
+      }
+
+      .price small {
+        white-space: nowrap !important;
+        text-wrap: nowrap !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service .tagline {
+        top: var(--tagline-first-bullet-y, 52px) !important;
+        left: 64% !important;
+      }
+    }
+
+
+    /* --- Tagline positioning correction: Y follows first bullet; X stays independently composed --- */
+    @media (min-width: 961px) {
+      .service .tagline {
+        top: var(--tagline-first-bullet-y, 66px) !important;
+        left: 59% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: auto !important;
+        white-space: nowrap !important;
+        text-wrap: nowrap !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service .tagline {
+        top: var(--tagline-first-bullet-y, 52px) !important;
+        left: 59% !important;
+      }
+    }
+
+
+    /* --- Card composition matched to the supplied sketch --- */
+    @media (min-width: 961px) {
+      /*
+       * Y = exact first bullet row.
+       * X = intentionally offset into the open middle of the card,
+       * independent of the bullet column.
+       */
+      .service .tagline {
+        top: var(--tagline-first-bullet-y, 66px) !important;
+        left: 34% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: auto !important;
+        white-space: nowrap !important;
+        text-wrap: nowrap !important;
+        text-align: left !important;
+      }
+
+      /* Pricing remains inset and right-aligned, with enough width for the full label. */
+      .price {
+        right: 36px !important;
+        width: 30% !important;
+        text-align: right !important;
+      }
+
+      .price small {
+        display: block !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        text-wrap: nowrap !important;
+        text-align: right !important;
+        font-size: clamp(10px, .72vw, 12px) !important;
+        letter-spacing: .1em !important;
+      }
+
+      .price strong {
+        width: 100% !important;
+        text-align: right !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service .tagline {
+        top: var(--tagline-first-bullet-y, 52px) !important;
+        left: 34% !important;
+      }
+
+      .price {
+        right: 32px !important;
+        width: 31% !important;
+      }
+
+      .price small {
+        font-size: 9px !important;
+      }
+    }
+
+
+    /* --- Tagline vertical refinement: lower into the visual diagonal centre --- */
+    @media (min-width: 961px) {
+      .service .tagline {
+        top: calc(var(--tagline-first-bullet-y, 66px) + 18px) !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service .tagline {
+        top: calc(var(--tagline-first-bullet-y, 52px) + 14px) !important;
+      }
+    }
+
+
+    /* --- Final sketch lock --- */
+    @media (min-width: 961px) {
+      .service .tagline {
+        /* Deliberately offset into the open middle; lowered onto the title→price diagonal. */
+        left: 34% !important;
+        top: calc(var(--tagline-first-bullet-y, 66px) + 18px) !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: auto !important;
+        white-space: nowrap !important;
+        text-wrap: nowrap !important;
+        text-align: left !important;
+      }
+
+      .price {
+        right: 36px !important;
+        width: 30% !important;
+        text-align: right !important;
+      }
+
+      .price small {
+        display: block !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        text-wrap: nowrap !important;
+        text-align: right !important;
+      }
+
+      .price strong {
+        display: block !important;
+        width: 100% !important;
+        text-align: right !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .service .tagline {
+        left: 34% !important;
+        top: calc(var(--tagline-first-bullet-y, 52px) + 14px) !important;
+      }
+
+      .price {
+        right: 32px !important;
+        width: 31% !important;
+      }
+    }
+
+
+    /* =========================================================
+       DESKTOP ONE-SCREEN MODE
+       The entire desktop site is one viewport: no page scrolling.
+       Wordmark = top band, context/globe = flexible middle,
+       service cards = exact bottom edge.
+       ========================================================= */
+    @media (min-width: 961px) {
+      :root {
+        --desktop-card-h: clamp(176px, 22.2dvh, 218px);
+        --desktop-wordmark-h: clamp(190px, 29dvh, 292px);
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        max-height: 100dvh;
+        overflow: hidden !important;
+        overscroll-behavior: none;
+      }
+
+      body {
+        min-height: 0 !important;
+      }
+
+      main#top {
+        width: 100%;
+        height: 100dvh !important;
+        min-height: 0 !important;
+        max-height: 100dvh !important;
+        overflow: hidden !important;
+        display: grid !important;
+        grid-template-rows:
+          var(--desktop-wordmark-h)
+          minmax(0, 1fr)
+          var(--desktop-card-h);
+      }
+
+      /* Top band */
+      .wordmark-intro {
+        grid-row: 1;
+        width: 100%;
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        padding-top: clamp(58px, 8dvh, 88px) !important;
+        padding-bottom: clamp(20px, 3dvh, 30px) !important;
+        overflow: visible !important;
+      }
+
+      /* Flexible information/globe field */
+      #global.global {
+        grid-row: 2;
+        width: 100%;
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        margin: 0 !important;
+        overflow: visible !important;
+      }
+
+      #global.global .shell {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .global-copy {
+        top: 50% !important;
+        transform: translateY(-50%);
+      }
+
+      /*
+       * Globe remains a background visual inside the middle field.
+       * Its oversized geometry may extend visually, but cannot
+       * create document overflow because the viewport is locked.
+       */
+      .globe-stage {
+        top: 0 !important;
+        bottom: auto !important;
+        height: max(720px, 100dvh) !important;
+        overflow: visible !important;
+      }
+
+      /* Card row = literal bottom edge of viewport */
+      #services {
+        grid-row: 3;
+        align-self: stretch;
+        width: 100%;
+        height: var(--desktop-card-h) !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+
+      #services .services {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        border-bottom: 0 !important;
+      }
+
+      #services .service {
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: none !important;
+      }
+
+      /*
+       * Desktop is now intentionally a single-screen site.
+       * Everything that used to live below the cards is removed
+       * from the desktop layout so it can never introduce a scrollbar.
+       */
+      #services .pricing-disclaimer,
+      .hero,
+      #method,
+      #contact {
+        display: none !important;
+      }
+
+      /* Nothing outside the three primary rows may affect document height. */
+      main#top > * {
+        min-width: 0;
+      }
+    }
+
+    /* Short desktop / laptop fullscreen: reserve a little more middle field. */
+    @media (min-width: 961px) and (max-height: 780px) {
+      :root {
+        --desktop-card-h: 176px;
+        --desktop-wordmark-h: clamp(168px, 25dvh, 202px);
+      }
+
+      .wordmark-intro {
+        padding-top: clamp(46px, 6dvh, 64px) !important;
+        padding-bottom: 16px !important;
+      }
+
+      .global-copy {
+        top: 48% !important;
+      }
+    }
+
+
+    /* --- Bottom card outline visibility fix --- */
+    @media (min-width: 961px) {
+      /*
+       * Keep the cards visually flush with the viewport while reserving
+       * one physical pixel for the bottom outline so it is never clipped.
+       */
+      #services {
+        height: calc(var(--desktop-card-h) - 1px) !important;
+        align-self: end !important;
+        margin-bottom: 1px !important;
+        overflow: visible !important;
+      }
+
+      #services .services {
+        height: 100% !important;
+        box-sizing: border-box !important;
+        border-bottom: 1px solid var(--line) !important;
+      }
+
+      #services .service {
+        height: 100% !important;
+        box-sizing: border-box !important;
+      }
+    }
+
+
+    /* --- Restore global copy to its original under-wordmark / over-globe position --- */
+    @media (min-width: 961px) {
+      /*
+       * The one-screen conversion had stretched the global shell to the full
+       * browser width, which dragged the copy toward the far-left edge.
+       * Restore the original centred content shell while keeping its flexible height.
+       */
+      #global.global .shell {
+        width: min(100%, 1120px) !important;
+        margin-inline: auto !important;
+        padding-inline: var(--pad) !important;
+      }
+
+      .global-copy {
+        left: var(--pad) !important;
+        top: clamp(54px, 8dvh, 92px) !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        max-width: 900px !important;
+        text-align: left !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .global-copy {
+        top: clamp(34px, 5dvh, 52px) !important;
+      }
+    }
+
+
+    /* --- Lower wordmark + main copy by a further 10% --- */
+    @media (min-width: 961px) {
+      .wordmark-intro {
+        padding-top: clamp(64px, 8.8dvh, 97px) !important;
+      }
+
+      .global-copy {
+        top: clamp(59px, 8.8dvh, 101px) !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .wordmark-intro {
+        padding-top: clamp(51px, 6.6dvh, 70px) !important;
+      }
+
+      .global-copy {
+        top: clamp(37px, 5.5dvh, 57px) !important;
+      }
+    }
+
+
+    /* --- Lower wordmark + main copy further --- */
+    @media (min-width: 961px) {
+      .wordmark-intro {
+        padding-top: clamp(70px, 9.7dvh, 107px) !important;
+      }
+
+      .global-copy {
+        top: clamp(65px, 9.7dvh, 111px) !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .wordmark-intro {
+        padding-top: clamp(56px, 7.25dvh, 77px) !important;
+      }
+
+      .global-copy {
+        top: clamp(41px, 6.05dvh, 63px) !important;
+      }
+    }
+
+
+    /* --- Lower wordmark + main copy by another 20% --- */
+    @media (min-width: 961px) {
+      .wordmark-intro {
+        padding-top: clamp(84px, 11.64dvh, 128px) !important;
+      }
+
+      .global-copy {
+        top: clamp(78px, 11.64dvh, 133px) !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .wordmark-intro {
+        padding-top: clamp(67px, 8.7dvh, 92px) !important;
+      }
+
+      .global-copy {
+        top: clamp(49px, 7.26dvh, 76px) !important;
+      }
+    }
+
+
+    /* =========================================================
+       WORDMARK OPTICAL ALIGNMENT - calibrated from supplied screenshot
+       Reference screenshot: 1898 × 1125
+       Red guide: y = 291 px
+       Current centre of the E middle stroke: y = 203 px
+       Required shift: +88 px = 7.8222dvh at the reference viewport.
+       ========================================================= */
+    @media (min-width: 961px) {
+      .wordmark {
+        /*
+         * Move only the wordmark artwork; do not alter the grid rows,
+         * globe, main copy, cards or the one-screen/no-scroll geometry.
+         */
+        transform: translate(.065em, 7.8222dvh) !important;
+      }
+    }
+
+
+    /* --- Wordmark optical nudge upward --- */
+    @media (min-width: 961px) {
+      .wordmark {
+        /* Slight upward correction from the red-line calibration. */
+        transform: translate(.065em, 6.05dvh) !important;
+      }
+    }
+
+
+    /* --- Wordmark optical nudge upward again --- */
+    @media (min-width: 961px) {
+      .wordmark {
+        /* Raised by roughly another 20px at the 1125px reference height. */
+        transform: translate(.065em, 4.27dvh) !important;
+      }
+    }
+
+
+    /* --- Final one-screen content lock: no legacy page exists below the cards --- */
+    @media (min-width: 961px) {
+      main#top {
+        overflow: hidden !important;
+      }
+
+      #services {
+        margin-bottom: 1px !important;
+      }
+    }
+
+
+    /* --- Main START A PROJECT CTA typography refinement --- */
+    @media (min-width: 681px) {
+      .main-page-cta {
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        letter-spacing: .04em !important;
+        line-height: 1 !important;
+        padding: 10px 14px !important;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .main-page-cta {
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        letter-spacing: .04em !important;
+      }
+    }
+
+
+    /* --- Wordmark placement: centre it in the air above the globe --- */
+    @media (min-width: 961px) {
+      .wordmark-intro {
+        position: relative !important;
+      }
+
+      .wordmark {
+        /*
+         * Stop accumulating percentage/padding nudges.
+         * Place the optical centre of the mark directly in the visual gap
+         * between the top edge of the viewport and the globe crown.
+         */
+        position: absolute !important;
+        left: 50% !important;
+        top: 19.5dvh !important;
+        margin: 0 !important;
+        transform: translate(-50%, -50%) translateX(.065em) !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      .wordmark {
+        top: 18dvh !important;
+      }
+    }
+
+
+    /* =========================================================
+       RICH SERVICE HOVER CONTEXT
+       ========================================================= */
+    .global-copy [data-global-title],
+    .global-copy [data-global-content] {
+      will-change: opacity, transform;
+    }
+
+    .global-context {
+      max-width: 820px;
+    }
+
+    .global-context p {
+      margin: 0;
+    }
+
+    .global-context .global-intro {
+      max-width: 760px;
+      color: #d0d0ca;
+      font-size: clamp(14px, 1.05vw, 16px);
+      line-height: 1.48;
+    }
+
+    .global-copy.is-service-context {
+      max-width: 850px !important;
+    }
+
+    .global-copy.is-service-context h2 {
+      margin-bottom: 13px !important;
+      font-size: clamp(25px, 2.05vw, 33px) !important;
+    }
+
+    .service-context-layout {
+      display: grid;
+      gap: 15px;
+      max-width: 820px;
+    }
+
+    .service-context-intro {
+      max-width: 790px;
+      color: #d6d6d0;
+      font-size: clamp(14px, 1.04vw, 16px);
+      line-height: 1.47;
+    }
+
+    .context-section {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 17px;
+      align-items: start;
+      max-width: 800px;
+    }
+
+    .context-label {
+      padding-top: 2px;
+      color: #7f7f79;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10px;
+      line-height: 1.2;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .context-section p,
+    .context-detail {
+      color: #babdb7;
+      font-size: clamp(12px, .91vw, 14px);
+      line-height: 1.45;
+    }
+
+    .context-emphasis {
+      color: #e0e0db;
+      font-size: clamp(13px, 1vw, 15px);
+      font-weight: 500;
+    }
+
+    .context-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 1px;
+    }
+
+    .context-meta {
+      min-width: 190px;
+      padding: 10px 12px 11px;
+      border: 1px solid rgba(255,255,255,.13);
+      background: rgba(8,8,8,.38);
+      backdrop-filter: blur(5px);
+    }
+
+    .context-meta-label {
+      display: block;
+      margin-bottom: 6px;
+      color: #777771;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 9px;
+      line-height: 1;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .context-meta-value {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e4e4df;
+      font-size: 13px;
+      line-height: 1.15;
+    }
+
+    .response-bolt {
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 22px;
+      width: 22px;
+      height: 22px;
+      border: 1px solid rgba(255,255,255,.32);
+      background: rgba(255,255,255,.055);
+    }
+
+    .response-bolt svg {
+      width: 12px;
+      height: 12px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+    }
+
+    .context-subsection {
+      max-width: 800px;
+      padding-left: 129px;
+    }
+
+    .context-subsection .context-emphasis {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .context-closing {
+      margin-top: 1px !important;
+      color: #e4e4df !important;
+      font-size: clamp(18px, 1.55vw, 24px) !important;
+      line-height: 1.1 !important;
+      letter-spacing: -.025em;
+    }
+
+    .global-copy:not(.is-service-context) .global-range {
+      margin-top: 25px;
+      font-size: clamp(19px, 1.8vw, 27px);
+      color: #e0e0db;
+      letter-spacing: -.025em;
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .service-context-layout {
+        gap: 10px;
+      }
+
+      .global-copy.is-service-context h2 {
+        margin-bottom: 9px !important;
+      }
+
+      .service-context-intro {
+        line-height: 1.36;
+      }
+
+      .context-section p,
+      .context-detail {
+        line-height: 1.34;
+      }
+
+      .context-meta {
+        padding-block: 8px;
+      }
+
+      .context-closing {
+        font-size: 18px !important;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .context-section {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+
+      .context-subsection {
+        padding-left: 0;
+      }
+
+      .context-meta-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+
+    /* =========================================================
+       SERVICE HOVER - USE THE FULL INFORMATION FIELD
+       Larger type + more generous vertical rhythm while remaining
+       completely inside the one-screen area above the cards.
+       ========================================================= */
+    @media (min-width: 961px) {
+      .global-copy.is-service-context {
+        /* Fill the available field between the wordmark band and cards. */
+        top: clamp(24px, 3.2dvh, 38px) !important;
+        bottom: clamp(22px, 2.8dvh, 34px) !important;
+        left: var(--pad) !important;
+        width: calc(100% - (var(--pad) * 2)) !important;
+        max-width: 1040px !important;
+        height: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: stretch !important;
+      }
+
+      .global-copy.is-service-context h2 {
+        flex: 0 0 auto;
+        margin: 0 0 clamp(17px, 2.1dvh, 25px) !important;
+        max-width: 1000px !important;
+        font-size: clamp(32px, 2.55vw, 42px) !important;
+        line-height: 1.02 !important;
+        letter-spacing: -.038em !important;
+      }
+
+      .global-copy.is-service-context .global-context {
+        flex: 1 1 auto;
+        width: 100%;
+        max-width: 1000px;
+        min-height: 0;
+      }
+
+      .service-context-layout {
+        width: 100%;
+        max-width: 1000px;
+        height: 100%;
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto auto auto auto;
+        align-content: space-between;
+        gap: clamp(18px, 2.35dvh, 30px);
+      }
+
+      .service-context-intro {
+        max-width: 960px;
+        font-size: clamp(17px, 1.24vw, 20px);
+        line-height: 1.52;
+      }
+
+      .context-section {
+        grid-template-columns: 140px minmax(0, 1fr);
+        gap: 24px;
+        max-width: 960px;
+      }
+
+      .context-label {
+        padding-top: 4px;
+        font-size: 11px;
+        letter-spacing: .15em;
+      }
+
+      .context-section p,
+      .context-detail {
+        font-size: clamp(15px, 1.05vw, 17px);
+        line-height: 1.52;
+      }
+
+      .context-emphasis {
+        font-size: clamp(17px, 1.2vw, 19px);
+      }
+
+      .context-subsection {
+        max-width: 960px;
+        padding-left: 164px;
+      }
+
+      .context-subsection .context-emphasis {
+        margin-bottom: 9px;
+      }
+
+      .context-meta-row {
+        gap: 16px;
+      }
+
+      .context-meta {
+        min-width: 250px;
+        padding: 14px 17px 15px;
+      }
+
+      .context-meta-label {
+        margin-bottom: 9px;
+        font-size: 10px;
+        letter-spacing: .15em;
+      }
+
+      .context-meta-value {
+        gap: 11px;
+        font-size: clamp(14px, 1vw, 16px);
+      }
+
+      .response-bolt {
+        flex-basis: 28px;
+        width: 28px;
+        height: 28px;
+      }
+
+      .response-bolt svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .context-closing {
+        margin-top: 0 !important;
+        font-size: clamp(25px, 2vw, 32px) !important;
+        line-height: 1 !important;
+        letter-spacing: -.035em !important;
+      }
+    }
+
+    /* Keep the richer presentation generous on common laptop fullscreen heights,
+       but scale the rhythm just enough to guarantee zero overflow. */
+    @media (min-width: 961px) and (max-height: 820px) {
+      .global-copy.is-service-context {
+        top: 18px !important;
+        bottom: 17px !important;
+      }
+
+      .global-copy.is-service-context h2 {
+        margin-bottom: 13px !important;
+        font-size: clamp(29px, 2.35vw, 37px) !important;
+      }
+
+      .service-context-layout {
+        gap: 12px;
+      }
+
+      .service-context-intro {
+        font-size: clamp(15px, 1.12vw, 18px);
+        line-height: 1.38;
+      }
+
+      .context-section p,
+      .context-detail {
+        font-size: clamp(13px, .98vw, 15px);
+        line-height: 1.38;
+      }
+
+      .context-emphasis {
+        font-size: 16px;
+      }
+
+      .context-meta {
+        padding: 10px 14px 11px;
+      }
+
+      .context-meta-label {
+        margin-bottom: 6px;
+      }
+
+      .response-bolt {
+        flex-basis: 24px;
+        width: 24px;
+        height: 24px;
+      }
+
+      .context-closing {
+        font-size: clamp(21px, 1.75vw, 27px) !important;
+      }
+    }
+
+
+    /* =========================================================
+       SIMPLIFIED SERVICE HOVER PRESENTATION
+       Keep all approved copy, reduce UI complexity, increase breathing
+       room above the cards.
+       ========================================================= */
+    @media (min-width: 961px) {
+      .global-copy.is-service-context {
+        top: clamp(28px, 3.4dvh, 40px) !important;
+        bottom: clamp(62px, 7.2dvh, 82px) !important;
+        max-width: 980px !important;
+      }
+
+      .global-copy.is-service-context h2 {
+        margin-bottom: clamp(16px, 1.9dvh, 22px) !important;
+        font-size: clamp(30px, 2.35vw, 38px) !important;
+      }
+
+      .service-context-layout {
+        max-width: 940px !important;
+        height: auto !important;
+        display: block !important;
+      }
+
+      .service-context-intro {
+        max-width: 900px !important;
+        font-size: clamp(16px, 1.15vw, 18px) !important;
+        line-height: 1.5 !important;
+        margin-bottom: 22px !important;
+      }
+
+      .context-section {
+        display: block !important;
+        max-width: 900px !important;
+        margin-bottom: 22px !important;
+      }
+
+      .context-label {
+        display: block !important;
+        padding-top: 0 !important;
+        margin-bottom: 7px !important;
+        font-size: 10px !important;
+        letter-spacing: .14em !important;
+      }
+
+      .context-section p,
+      .context-detail {
+        max-width: 860px !important;
+        font-size: clamp(14px, 1vw, 16px) !important;
+        line-height: 1.48 !important;
+      }
+
+      .context-subsection {
+        max-width: 900px !important;
+        padding-left: 0 !important;
+        margin-bottom: 22px !important;
+      }
+
+      .context-subsection .context-emphasis {
+        margin-bottom: 7px !important;
+        font-size: clamp(15px, 1.08vw, 17px) !important;
+      }
+
+      .context-meta-row {
+        display: flex !important;
+        gap: 28px !important;
+        margin: 0 0 24px !important;
+      }
+
+      .context-meta {
+        min-width: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+      }
+
+      .context-meta-label {
+        margin-bottom: 6px !important;
+        font-size: 9px !important;
+        letter-spacing: .14em !important;
+      }
+
+      .context-meta-value {
+        gap: 8px !important;
+        font-size: clamp(13px, .96vw, 15px) !important;
+      }
+
+      .response-bolt {
+        flex-basis: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+        border: 0 !important;
+        background: transparent !important;
+      }
+
+      .response-bolt svg {
+        width: 14px !important;
+        height: 14px !important;
+      }
+
+      .context-closing {
+        margin-top: 0 !important;
+        font-size: clamp(22px, 1.75vw, 28px) !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .global-copy.is-service-context {
+        top: 20px !important;
+        bottom: 54px !important;
+      }
+
+      .global-copy.is-service-context h2 {
+        margin-bottom: 12px !important;
+        font-size: clamp(27px, 2.2vw, 34px) !important;
+      }
+
+      .service-context-intro {
+        margin-bottom: 15px !important;
+        font-size: clamp(14px, 1.06vw, 16px) !important;
+        line-height: 1.38 !important;
+      }
+
+      .context-section,
+      .context-subsection {
+        margin-bottom: 15px !important;
+      }
+
+      .context-meta-row {
+        margin-bottom: 16px !important;
+        gap: 24px !important;
+      }
+
+      .context-section p,
+      .context-detail {
+        font-size: clamp(13px, .95vw, 14px) !important;
+        line-height: 1.36 !important;
+      }
+
+      .context-closing {
+        font-size: clamp(20px, 1.6vw, 24px) !important;
+      }
+    }
+
+
+    /* =========================================================
+       ULTRA-SIMPLE HOVER TYPOGRAPHY
+       One title size, one body size, one small label size.
+       No decorative weight changes.
+       ========================================================= */
+    @media (min-width: 961px) {
+      .global-copy.is-service-context h2 {
+        font-size: 30px !important;
+        font-weight: 400 !important;
+        line-height: 1.08 !important;
+        letter-spacing: -.025em !important;
+        margin-bottom: 18px !important;
+      }
+
+      .service-context-intro,
+      .context-section p,
+      .context-detail,
+      .context-emphasis,
+      .context-meta-value,
+      .context-closing {
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        line-height: 1.48 !important;
+        letter-spacing: 0 !important;
+      }
+
+      .context-label,
+      .context-meta-label {
+        font-family: inherit !important;
+        font-size: 11px !important;
+        font-weight: 400 !important;
+        line-height: 1.2 !important;
+        letter-spacing: .08em !important;
+        text-transform: uppercase !important;
+        color: #8a8a84 !important;
+      }
+
+      .context-emphasis {
+        display: block !important;
+        margin-bottom: 7px !important;
+        color: #d6d6d0 !important;
+      }
+
+      .context-closing {
+        margin-top: 0 !important;
+        color: #e0e0db !important;
+      }
+
+      .service-context-intro {
+        margin-bottom: 22px !important;
+      }
+
+      .context-section,
+      .context-subsection {
+        margin-bottom: 22px !important;
+      }
+
+      .context-meta-row {
+        margin-bottom: 22px !important;
+      }
+
+      .context-meta-label {
+        margin-bottom: 6px !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .global-copy.is-service-context h2 {
+        font-size: 27px !important;
+        margin-bottom: 14px !important;
+      }
+
+      .service-context-intro,
+      .context-section p,
+      .context-detail,
+      .context-emphasis,
+      .context-meta-value,
+      .context-closing {
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+      }
+
+      .context-label,
+      .context-meta-label {
+        font-size: 10px !important;
+      }
+
+      .service-context-intro,
+      .context-section,
+      .context-subsection,
+      .context-meta-row {
+        margin-bottom: 16px !important;
+      }
+    }
+
+
+    /* --- Best For first: spacing refinement --- */
+    @media (min-width: 961px) {
+      .global-copy.is-service-context .context-section:first-child {
+        margin-top: 0 !important;
+        margin-bottom: 22px !important;
+      }
+
+      .global-copy.is-service-context .service-context-intro {
+        margin-bottom: 22px !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .global-copy.is-service-context .context-section:first-child,
+      .global-copy.is-service-context .service-context-intro {
+        margin-bottom: 16px !important;
+      }
+    }
+
+
+    /* --- Larger hover body + subheading typography --- */
+    @media (min-width: 961px) {
+      .service-context-intro,
+      .context-section p,
+      .context-detail,
+      .context-emphasis,
+      .context-meta-value,
+      .context-closing {
+        font-size: 18px !important;
+        line-height: 1.5 !important;
+      }
+
+      .context-label,
+      .context-meta-label {
+        font-size: 13px !important;
+        letter-spacing: .08em !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .service-context-intro,
+      .context-section p,
+      .context-detail,
+      .context-emphasis,
+      .context-meta-value,
+      .context-closing {
+        font-size: 16px !important;
+        line-height: 1.42 !important;
+      }
+
+      .context-label,
+      .context-meta-label {
+        font-size: 11px !important;
+      }
+    }
+
+
+    /* =========================================================
+       SERVICE TITLE TYPEWRITER
+       Persistent blinking cursor + realistic variable typing/backspacing.
+       ========================================================= */
+    .global-copy [data-global-title] {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      transition: none !important;
+      filter: none !important;
+    }
+
+    .global-copy [data-global-title] * {
+      visibility: visible !important;
+      transform: none !important;
+      transition: none !important;
+      filter: none !important;
+    }
+
+    .global-copy [data-global-title]::before,
+    .global-copy [data-global-title]::after {
+      content: none !important;
+      display: none !important;
+    }
+
+    .global-copy [data-global-title] {
+      white-space: nowrap !important;
+    }
+
+    .global-copy [data-global-title] .dl-type-text {
+      display: inline !important;
+    }
+
+    .global-copy [data-global-title] .dl-type-cursor {
+      display: inline-block !important;
+      margin-left: .09em !important;
+      color: currentColor !important;
+      font: inherit !important;
+      line-height: inherit !important;
+      opacity: 1;
+      animation: none !important;
+      will-change: opacity;
+    }
+
+
+    /* =========================================================
+       START A PROJECT COMPOSE MODE
+       Minimal terminal-like form occupying the main information field.
+       ========================================================= */
+    .project-compose {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: min(100%, 1120px);
+      margin-inline: auto;
+      padding: clamp(28px, 4.4dvh, 54px) var(--pad) clamp(66px, 7.8dvh, 88px);
+      box-sizing: border-box;
+      pointer-events: auto;
+    }
+
+    .project-compose[hidden] {
+      display: none !important;
+    }
+
+    .project-compose.is-active {
+      display: flex !important;
+    }
+
+    .project-message-wrap {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+    }
+
+    .project-message {
+      width: 100%;
+      height: 100%;
+      min-height: 220px;
+      resize: none;
+      border: 0;
+      outline: 0;
+      padding: 0 0 34px;
+      margin: 0;
+      background: transparent;
+      color: #e7e7e1;
+      caret-color: #e7e7e1;
+      font: inherit;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: clamp(20px, 1.55vw, 25px);
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -.015em;
+      overflow: auto;
+      scrollbar-width: none;
+    }
+
+    .project-message::-webkit-scrollbar {
+      display: none;
+    }
+
+    .project-message-limit {
+      position: absolute;
+      right: 0;
+      bottom: 8px;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .08em;
+      color: #73736d;
+      pointer-events: none;
+    }
+
+    .project-compose-footer {
+      display: grid;
+      grid-template-columns: minmax(260px, 420px) auto;
+      align-items: end;
+      justify-content: space-between;
+      gap: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .project-email-field {
+      display: grid;
+      gap: 9px;
+    }
+
+    .project-field-label {
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #85857f;
+    }
+
+    .project-email {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid rgba(255,255,255,.22);
+      outline: 0;
+      padding: 0 0 10px;
+      background: transparent;
+      color: #e7e7e1;
+      caret-color: #e7e7e1;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    .project-email:focus {
+      border-bottom-color: rgba(255,255,255,.62);
+    }
+
+    .project-submit {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.28);
+      background: transparent;
+      color: #e7e7e1;
+      padding: 12px 16px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: .04em;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .project-submit::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 300ms cubic-bezier(.4,0,.2,1);
+    }
+
+    .project-submit:hover::before,
+    .project-submit:focus-visible::before {
+      transform: scaleX(1);
+    }
+
+    .project-submit span {
+      position: relative;
+      z-index: 1;
+      mix-blend-mode: difference;
+    }
+
+    .project-compose-status {
+      min-height: 1.2em;
+      margin: 12px 0 0;
+      font-size: 11px;
+      line-height: 1.2;
+      color: #8f8f89;
+    }
+
+    body.project-mode .global-copy {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    body.project-mode .globe-stage {
+      opacity: .26 !important;
+      transition: opacity 320ms cubic-bezier(.22,.61,.36,1) !important;
+    }
+
+    body.project-mode #services {
+      opacity: .38;
+      transition: opacity 320ms cubic-bezier(.22,.61,.36,1);
+    }
+
+    body.project-mode #services .service {
+      pointer-events: none;
+    }
+
+    body.project-mode .main-page-cta span {
+      font-size: 0;
+    }
+
+    body.project-mode .main-page-cta span::after {
+      content: "Close ×";
+      font-size: 14px;
+      letter-spacing: .04em;
+    }
+
+    @media (max-width: 960px) {
+      .project-compose {
+        position: relative;
+        min-height: 62vh;
+        padding: 34px var(--pad) 40px;
+      }
+
+      .project-compose-footer {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+
+      .project-submit {
+        justify-self: start;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .project-compose {
+        padding-top: 20px;
+        padding-bottom: 54px;
+      }
+
+      .project-message {
+        min-height: 160px;
+        font-size: 18px;
+      }
+    }
+
+
+    /* =========================================================
+       PROJECT COMPOSE VISIBILITY + DARKENING FIX
+       ========================================================= */
+    body.project-mode .global-copy {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* The title has its own visibility overrides for the hover typewriter.
+       Explicitly suppress it in compose mode so "Operating Globally"
+       can never bleed through the writing field. */
+    body.project-mode [data-global-title],
+    body.project-mode [data-global-title] * {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+
+    body.project-mode .project-compose {
+      background: rgba(0, 0, 0, .58);
+      backdrop-filter: brightness(.58);
+      -webkit-backdrop-filter: brightness(.58);
+    }
+
+    body.project-mode .globe-stage {
+      opacity: .10 !important;
+    }
+
+    body.project-mode #services {
+      opacity: .18 !important;
+    }
+
+    body.project-mode .wordmark {
+      opacity: .48 !important;
+      transition: opacity 320ms cubic-bezier(.22,.61,.36,1) !important;
+    }
+
+    body:not(.project-mode) .wordmark {
+      transition: opacity 320ms cubic-bezier(.22,.61,.36,1) !important;
+    }
+
+
+    /* =========================================================
+       PROJECT COMPOSE - SMOKED GLASS + MATCHED BLOCK CARET
+       ========================================================= */
+    body.project-mode .project-compose {
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      isolation: isolate;
+    }
+
+    body.project-mode .project-compose::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 28% 24%, rgba(38,38,36,.16) 0%, rgba(14,14,14,.08) 38%, transparent 68%),
+        radial-gradient(ellipse at 72% 58%, rgba(28,28,26,.13) 0%, rgba(10,10,10,.07) 42%, transparent 72%),
+        rgba(4,4,4,.20);
+      backdrop-filter: blur(15px) brightness(.60) saturate(.72);
+      -webkit-backdrop-filter: blur(15px) brightness(.60) saturate(.72);
+    }
+
+    body.project-mode .globe-stage {
+      opacity: .14 !important;
+    }
+
+    body.project-mode #services {
+      opacity: .22 !important;
+    }
+
+    body.project-mode .wordmark {
+      opacity: .56 !important;
+    }
+
+    .project-message {
+      caret-color: transparent !important;
+    }
+
+    .project-caret-mirror {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 0 0 34px;
+      margin: 0;
+      border: 0;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: clamp(20px, 1.55vw, 25px);
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -.015em;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-break: normal;
+      overflow: hidden;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .project-caret-marker {
+      display: inline;
+    }
+
+    .project-caret-block {
+      position: absolute;
+      z-index: 3;
+      display: none;
+      pointer-events: none;
+      color: #e7e7e1;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: clamp(20px, 1.55vw, 25px);
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -.015em;
+      transform: translateY(-.02em);
+      animation: dl-type-cursor-flash .70s steps(1, end) infinite !important;
+      will-change: opacity;
+    }
+
+    .project-message:focus ~ .project-caret-block {
+      display: block;
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .project-caret-mirror,
+      .project-caret-block {
+        font-size: 18px;
+      }
+    }
+
+
+    /* =========================================================
+       PROJECT COMPOSE - FULL-SCREEN FROSTED OVERLAY
+       No panel, card, outline or separate rectangular surface.
+       The whole viewport becomes one continuous blurred layer.
+       ========================================================= */
+    body.project-mode .project-compose {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 1000 !important;
+      width: 100vw !important;
+      max-width: none !important;
+      height: 100dvh !important;
+      margin: 0 !important;
+      box-sizing: border-box !important;
+
+      background: rgba(5, 5, 5, .38) !important;
+      backdrop-filter: blur(18px) saturate(.78) brightness(.70) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(.78) brightness(.70) !important;
+
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+
+      padding:
+        clamp(84px, 11dvh, 126px)
+        max(var(--pad), calc((100vw - 1120px) / 2 + var(--pad)))
+        clamp(54px, 7dvh, 78px) !important;
+
+      isolation: auto !important;
+    }
+
+    body.project-mode .project-compose::before,
+    body.project-mode .project-compose::after {
+      content: none !important;
+      display: none !important;
+    }
+
+    /* Let the underlying site remain recognisable through the full-screen haze. */
+    body.project-mode .globe-stage {
+      opacity: .30 !important;
+    }
+
+    body.project-mode #services {
+      opacity: .42 !important;
+    }
+
+    body.project-mode .wordmark {
+      opacity: .66 !important;
+    }
+
+    /* The form itself has no container treatment whatsoever. */
+    .project-message-wrap,
+    .project-compose-footer,
+    .project-email-field {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+    }
+
+    .project-message-wrap {
+      border: 0 !important;
+      outline: 0 !important;
+    }
+
+    /* Keep only the intentional fine rule separating input actions. */
+    .project-compose-footer {
+      border-left: 0 !important;
+      border-right: 0 !important;
+      border-bottom: 0 !important;
+    }
+
+    @media (max-width: 960px) {
+      body.project-mode .project-compose {
+        position: fixed !important;
+        min-height: 100dvh !important;
+        padding: 84px var(--pad) 34px !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      body.project-mode .project-compose {
+        padding-top: 62px !important;
+        padding-bottom: 42px !important;
+      }
+    }
+
+
+    /* =========================================================
+       START A PROJECT - INLINE MAIN-AREA COMPOSE MODE
+       Replaces the normal/hover copy in-place. No overlay, dimming,
+       backdrop, blur panel, or separate full-screen treatment.
+       ========================================================= */
+    body.project-mode .global-copy {
+      display: none !important;
+    }
+
+    body.project-mode .globe-stage,
+    body.project-mode #services,
+    body.project-mode .wordmark {
+      opacity: inherit !important;
+      filter: none !important;
+      transition: none !important;
+    }
+
+    body.project-mode .project-compose {
+      position: absolute !important;
+      z-index: 8 !important;
+      inset: auto !important;
+      left: var(--pad) !important;
+      top: clamp(28px, 3.4dvh, 40px) !important;
+      bottom: clamp(62px, 7.2dvh, 82px) !important;
+
+      width: calc(100% - (var(--pad) * 2)) !important;
+      max-width: 980px !important;
+      height: auto !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      isolation: auto !important;
+    }
+
+    body.project-mode .project-compose::before,
+    body.project-mode .project-compose::after {
+      content: none !important;
+      display: none !important;
+    }
+
+    .project-message-wrap {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      margin: 0 0 26px;
+      padding: 0;
+      border: 0 !important;
+      outline: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .project-message {
+      width: 100%;
+      height: 100%;
+      min-height: 190px;
+      max-height: 100%;
+      margin: 0;
+      padding: 0 0 30px;
+      border: 0 !important;
+      outline: 0 !important;
+      resize: none;
+      overflow: auto;
+      background: transparent !important;
+      color: #e7e7e1;
+      caret-color: transparent !important;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 18px !important;
+      font-weight: 400 !important;
+      line-height: 1.5 !important;
+      letter-spacing: 0 !important;
+      scrollbar-width: none;
+    }
+
+    .project-message::-webkit-scrollbar {
+      display: none;
+    }
+
+    .project-message-limit {
+      right: 0;
+      bottom: 3px;
+    }
+
+    .project-caret-mirror,
+    .project-caret-block {
+      font-size: 18px !important;
+      line-height: 1.5 !important;
+      letter-spacing: 0 !important;
+    }
+
+    .project-compose-footer {
+      display: grid !important;
+      grid-template-columns: minmax(260px, 420px) auto !important;
+      align-items: end !important;
+      justify-content: space-between !important;
+      gap: 32px !important;
+      width: 100%;
+      padding: 18px 0 0 !important;
+      margin: 0 !important;
+      border-top: 1px solid var(--line) !important;
+      border-right: 0 !important;
+      border-bottom: 0 !important;
+      border-left: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .project-email-field {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .project-compose-status {
+      margin-top: 10px !important;
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      body.project-mode .project-compose {
+        top: 20px !important;
+        bottom: 54px !important;
+      }
+
+      .project-message {
+        min-height: 145px !important;
+        font-size: 16px !important;
+      }
+
+      .project-caret-mirror,
+      .project-caret-block {
+        font-size: 16px !important;
+      }
+
+      .project-message-wrap {
+        margin-bottom: 18px !important;
+      }
+
+      .project-compose-footer {
+        padding-top: 14px !important;
+      }
+    }
+
+    @media (max-width: 960px) {
+      body.project-mode .project-compose {
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        bottom: auto !important;
+        width: 100% !important;
+        max-width: none !important;
+        padding: 32px var(--pad) 40px !important;
+      }
+
+      .project-compose-footer {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+      }
+
+      .project-submit {
+        justify-self: start;
+      }
+    }
+
+
+    /* =========================================================
+       START A PROJECT - EXACT MAIN-COPY ALIGNMENT
+       The compose form now lives inside the same centred shell and uses
+       the exact service-hover copy geometry.
+       ========================================================= */
+    @media (min-width: 961px) {
+      body.project-mode .project-compose {
+        left: var(--pad) !important;
+        top: clamp(28px, 3.4dvh, 40px) !important;
+        bottom: clamp(62px, 7.2dvh, 82px) !important;
+        width: calc(100% - (var(--pad) * 2)) !important;
+        max-width: 980px !important;
+      }
+
+      /* Match the usable line width of the hover service content. */
+      .project-message-wrap,
+      .project-compose-footer,
+      .project-compose-status {
+        width: 100% !important;
+        max-width: 900px !important;
+      }
+
+      .project-message {
+        width: 100% !important;
+        max-width: 900px !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      body.project-mode .project-compose {
+        top: 20px !important;
+        bottom: 54px !important;
+      }
+    }
+
+    /* Project caret uses the same cursor component as hover titles.
+       CSS animation stays disabled because the hover cursor itself is
+       driven by the site's JS blink routine. */
+    .project-caret-block.dl-type-cursor {
+      position: absolute !important;
+      margin-left: 0 !important;
+      display: none !important;
+      opacity: 1;
+      animation: none !important;
+    }
+
+    .project-message:focus ~ .project-caret-block.dl-type-cursor {
+      display: block !important;
+    }
+
+
+    /* =========================================================
+       PROJECT COMPOSE - TYPOGRAPHY + CURSOR CONSISTENCY
+       ========================================================= */
+
+    /* Match the exact desktop body typography already used by the
+       service hover copy in this same content field. */
+    @media (min-width: 961px) {
+      .project-message,
+      .project-caret-mirror,
+      .project-caret-block.dl-type-cursor {
+        font-family: inherit !important;
+        font-size: 18px !important;
+        font-weight: 400 !important;
+        line-height: 1.5 !important;
+        letter-spacing: 0 !important;
+      }
+
+      .project-message,
+      .project-caret-block.dl-type-cursor {
+        color: #d6d6d0 !important;
+      }
+    }
+
+    /* Match the same short-screen reduction used by hover body copy. */
+    @media (min-width: 961px) and (max-height: 820px) {
+      .project-message,
+      .project-caret-mirror,
+      .project-caret-block.dl-type-cursor {
+        font-size: 16px !important;
+        line-height: 1.42 !important;
+      }
+    }
+
+    /* Once the Deepline technical cursor is live, suppress every native
+       pointer shape, including the browser I-beam over editable/selectable
+       text, so it can never sit on top of the custom rotating cursor. */
+    html.deepline-cursor-live,
+    html.deepline-cursor-live *,
+    html.deepline-cursor-live *::before,
+    html.deepline-cursor-live *::after {
+      cursor: none !important;
+    }
+
+    html.deepline-cursor-live input,
+    html.deepline-cursor-live textarea,
+    html.deepline-cursor-live [contenteditable="true"],
+    html.deepline-cursor-live [contenteditable=""],
+    html.deepline-cursor-live label,
+    html.deepline-cursor-live select,
+    html.deepline-cursor-live option {
+      cursor: none !important;
+    }
+
+
+    /* =========================================================
+       DEFAULT INTRO SLIDES
+       First slide is the Deepline overview with no heading.
+       ========================================================= */
+    .global-copy [data-global-title]:empty {
+      display: none !important;
+      margin: 0 !important;
+    }
+
+    .homepage-overview {
+      max-width: 900px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .homepage-overview p {
+      margin: 0;
+      max-width: 900px;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: 0;
+      color: #d6d6d0;
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .homepage-overview {
+        gap: 16px;
+      }
+
+      .homepage-overview p {
+        font-size: 16px;
+        line-height: 1.42;
+      }
+    }
+
+
+    /* =========================================================
+       HOMEPAGE INTRO - CLEAN MARKETING HIERARCHY
+       Strong lead, restrained supporting line. No extra UI.
+       ========================================================= */
+    .homepage-overview {
+      max-width: 940px !important;
+      gap: clamp(20px, 2.5dvh, 28px) !important;
+    }
+
+    .homepage-overview .overview-lead {
+      max-width: 930px !important;
+      margin: 0 !important;
+      color: #e4e4df !important;
+      font-size: clamp(23px, 1.72vw, 28px) !important;
+      font-weight: 500 !important;
+      line-height: 1.30 !important;
+      letter-spacing: -.022em !important;
+    }
+
+    .homepage-overview .overview-support {
+      max-width: 835px !important;
+      margin: 0 !important;
+      color: #aaa9a3 !important;
+      font-size: clamp(16px, 1.08vw, 18px) !important;
+      font-weight: 400 !important;
+      line-height: 1.48 !important;
+      letter-spacing: -.006em !important;
+    }
+
+    .homepage-overview .overview-support span {
+      color: #d7d7d1 !important;
+      font-weight: 500 !important;
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .homepage-overview {
+        gap: 18px !important;
+      }
+
+      .homepage-overview .overview-lead {
+        font-size: clamp(20px, 1.55vw, 24px) !important;
+        line-height: 1.28 !important;
+      }
+
+      .homepage-overview .overview-support {
+        font-size: clamp(14px, 1vw, 16px) !important;
+        line-height: 1.42 !important;
+      }
+    }
+
+
+    /* =========================================================
+       SITE TYPEFACE — IBM PLEX SANS
+       Technical, precise and highly readable.
+       Wordmark intentionally remains unchanged.
+       ========================================================= */
+    html,
+    body,
+    main,
+    section,
+    article,
+    nav,
+    header,
+    footer,
+    div,
+    p,
+    span,
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    option,
+    label,
+    small,
+    strong,
+    em,
+    ul,
+    ol,
+    li,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "IBM Plex Sans", "Segoe UI", Arial, sans-serif !important;
+    }
+
+    /* Preserve the Deepline wordmark exactly as designed. */
+    .wordmark,
+    .wordmark *,
+    .wordmark-motion,
+    .wordmark-motion * {
+      font-family: Bahnschrift, "DIN Alternate", "Arial Narrow", sans-serif !important;
+    }
+
+    /* Keep the technical labels in the same family rather than switching
+       to a separate mono font, so the site feels coherent and less AI-tool-like. */
+    .context-label,
+    .context-meta-label,
+    .project-field-label,
+    .service small,
+    .price small {
+      font-family: "IBM Plex Sans", "Segoe UI", Arial, sans-serif !important;
+    }
+
+
+    /* =========================================================
+       MAIN COPY SLIDES #1-#4
+       ========================================================= */
+    .global-copy [data-global-title]:empty {
+      display: none !important;
+      margin: 0 !important;
+    }
+
+    .homepage-slide {
+      display: grid;
+      gap: 18px;
+      width: 100%;
+      max-width: 930px;
+    }
+.homepage-slide .slide-heading {
+      margin: 0 !important;
+      max-width: 900px !important;
+      color: #e5e5df !important;
+      font-size: clamp(28px, 2.35vw, 38px) !important;
+      font-weight: 500 !important;
+      line-height: 1.08 !important;
+      letter-spacing: -.03em !important;
+    }
+
+    .homepage-slide .slide-body {
+      margin: 0 !important;
+      max-width: 850px !important;
+      color: #cfcfc9 !important;
+      font-size: 18px !important;
+      font-weight: 400 !important;
+      line-height: 1.5 !important;
+      letter-spacing: 0 !important;
+    }
+
+    .homepage-slide .slide-closing {
+      margin: 2px 0 0 !important;
+      max-width: 850px !important;
+      color: #e0e0da !important;
+      font-size: 18px !important;
+      font-weight: 500 !important;
+      line-height: 1.45 !important;
+      letter-spacing: -.01em !important;
+    }
+
+    .homepage-slide-statement {
+      max-width: 900px;
+    }
+
+    .homepage-slide-statement .slide-heading {
+      max-width: 860px !important;
+      font-size: clamp(30px, 2.6vw, 42px) !important;
+      line-height: 1.08 !important;
+    }
+
+    /* Supplied hover copy uses full-width supporting subsections. */
+    .context-subsection-full {
+      padding-left: 0 !important;
+      max-width: 860px !important;
+    }
+
+    .context-emphasis-lead {
+      margin: 0 !important;
+      color: #e4e4df !important;
+      font-size: 18px !important;
+      font-weight: 500 !important;
+      line-height: 1.45 !important;
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .homepage-slide {
+        gap: 14px;
+      }
+
+      .homepage-slide .slide-heading {
+        font-size: clamp(25px, 2.15vw, 34px) !important;
+      }
+
+      .homepage-slide .slide-body,
+      .homepage-slide .slide-closing,
+      .context-emphasis-lead {
+        font-size: 16px !important;
+        line-height: 1.42 !important;
+      }
+
+      .homepage-slide-statement .slide-heading {
+        font-size: clamp(27px, 2.35vw, 37px) !important;
+      }
+    }
+
+
+    /* =========================================================
+       X-AXIS CENTRING ONLY
+       No vertical positioning values are changed.
+       ========================================================= */
+
+    @media (min-width: 961px) {
+      /* Perfectly centre the DEEPLINE wordmark on the viewport X axis.
+         Preserve its existing Y translation/position exactly. */
+      .wordmark {
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+      }
+
+      /* Centre only the idle/main-page statements.
+         Service-hover content keeps its existing left-aligned layout. */
+      .global-copy:not(.is-service-context) {
+        left: 50% !important;
+        width: min(calc(100vw - (var(--pad) * 2)), 940px) !important;
+        max-width: 940px !important;
+        transform: translateX(-50%) !important;
+        text-align: center !important;
+      }
+
+      .global-copy:not(.is-service-context) .global-context,
+      .global-copy:not(.is-service-context) .homepage-slide {
+        width: 100% !important;
+        max-width: 940px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+      }
+
+      .global-copy:not(.is-service-context) .slide-heading,
+      .global-copy:not(.is-service-context) .slide-body,
+      .global-copy:not(.is-service-context) .slide-closing {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+      }
+    }
+
+
+    /* =========================================================
+       TRUE FULL-VIEWPORT X CENTRING
+       Horizontal geometry only. No Y/top/bottom values changed.
+       ========================================================= */
+    @media (min-width: 961px) {
+      /* Make the positioning context itself span the full browser viewport,
+         rather than the 1120px content shell. */
+      #global.global .shell {
+        width: 100vw !important;
+        max-width: none !important;
+        margin-left: calc(50% - 50vw) !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      /* Idle slides are centred against the literal viewport midpoint. */
+      .global-copy:not(.is-service-context) {
+        left: 50% !important;
+        right: auto !important;
+        width: min(calc(100vw - (var(--pad) * 2)), 940px) !important;
+        max-width: 940px !important;
+        transform: translateX(-50%) !important;
+        text-align: center !important;
+      }
+
+      .global-copy:not(.is-service-context) .global-context,
+      .global-copy:not(.is-service-context) .homepage-slide {
+        width: 100% !important;
+        max-width: 940px !important;
+        margin-inline: auto !important;
+        text-align: center !important;
+      }
+
+      .global-copy:not(.is-service-context) .slide-heading,
+      .global-copy:not(.is-service-context) .slide-body,
+      .global-copy:not(.is-service-context) .slide-closing {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+      }
+
+      /* Ensure the wordmark's containing section is also full viewport width,
+         then centre the mark on that true midpoint. Vertical placement untouched. */
+      .wordmark-intro {
+        width: 100vw !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+
+      .wordmark {
+        left: 50% !important;
+        right: auto !important;
+        transform: translate(-50%, -50%) !important;
+      }
+    }
+
+
+    /* =========================================================
+       CORRECT VIEWPORT CENTRING
+       Fixes the previous 100vw shell offset that pushed copy right.
+       Horizontal only: all existing Y/top/bottom values remain untouched.
+       ========================================================= */
+    @media (min-width: 961px) {
+      /* Restore the centred content shell. Its centre is the viewport centre. */
+      #global.global .shell {
+        width: min(100%, 1120px) !important;
+        max-width: 1120px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: var(--pad) !important;
+        padding-right: var(--pad) !important;
+      }
+
+      /* Centre idle slides on the shell midpoint, which is also the exact
+         browser viewport midpoint. */
+      .global-copy:not(.is-service-context) {
+        left: 50% !important;
+        right: auto !important;
+        width: min(calc(100vw - (var(--pad) * 2)), 940px) !important;
+        max-width: 940px !important;
+        transform: translateX(-50%) !important;
+        text-align: center !important;
+      }
+
+      .global-copy:not(.is-service-context) .global-context,
+      .global-copy:not(.is-service-context) .homepage-slide {
+        width: 100% !important;
+        max-width: 940px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+      }
+
+      .global-copy:not(.is-service-context) .slide-heading,
+      .global-copy:not(.is-service-context) .slide-body,
+      .global-copy:not(.is-service-context) .slide-closing {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+      }
+
+      /* Wordmark section already spans the full screen naturally.
+         Remove the unnecessary 100vw/margin manipulation and centre
+         directly on its true midpoint. */
+      .wordmark-intro {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+
+      .wordmark {
+        left: 50% !important;
+        right: auto !important;
+        transform: translate(-50%, -50%) !important;
+      }
+    }
+
+
+    /* =========================================================
+       DEFINITIVE FULLSCREEN X-AXIS ALIGNMENT
+       Rotating copy is now a direct child of #global, so 50% means
+       the actual viewport midpoint rather than an inner content shell.
+       Vertical positioning remains completely untouched.
+       ========================================================= */
+    @media (min-width: 961px) {
+      #global.global {
+        position: relative !important;
+        width: 100% !important;
+      }
+
+      #global.global .shell {
+        width: min(100%, 1120px) !important;
+        max-width: 1120px !important;
+        margin-inline: auto !important;
+        padding-inline: var(--pad) !important;
+      }
+
+      /* Idle slideshow: exact centre of the fullscreen viewport. */
+      #global.global > .global-copy:not(.is-service-context) {
+        left: 50% !important;
+        right: auto !important;
+        width: min(calc(100% - (var(--pad) * 2)), 940px) !important;
+        max-width: 940px !important;
+        transform: translateX(-50%) !important;
+        text-align: center !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context) .global-context,
+      #global.global > .global-copy:not(.is-service-context) .homepage-slide {
+        width: 100% !important;
+        max-width: 940px !important;
+        margin-inline: auto !important;
+        text-align: center !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context) .slide-heading,
+      #global.global > .global-copy:not(.is-service-context) .slide-body,
+      #global.global > .global-copy:not(.is-service-context) .slide-closing {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+      }
+
+      /* Service hover copy keeps the original content-column alignment. */
+      #global.global > .global-copy.is-service-context {
+        left: max(var(--pad), calc((100vw - 1120px) / 2 + var(--pad))) !important;
+        right: auto !important;
+        transform: none !important;
+      }
+
+      /* Wordmark: horizontal centre only. Existing top/Y remains unchanged. */
+      .wordmark {
+        left: 50% !important;
+        right: auto !important;
+        transform: translate(-50%, -50%) !important;
+      }
+    }
+
+
+    /* =========================================================
+       MONOSPACED SITE TYPE + LEFT-ALIGNED IDLE COPY
+       ========================================================= */
+
+    /* IBM Plex Mono gives the site a Consolas-like technical character
+       while remaining clean enough for longer marketing copy. */
+    html,
+    body,
+    main,
+    section,
+    article,
+    nav,
+    header,
+    footer,
+    div,
+    p,
+    span,
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    option,
+    label,
+    small,
+    strong,
+    em,
+    ul,
+    ol,
+    li,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .wordmark,
+    .wordmark *,
+    .wordmark-motion,
+    .wordmark-motion * {
+      font-family: "IBM Plex Mono", Consolas, "Liberation Mono", "Courier New", monospace !important;
+    }
+
+    /* Keep the whole idle-copy block mathematically centred in the
+       fullscreen viewport, but align the text itself to the left. */
+    @media (min-width: 961px) {
+      #global.global > .global-copy:not(.is-service-context) {
+        text-align: left !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context) .global-context,
+      #global.global > .global-copy:not(.is-service-context) .homepage-slide {
+        text-align: left !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context) .slide-heading,
+      #global.global > .global-copy:not(.is-service-context) .slide-body,
+      #global.global > .global-copy:not(.is-service-context) .slide-closing {
+        margin-left: 0 !important;
+        margin-right: auto !important;
+        text-align: left !important;
+      }
+    }
+
+
+    /* =========================================================
+       RESTORE ORIGINAL DEEPLINE TYPOGRAPHY
+       ========================================================= */
+    html,
+    body,
+    main,
+    section,
+    article,
+    nav,
+    header,
+    footer,
+    div,
+    p,
+    span,
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    option,
+    label,
+    small,
+    strong,
+    em,
+    ul,
+    ol,
+    li,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+    }
+
+    .wordmark,
+    .wordmark *,
+    .wordmark-motion,
+    .wordmark-motion * {
+      font-family: Bahnschrift, "DIN Alternate", "Arial Narrow", sans-serif !important;
+    }
+
+
+    /* =========================================================
+       FINAL STATEMENT EMPHASIS
+       ========================================================= */
+    .homepage-slide-final {
+      text-align: center !important;
+    }
+
+    .homepage-slide-final .slide-heading {
+      margin-left: auto !important;
+      margin-right: auto !important;
+      text-align: center !important;
+    }
+
+    .homepage-slide-final .final-statement-lead,
+    .homepage-slide-final .final-statement-hit {
+      display: block;
+      text-align: center !important;
+    }
+
+    .homepage-slide-final .final-statement-hit {
+      margin-top: clamp(18px, 2.4dvh, 28px);
+    }
+
+
+    /* =========================================================
+       TRUE VIEWPORT CENTRE
+       Uses viewport units directly, so centring is independent of
+       parent widths, shells, padding and responsive rescaling.
+       Horizontal positioning only.
+       ========================================================= */
+    @media (min-width: 961px) {
+      /* The idle/main-copy block is always centred on 50vw. */
+      #global.global > .global-copy:not(.is-service-context) {
+        left: 50vw !important;
+        right: auto !important;
+        width: min(940px, calc(100vw - (var(--pad) * 2))) !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        transform: translateX(-50%) !important;
+      }
+
+      /* Keep the content width fully contained inside that centred block. */
+      #global.global > .global-copy:not(.is-service-context) .global-context,
+      #global.global > .global-copy:not(.is-service-context) .homepage-slide {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+
+      /* Wordmark uses the same literal viewport centre line. */
+      .wordmark {
+        left: 50vw !important;
+        right: auto !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        transform: translate(-50%, -50%) !important;
+      }
+    }
+
+
+    /* =========================================================
+       FINAL STATEMENT — TRUE CENTRED HEADING
+       The earlier left-alignment rule had higher selector specificity,
+       so it was overriding the final statement even with !important.
+       This selector deliberately outranks it.
+       ========================================================= */
+    @media (min-width: 961px) {
+      #global.global > .global-copy:not(.is-service-context) .homepage-slide-final {
+        text-align: center !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context) .homepage-slide-final .slide-heading {
+        width: 100% !important;
+        max-width: 860px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context) .homepage-slide-final .final-statement-lead,
+      #global.global > .global-copy:not(.is-service-context) .homepage-slide-final .final-statement-hit {
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+      }
+    }
+
+
+    /* =========================================================
+       TECHNICAL CURSOR — DYNAMIC TEXT SNAP TARGETS
+       ========================================================= */
+    .cursor-snap-text {
+      position: relative;
+    }
+
+
+
+    /* =========================================================
+       OPTICAL CENTRING OF LEFT-ALIGNED ROTATING COPY
+       The block remains left-aligned internally, but its actual rendered
+       text bounds are centred beneath the wordmark.
+       ========================================================= */
+    @media (min-width: 961px) {
+      #global.global > .global-copy:not(.is-service-context) {
+        transform:
+          translateX(calc(-50% + var(--copy-optical-x, 0px))) !important;
+      }
+    }
+
+
+    /* =========================================================
+       OPERATING GLOBALLY — READABILITY
+       Increase only the supporting copy beneath the heading.
+       ========================================================= */
+    .homepage-slide-global .slide-body,
+    .homepage-slide-global .slide-closing {
+      font-size: 21px !important;
+      line-height: 1.48 !important;
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .homepage-slide-global .slide-body,
+      .homepage-slide-global .slide-closing {
+        font-size: 18px !important;
+        line-height: 1.44 !important;
+      }
+    }
+
+
+    /* =========================================================
+       TRUE BOTTOM-FLUSH SERVICE CARDS
+       Remove the legacy 1px viewport gap. Draw the bottom rule
+       inside the card row instead of reserving space beneath it.
+       ========================================================= */
+    @media (min-width: 961px) {
+      #services {
+        height: var(--desktop-card-h) !important;
+        align-self: end !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+        overflow: hidden !important;
+      }
+
+      #services .services {
+        height: 100% !important;
+        box-sizing: border-box !important;
+        border-bottom: 0 !important;
+        box-shadow: inset 0 -1px 0 var(--line) !important;
+      }
+
+      #services .service {
+        height: 100% !important;
+        box-sizing: border-box !important;
+      }
+    }
+
+
+    /* =========================================================
+       SERVICE HOVER SUBHEADING REFINEMENT
+       ========================================================= */
+    @media (min-width: 961px) {
+      /* Forge: make "Comfortable in all conditions." read as a true subheading. */
+      .global-copy.is-service-context .context-subsection .context-emphasis {
+        font-weight: 600 !important;
+        font-size: 17px !important;
+      }
+
+      /* Overwatch: give the lead subheading clear separation from its paragraph. */
+      .global-copy.is-service-context .context-emphasis-lead {
+        margin-bottom: 18px !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .global-copy.is-service-context .context-emphasis-lead {
+        margin-bottom: 14px !important;
+      }
+    }
+
+
+    /* =========================================================
+       SITEWIDE COPY / PASTE / TEXT-SELECTION LOCK
+       ========================================================= */
+    html,
+    body,
+    body *,
+    body *::before,
+    body *::after {
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      user-select: none !important;
+      -webkit-touch-callout: none !important;
+    }
+
+    ::selection {
+      background: transparent !important;
+      color: inherit !important;
+    }
+
+    ::-moz-selection {
+      background: transparent !important;
+      color: inherit !important;
+    }
+
+    img,
+    svg,
+    canvas {
+      -webkit-user-drag: none !important;
+      user-drag: none !important;
+    }
+
+
+    @media (max-width: 960px) {
+      .service[data-context] {
+        touch-action: manipulation;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE-ONLY SERVICE CARD TAGLINES
+       ========================================================= */
+    @media (min-width: 961px) {
+      .service .mobile-tagline {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .service .mobile-tagline {
+        display: block !important;
+        position: static !important;
+        width: auto !important;
+        transform: none !important;
+        margin: 5px 0 16px !important;
+        font-size: 14px !important;
+        line-height: 1.3 !important;
+        letter-spacing: 0 !important;
+        color: #d6d6d1 !important;
+        white-space: normal !important;
+        text-wrap: wrap !important;
+      }
+    }
+
+
+    /* =========================================================
+       COPYRIGHT
+       Desktop: subtle top-left counterpoint to Start a project.
+       Mobile: dedicated small section beneath the final card.
+       ========================================================= */
+    .site-copyright {
+      font-size: 10px;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: .04em;
+      color: #777771;
+      white-space: nowrap;
+    }
+
+    @media (min-width: 961px) {
+      .site-copyright {
+        position: fixed;
+        top: 18px;
+        left: var(--pad);
+        z-index: 20;
+        pointer-events: none;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .site-copyright {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 54px;
+        padding: 0 var(--pad);
+        border-top: 1px solid var(--line);
+        font-size: 11px;
+        letter-spacing: .035em;
+        color: #8a8a84;
+      }
+
+      /* =======================================================
+         MOBILE SERVICE META — MATCH DESKTOP PRESENTATION
+         Availability / Response Time use the same unboxed,
+         transparent treatment as desktop.
+         ======================================================= */
+      .global-copy.is-service-context .context-meta-row {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 28px !important;
+        margin: 0 0 24px !important;
+      }
+
+      .global-copy.is-service-context .context-meta {
+        min-width: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      .global-copy.is-service-context .context-meta-label {
+        margin-bottom: 6px !important;
+        font-family: inherit !important;
+        font-size: 11px !important;
+        font-weight: 400 !important;
+        line-height: 1.2 !important;
+        letter-spacing: .08em !important;
+        text-transform: uppercase !important;
+        color: #8a8a84 !important;
+      }
+
+      .global-copy.is-service-context .context-meta-value {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        line-height: 1.48 !important;
+        letter-spacing: 0 !important;
+        color: #e4e4df !important;
+      }
+
+      .global-copy.is-service-context .response-bolt {
+        flex: 0 0 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+        border: 0 !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+      }
+
+      .global-copy.is-service-context .response-bolt svg {
+        width: 14px !important;
+        height: 14px !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE PRIMARY CTA
+       Large tap target directly beneath the wordmark and above
+       the rotating information panel. Desktop remains unchanged.
+       ========================================================= */
+    @media (max-width: 960px) {
+      .wordmark-intro {
+        min-height: 310px !important;
+        padding-bottom: 92px !important;
+      }
+
+      .main-page-cta {
+        position: absolute !important;
+        top: auto !important;
+        left: var(--pad) !important;
+        right: var(--pad) !important;
+        bottom: 20px !important;
+        width: auto !important;
+        min-height: 54px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        padding: 0 20px !important;
+        border: 1px solid rgba(244,244,239,.9) !important;
+        background: rgba(7,7,7,.72) !important;
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        line-height: 1 !important;
+        letter-spacing: .075em !important;
+        text-transform: uppercase !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+      }
+
+      .main-page-cta span {
+        position: relative;
+        z-index: 2;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .wordmark-intro {
+        min-height: 292px !important;
+        padding-top: 78px !important;
+        padding-bottom: 88px !important;
+      }
+
+      .main-page-cta {
+        bottom: 18px !important;
+        min-height: 52px !important;
+        font-size: 13px !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE CTA — COMPACT WHITE PRIMARY BUTTON
+       ========================================================= */
+    @media (max-width: 960px) {
+      .main-page-cta {
+        left: 50% !important;
+        right: auto !important;
+        width: min(68vw, 286px) !important;
+        min-width: 210px !important;
+        transform: translateX(-50%) !important;
+        min-height: 50px !important;
+        padding: 0 22px !important;
+        border: 0 !important;
+        border-radius: 11px !important;
+        background: #f4f4ef !important;
+        color: #050505 !important;
+        box-shadow: none !important;
+        letter-spacing: .065em !important;
+        font-weight: 600 !important;
+      }
+
+      .main-page-cta::before {
+        content: none !important;
+        display: none !important;
+      }
+
+      .main-page-cta span {
+        color: #050505 !important;
+        mix-blend-mode: normal !important;
+      }
+
+      /* =======================================================
+         MOBILE CARD PRICING — DESKTOP COMPOSITION
+         Large, bottom-right and visually weighted.
+         ======================================================= */
+      #services .service {
+        position: relative !important;
+        padding-bottom: 94px !important;
+      }
+
+      #services .price {
+        position: absolute !important;
+        left: auto !important;
+        right: 18px !important;
+        top: auto !important;
+        bottom: 16px !important;
+        width: auto !important;
+        max-width: 62% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: right !important;
+      }
+
+      #services .price small {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 0 7px !important;
+        font-size: 10px !important;
+        line-height: 1 !important;
+        letter-spacing: .1em !important;
+        text-align: right !important;
+        white-space: nowrap !important;
+      }
+
+      #services .price strong {
+        display: block !important;
+        width: 100% !important;
+        font-size: clamp(42px, 12.5vw, 56px) !important;
+        font-weight: 500 !important;
+        line-height: .88 !important;
+        letter-spacing: -.045em !important;
+        text-align: right !important;
+        white-space: nowrap !important;
+      }
+
+      #services .price strong span {
+        font-size: .44em !important;
+        letter-spacing: 0 !important;
+      }
+
+      /* =======================================================
+         REINTRODUCED BLURRED SCROLL TOPBAR
+         ======================================================= */
+      .site-topbar {
+        display: block !important;
+        height: 58px !important;
+        background: rgba(5,5,5,.62) !important;
+        border-bottom: 1px solid rgba(255,255,255,.09) !important;
+        -webkit-backdrop-filter: blur(18px) saturate(125%) !important;
+        backdrop-filter: blur(18px) saturate(125%) !important;
+      }
+
+      .site-topbar .topbar-inner {
+        height: 58px !important;
+        padding: 0 var(--pad) !important;
+      }
+
+      .site-topbar .topbar-wordmark {
+        font-size: 12px !important;
+        letter-spacing: .09em !important;
+        transform: none !important;
+      }
+
+      .site-topbar .nav-cta {
+        position: relative !important;
+        inset: auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 9px 12px !important;
+        border: 1px solid rgba(244,244,239,.28) !important;
+        border-radius: 8px !important;
+        background: rgba(255,255,255,.04) !important;
+        color: var(--ink) !important;
+        transform: none !important;
+        font-size: 9px !important;
+        font-weight: 500 !important;
+        letter-spacing: .06em !important;
+      }
+
+      .site-topbar .nav-cta span {
+        color: inherit !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .main-page-cta {
+        width: min(66vw, 248px) !important;
+        min-width: 196px !important;
+        min-height: 48px !important;
+        border-radius: 10px !important;
+        font-size: 12px !important;
+      }
+
+      #services .price strong {
+        font-size: clamp(40px, 13vw, 52px) !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE SERVICE CARDS — USE THE FULL CARD HEIGHT
+       Title/tagline stay at the top. Capabilities and price share
+       the bottom row, matching the desktop card composition.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #services .service {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        grid-template-rows: auto auto minmax(0, 1fr) !important;
+        column-gap: 16px !important;
+        align-items: start !important;
+        min-height: 300px !important;
+        padding-bottom: 18px !important;
+      }
+
+      #services .service h3 {
+        grid-column: 1 / -1 !important;
+        grid-row: 1 !important;
+      }
+
+      #services .service .mobile-tagline {
+        grid-column: 1 / -1 !important;
+        grid-row: 2 !important;
+        margin-bottom: 0 !important;
+      }
+
+      #services .service ul {
+        grid-column: 1 !important;
+        grid-row: 3 !important;
+        align-self: end !important;
+        margin: 22px 0 0 !important;
+        padding: 0 !important;
+      }
+
+      #services .price {
+        grid-column: 2 !important;
+        grid-row: 3 !important;
+        align-self: end !important;
+        justify-self: end !important;
+        position: static !important;
+        inset: auto !important;
+        max-width: none !important;
+        margin: 22px 0 0 !important;
+        padding: 0 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      #services .service {
+        column-gap: 10px !important;
+        min-height: 292px !important;
+      }
+
+      #services .service ul {
+        font-size: 12px !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE SERVICE CARDS — COMPACT CONTENT-DRIVEN COMPOSITION
+       No fixed/minimum card height. The card height is determined
+       by its actual contents, so empty vertical space collapses.
+       The capability list and price share the same lower row and
+       scale responsively to avoid collisions.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #services .services {
+        align-items: start !important;
+      }
+
+      #services .service {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) max-content !important;
+        grid-template-rows: auto auto auto !important;
+        column-gap: clamp(10px, 3vw, 18px) !important;
+        row-gap: 0 !important;
+
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        aspect-ratio: auto !important;
+
+        padding:
+          clamp(17px, 4.2vw, 22px)
+          var(--pad)
+          clamp(16px, 4vw, 21px) !important;
+
+        overflow: visible !important;
+        align-items: start !important;
+        box-sizing: border-box !important;
+      }
+
+      #services .service h3 {
+        grid-column: 1 / -1 !important;
+        grid-row: 1 !important;
+        margin: 0 0 clamp(5px, 1.4vw, 7px) !important;
+        font-size: clamp(25px, 6.5vw, 31px) !important;
+        line-height: 1 !important;
+      }
+
+      #services .service .mobile-tagline {
+        grid-column: 1 / -1 !important;
+        grid-row: 2 !important;
+        margin: 0 0 clamp(14px, 3.6vw, 18px) !important;
+        font-size: clamp(12px, 3.2vw, 14px) !important;
+        line-height: 1.3 !important;
+      }
+
+      #services .service ul {
+        grid-column: 1 !important;
+        grid-row: 3 !important;
+        align-self: end !important;
+
+        width: auto !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+
+        font-size: clamp(11px, 3vw, 13px) !important;
+        line-height: 1.42 !important;
+      }
+
+      #services .service li {
+        gap: 6px !important;
+      }
+
+      #services .price {
+        grid-column: 2 !important;
+        grid-row: 3 !important;
+        align-self: end !important;
+        justify-self: end !important;
+
+        position: static !important;
+        inset: auto !important;
+        width: max-content !important;
+        max-width: none !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: right !important;
+      }
+
+      #services .price small {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 0 clamp(6px, 1.6vw, 8px) !important;
+        font-size: clamp(8px, 2.15vw, 10px) !important;
+        line-height: 1 !important;
+        letter-spacing: .09em !important;
+        text-align: right !important;
+        white-space: nowrap !important;
+      }
+
+      #services .price strong {
+        display: block !important;
+        width: auto !important;
+        margin: 0 !important;
+        font-size: clamp(39px, 11.2vw, 54px) !important;
+        font-weight: 500 !important;
+        line-height: .88 !important;
+        letter-spacing: -.045em !important;
+        text-align: right !important;
+        white-space: nowrap !important;
+      }
+
+      #services .price strong span {
+        font-size: .43em !important;
+        letter-spacing: 0 !important;
+      }
+    }
+
+    /* Tighter phones: scale both lower columns together rather than
+       letting either side collide with the other. */
+    @media (max-width: 390px) {
+      #services .service {
+        column-gap: 8px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+      }
+
+      #services .service ul {
+        font-size: clamp(10px, 3vw, 11.5px) !important;
+        line-height: 1.38 !important;
+      }
+
+      #services .price strong {
+        font-size: clamp(35px, 10.8vw, 43px) !important;
+      }
+
+      #services .price small {
+        font-size: 7.5px !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE DEFAULT SLIDES — TRUE OPTICAL X CENTRE
+       Keeps paragraph alignment exactly as-is. Only moves the
+       complete rendered text block horizontally so its visible
+       bounds are centred beneath the wordmark/CTA.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #global.global > .global-copy:not(.is-service-context) {
+        transform: translateX(var(--copy-optical-x, 0px)) !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE CTA WIDTH — NARROWER THAN WORDMARK
+       ========================================================= */
+    @media (max-width: 960px) {
+      .main-page-cta {
+        width: min(58vw, 238px) !important;
+        min-width: 188px !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .main-page-cta {
+        width: min(56vw, 220px) !important;
+        min-width: 180px !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE CTA — SQUARE CORNERS + BOLDER LABEL
+       ========================================================= */
+    @media (max-width: 960px) {
+      .main-page-cta {
+        border-radius: 0 !important;
+        font-weight: 700 !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE COPYRIGHT — SIT FLUSH BENEATH FINAL CARD
+       ========================================================= */
+    @media (max-width: 960px) {
+      #services {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+      }
+
+      #services .services {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+      }
+
+      #services .service:last-child {
+        margin-bottom: 0 !important;
+      }
+
+      .site-copyright {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+        min-height: 42px !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE FINAL CARD / COPYRIGHT DIVIDER
+       Keep only the card's normal thin bottom rule.
+       ========================================================= */
+    @media (max-width: 960px) {
+      .site-copyright {
+        border-top: 0 !important;
+      }
+
+      #services .service:last-child {
+        border-bottom: 1px solid var(--line) !important;
+        box-shadow: none !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE COPYRIGHT — CENTRED
+       ========================================================= */
+    @media (max-width: 960px) {
+      .site-copyright {
+        justify-content: center !important;
+        text-align: center !important;
+      }
+    }
+
+
+    /* =========================================================
+       VIEWPORT / ZOOM CONTAINMENT
+       Preserve normal browser zoom, but prevent layout overflow
+       and overscroll into empty canvas beyond the real page.
+       ========================================================= */
+    html,
+    body {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      overflow-x: hidden !important;
+      overscroll-behavior-x: none !important;
+      overscroll-behavior-y: none !important;
+    }
+
+    @supports (overflow: clip) {
+      html,
+      body {
+        overflow-x: clip !important;
+      }
+    }
+
+    body {
+      position: relative;
+    }
+
+    main#top,
+    #global,
+    #services,
+    #services .services,
+    #services .service,
+    .wordmark-intro,
+    .global-copy {
+      max-width: 100% !important;
+      min-width: 0 !important;
+    }
+
+    main#top,
+    #global,
+    #services {
+      overflow-x: clip !important;
+    }
+
+    /* Allow vertical page movement and pinch zoom, but don't let the
+       browser treat sideways drags as document panning. Horizontal
+       slide swipes are handled by the touch listener above. */
+    @media (max-width: 960px) {
+      html,
+      body {
+        touch-action: pan-y pinch-zoom;
+      }
+
+      #global {
+        touch-action: pan-y pinch-zoom;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE FINAL CARD — REMOVE DUPLICATE BOTTOM RULE
+       The service-stack container already draws the normal outline.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #services .service:last-child {
+        border-bottom: 0 !important;
+        box-shadow: none !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE FINAL STATEMENT — EMPHATIC THREE-LINE LEAD
+       Desktop remains one continuous sentence.
+       ========================================================= */
+    .homepage-slide-final .mobile-final-line {
+      display: inline;
+    }
+
+    @media (max-width: 960px) {
+      .homepage-slide-final .final-statement-lead {
+        width: max-content !important;
+        max-width: calc(100vw - (var(--pad) * 2)) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        font-size: clamp(27px, 7.4vw, 34px) !important;
+        line-height: 1.04 !important;
+      }
+
+      .homepage-slide-final .mobile-final-line {
+        display: block !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+      }
+
+      .homepage-slide-final .mobile-final-line + .mobile-final-line {
+        margin-top: .08em !important;
+      }
+
+      .homepage-slide-final .final-statement-hit {
+        margin-top: clamp(22px, 6vw, 30px) !important;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .homepage-slide-final .final-statement-lead {
+        font-size: clamp(24px, 7vw, 28px) !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE FINAL STATEMENT — EXACT THREE-LINE COMPOSITION
+       1. When everyone else says
+       2. “it can’t be done”
+       3. Deepliners get it done.
+       ========================================================= */
+    @media (max-width: 960px) {
+      .homepage-slide-final .final-statement-lead {
+        font-size: clamp(27px, 7.2vw, 34px) !important;
+        line-height: 1.06 !important;
+      }
+
+      .homepage-slide-final .mobile-final-line {
+        display: block !important;
+        width: max-content !important;
+        max-width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+      }
+
+      .homepage-slide-final .mobile-final-line + .mobile-final-line {
+        margin-top: .14em !important;
+      }
+
+      .homepage-slide-final .final-statement-hit {
+        margin-top: .34em !important;
+        font-size: clamp(27px, 7.2vw, 34px) !important;
+        line-height: 1.06 !important;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .homepage-slide-final .final-statement-lead,
+      .homepage-slide-final .final-statement-hit {
+        font-size: clamp(23px, 6.8vw, 27px) !important;
+      }
+    }
+
+
+    /* =========================================================
+       FORGE SUBHEADING — EXACT MATCH TO "KEEP OPERATIONS MOVING."
+       Same size, weight, line-height and following-paragraph gap.
+       ========================================================= */
+    .global-copy.is-service-context
+    .context-subsection
+    .context-emphasis.context-emphasis-lead.forge-lead {
+      color: #e4e4df !important;
+      font-size: 18px !important;
+      font-weight: 500 !important;
+      line-height: 1.45 !important;
+      margin: 0 0 15px !important;
+    }
+
+    @media (min-width: 961px) {
+      .global-copy.is-service-context
+      .context-subsection
+      .context-emphasis.context-emphasis-lead.forge-lead {
+        font-size: 18px !important;
+        font-weight: 500 !important;
+        line-height: 1.45 !important;
+        margin-bottom: 18px !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 820px) {
+      .global-copy.is-service-context
+      .context-subsection
+      .context-emphasis.context-emphasis-lead.forge-lead {
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        line-height: 1.42 !important;
+        margin-bottom: 14px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
-  <header>
-    <div class="shell nav">
-      <a class="brand cursor-target" href="#top" aria-label="Deepline home"><span class="brand-mark" aria-hidden="true"></span>DEEPLINE</a>
-      <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#services">Services</a>
-        <a href="#method">Method</a>
-        <a href="#global">Global</a>
-        <a class="nav-cta cursor-target" href="mailto:osh@deepline.support">Start a project</a>
-      </nav>
+
+  <header class="site-topbar" aria-label="Deepline navigation">
+    <div class="topbar-inner">
+      <a class="topbar-wordmark cursor-target" href="#top" aria-label="Deepline home">DEEPLINE</a>
+      <a class="nav-cta cursor-target" href="mailto:deploy@deepline.support?subject=Project"><span>Start a project ↗</span></a>
     </div>
   </header>
 
+  <script>
+    (() => {
+      const cursor = document.createElement('div');
+      cursor.className = 'dl-cursor';
+      cursor.setAttribute('aria-hidden', 'true');
+      cursor.innerHTML = `
+        <div class="dl-cursor-rotor">
+          <span class="dl-cursor-corner tl"></span>
+          <span class="dl-cursor-corner tr"></span>
+          <span class="dl-cursor-corner br"></span>
+          <span class="dl-cursor-corner bl"></span>
+        </div>
+        <span class="dl-cursor-dot"></span>
+      `;
+      document.body.appendChild(cursor);
+
+      const rotor = cursor.querySelector('.dl-cursor-rotor');
+      const corners = [...cursor.querySelectorAll('.dl-cursor-corner')];
+      const FREE = [
+        {x:-18,y:-18}, {x:6,y:-18}, {x:6,y:6}, {x:-18,y:6}
+      ];
+
+      let x = innerWidth / 2;
+      let y = innerHeight / 2;
+      let target = null;
+      let modeStart = performance.now();
+      let from = FREE.map(p => ({...p}));
+      let current = FREE.map(p => ({...p}));
+      let spinStart = performance.now();
+      let raf = 0;
+
+      const ease = t => 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3);
+
+      function getTightTextRect(el) {
+        const walker = document.createTreeWalker(
+          el,
+          NodeFilter.SHOW_TEXT,
+          {
+            acceptNode(node) {
+              return node.nodeValue && node.nodeValue.trim()
+                ? NodeFilter.FILTER_ACCEPT
+                : NodeFilter.FILTER_REJECT;
+            }
+          }
+        );
+
+        const rects = [];
+        let node;
+
+        while ((node = walker.nextNode())) {
+          const range = document.createRange();
+          range.selectNodeContents(node);
+
+          for (const rect of range.getClientRects()) {
+            if (rect.width > 0 && rect.height > 0) {
+              rects.push(rect);
+            }
+          }
+
+          if (range.detach) range.detach();
+        }
+
+        if (!rects.length) return el.getBoundingClientRect();
+
+        return {
+          left: Math.min(...rects.map(r => r.left)),
+          top: Math.min(...rects.map(r => r.top)),
+          right: Math.max(...rects.map(r => r.right)),
+          bottom: Math.max(...rects.map(r => r.bottom))
+        };
+      }
+
+      function goals() {
+        if (!target || !target.isConnected) return FREE;
+
+        const r = target.classList.contains('cursor-snap-text')
+          ? getTightTextRect(target)
+          : target.getBoundingClientRect();
+
+        const padX = target.classList.contains('cursor-snap-text') ? 10 : 0;
+        const padY = target.classList.contains('cursor-snap-text') ? 7 : 0;
+
+        return [
+          {x:r.left-padX-x, y:r.top-padY-y},
+          {x:r.right+padX-x-12, y:r.top-padY-y},
+          {x:r.right+padX-x-12, y:r.bottom+padY-y-12},
+          {x:r.left-padX-x, y:r.bottom+padY-y-12}
+        ];
+      }
+
+      function snapTo(next) {
+        if (next === target) return;
+        from = current.map(p => ({...p}));
+        target = next;
+        modeStart = performance.now();
+        cursor.classList.toggle('is-target', !!target);
+        if (!target) spinStart = performance.now();
+      }
+
+      function frame(now) {
+        cursor.style.transform = `translate3d(${x}px,${y}px,0)`;
+
+        const g = goals();
+        const t = ease((now - modeStart) / 350);
+
+        for (let i = 0; i < 4; i++) {
+          if (target || (now - modeStart) < 350) {
+            current[i] = {
+              x: from[i].x + (g[i].x - from[i].x) * t,
+              y: from[i].y + (g[i].y - from[i].y) * t
+            };
+          } else {
+            current[i] = g[i];
+          }
+          corners[i].style.transform = `translate3d(${current[i].x}px,${current[i].y}px,0)`;
+        }
+
+        if (target) {
+          rotor.style.transform = 'rotate(0deg)';
+        } else {
+          const angle = ((now - spinStart) % 5000) / 5000 * 360;
+          rotor.style.transform = `rotate(${angle}deg)`;
+        }
+
+        raf = requestAnimationFrame(frame);
+      }
+
+      function detectTarget(node) {
+        return node?.closest?.('.cursor-target, .cursor-snap-text') || null;
+      }
+
+      document.addEventListener('mousemove', event => {
+        x = event.clientX;
+        y = event.clientY;
+        snapTo(detectTarget(event.target));
+      }, { passive: true });
+
+      document.addEventListener('mouseover', event => {
+        const next = detectTarget(event.target);
+        if (next) snapTo(next);
+      }, { passive: true });
+
+      document.addEventListener('mouseout', event => {
+        if (!event.relatedTarget) return;
+        const next = detectTarget(event.relatedTarget);
+        if (!next) snapTo(null);
+      }, { passive: true });
+
+      window.addEventListener('scroll', () => {
+        const node = document.elementFromPoint(x, y);
+        snapTo(detectTarget(node));
+      }, { passive: true });
+
+      // The main copy is replaced dynamically as slides rotate and service
+      // hover content changes. Re-evaluate the target after each mutation so
+      // the cursor can snap immediately without requiring another mouse move.
+      const dynamicCopy = document.querySelector('.global-copy');
+      if (dynamicCopy) {
+        const textTargetObserver = new MutationObserver(() => {
+          requestAnimationFrame(() => {
+            const node = document.elementFromPoint(x, y);
+            snapTo(detectTarget(node));
+          });
+        });
+
+        textTargetObserver.observe(dynamicCopy, {
+          childList: true,
+          subtree: true,
+          characterData: true,
+          attributes: true,
+          attributeFilter: ['style', 'class']
+        });
+      }
+
+      // The overlay is already in the DOM and visible before we suppress the system cursor.
+      document.documentElement.classList.add('deepline-cursor-live');
+      raf = requestAnimationFrame(frame);
+    })();
+  </script>
+
+
+
   <main id="top">
     <section class="wordmark-intro" aria-label="Deepline">
-      <h1 class="wordmark">DEEPLINE</h1>
+      <a class="main-page-cta nav-cta cursor-target" href="mailto:deploy@deepline.support?subject=Project"><span>Start a project ↗</span></a>
+      <h1 class="wordmark"><span class="wordmark-motion">DEEPLINE</span></h1>
     </section>
 
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <div>
-          <p class="eyebrow mono">Remote multidisciplinary support / Global</p>
-          <h1 id="hero-title">Problems,<br><span class="soft">solved deeply.</span></h1>
-        </div>
-        <div class="hero-intro">
-          <p>Deepline identifies problems, develops effective solutions and drives projects from concept to completion.</p>
-          <a class="primary-link cursor-target" href="#services">Explore capabilities <span class="arrow" aria-hidden="true">↘</span></a>
+    <section id="global" class="global">
+      <div class="shell">
+        <div class="globe-stage" aria-label="Animated global network globe">
+          <div class="globe-fallback" aria-hidden="true"></div>
+          <div id="globe" aria-hidden="true"></div>
+          <span class="globe-note mono">Auto-rotating globe / OriginKit reference</span>
         </div>
       </div>
-      <aside class="hero-side" aria-label="Deepline operating profile">
-        <div>
-          <p class="eyebrow mono">Operating profile</p>
-          <p class="status" style="margin-top:18px"><span class="status-dot"></span>Available for remote engagements</p>
-        </div>
-        <div class="depth-scale">
-          <p class="eyebrow mono">Signal</p>
-          <strong>Technical.<br>Resourceful.<br>Versatile.</strong>
-          <div class="depth-line" aria-hidden="true"></div>
-        </div>
-      </aside>
-    </section>
 
-    <section id="services">
-      <div class="shell section-head reveal">
-        <p class="eyebrow mono">01 / Capabilities</p>
-        <div>
-          <h2>Three modes.<br>One operative.</h2>
-          <p>Choose the depth of engagement that fits the problem: dependable day-to-day support, crafted systems and workflows, or creative direction from first idea to finished expression.</p>
+      <div class="global-copy reveal" aria-live="polite" aria-atomic="true">
+        <h2 data-global-title></h2>
+        <div class="global-context" data-global-content>
+          <div class="homepage-slide cursor-snap-text">
+            <h2 class="slide-heading">Operating Globally</h2>
+            <p class="slide-body">Providing remote multidisciplinary support to NGOs and independent entities in 160+ countries, territories and markets around the world.</p>
+            <p class="slide-closing">Across borders, disciplines and time zones.</p>
+          </div>
         </div>
       </div>
+    </section>
+<section id="services">
       <div class="services">
-        <article class="service reveal cursor-target">
-          <span class="service-number mono">01 — SUPPORT</span>
+        <article class="service reveal cursor-target" data-context="overwatch">
           <h3>Overwatch</h3>
-          <p class="tagline">Reliable remote support.</p>
+          <p class="tagline mobile-tagline">Reliable remote support.</p>
           <ul>
             <li>IT assistance</li>
             <li>Troubleshooting</li>
@@ -581,13 +5858,12 @@
             <li>Platform administration</li>
             <li>Lightweight digital tasks & fixes</li>
           </ul>
-          <div class="price"><small>Service starting at</small><strong class="fx-price" data-gbp="800" data-suffix="/mo">£800<span>/mo</span></strong></div>
+          <div class="price"><small>SERVICE STARTING AT</small><strong class="fx-price" data-gbp="800" data-suffix="/mo">£800<span>/mo</span></strong></div>
         </article>
 
-        <article class="service reveal cursor-target">
-          <span class="service-number mono">02 — SYSTEMS</span>
+        <article class="service reveal cursor-target" data-context="forge">
           <h3>Forge</h3>
-          <p class="tagline">Crafted digital solutions.</p>
+          <p class="tagline mobile-tagline">Crafted digital solutions.</p>
           <ul>
             <li>Automation</li>
             <li>Workflow design</li>
@@ -595,320 +5871,28 @@
             <li>Systems integration</li>
             <li>Custom tools</li>
           </ul>
-          <div class="price"><small>Projects from</small><strong class="fx-price" data-gbp="1000">£1,000</strong></div>
+          <div class="price"><small>PROJECTS FROM</small><strong class="fx-price" data-gbp="1000">£1000</strong></div>
         </article>
 
-        <article class="service reveal cursor-target">
-          <span class="service-number mono">03 — CREATIVE</span>
+        <article class="service reveal cursor-target" data-context="eden">
           <h3>Eden</h3>
-          <p class="tagline">Pure creation.</p>
+          <p class="tagline mobile-tagline">Pure creation.</p>
           <ul>
             <li>Brand identity</li>
             <li>UI / UX</li>
             <li>Concept development</li>
             <li>Creative direction</li>
           </ul>
-          <div class="price"><small>Projects from</small><strong class="fx-price" data-gbp="1000">£1,000</strong></div>
+          <div class="price"><small>PROJECTS FROM</small><strong class="fx-price" data-gbp="1000">£1000</strong></div>
         </article>
       </div>
-      <div class="pricing-disclaimer mono">
-        <span>Currency note —</span> Deepline prices and invoices in GBP sterling. USD/EUR figures are approximate local equivalents based on recent reference exchange rates; your bank or payment provider may use a different rate and may apply fees. The GBP price is the controlling price.
-      </div>
+
     </section>
 
-    <section id="method" class="method-grid">
-      <div class="manifesto reveal">
-        <p class="eyebrow mono">02 / Approach</p>
-        <blockquote>When everyone else says <span class="muted">“it can’t be done”</span> — Deepline gets it done.</blockquote>
-      </div>
-      <div class="steps">
-        <article class="step reveal">
-          <span class="num mono">01</span>
-          <div><h3>Identify the real problem.</h3><p>Strip away noise, map the constraints and find the point where action creates the most leverage.</p></div>
-        </article>
-        <article class="step reveal">
-          <span class="num mono">02</span>
-          <div><h3>Build the right intervention.</h3><p>Technical execution and creative thinking live in the same workflow, not in separate silos.</p></div>
-        </article>
-        <article class="step reveal">
-          <span class="num mono">03</span>
-          <div><h3>Carry it through.</h3><p>From quick fixes to full projects, Deepline stays close to implementation until the solution works in the real world.</p></div>
-        </article>
-      </div>
-    </section>
+    <div class="site-copyright" aria-label="Copyright">© 2026 Deepline</div>
 
-    <section id="global" class="global">
-      <div class="shell">
-        <div class="global-copy reveal">
-          <p class="eyebrow mono">03 / Reach</p>
-          <h2>Operating globally.</h2>
-          <p>Remote support for NGOs and independent entities across borders, time zones and technical environments.</p>
-          <div class="global-stat">
-            <div><strong>160+</strong><span>Countries & markets</span></div>
-            <div><strong>Remote</strong><span>By default</span></div>
-          </div>
-        </div>
-        <div class="globe-stage" aria-label="Animated global network globe">
-          <div class="globe-fallback" aria-hidden="true"></div>
-          <div id="globe" aria-hidden="true"></div>
-          <span class="globe-note mono">Auto-rotating globe / OriginKit reference</span>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="shell contact">
-      <div class="reveal">
-        <p class="eyebrow mono">04 / Contact</p>
-        <h2>Need something<br><span>made possible?</span></h2>
-        <a class="email cursor-target" href="mailto:osh@deepline.support">osh@deepline.support ↗</a>
-      </div>
-      <footer>
-        <span>Deepline / Global operative</span>
-        <span>Remote multidisciplinary support</span>
-        <span>© <span id="year"></span></span>
-      </footer>
-    </section>
   </main>
-
-
-
-
-
-
-
-
-
   <script>
-    (() => {
-      const SPIN_DURATION = 5000;
-      const SNAP_DURATION = 350;
-      const CORNER_SIZE = 12;
-      const FREE_RADIUS = 17;
-
-      const overlay = document.createElement('div');
-      overlay.className = 'target-cursor-overlay';
-      overlay.setAttribute('aria-hidden', 'true');
-      overlay.innerHTML = `
-        <span class="target-cursor-dot"></span>
-        <span class="target-cursor-corner corner-tl"></span>
-        <span class="target-cursor-corner corner-tr"></span>
-        <span class="target-cursor-corner corner-br"></span>
-        <span class="target-cursor-corner corner-bl"></span>
-      `;
-      document.body.appendChild(overlay);
-
-      const dot = overlay.querySelector('.target-cursor-dot');
-      const corners = [...overlay.querySelectorAll('.target-cursor-corner')];
-
-      // If this script has executed, hide the browser cursor immediately.
-      // This avoids the previous situation where the native cursor could remain visible
-      // because initialization depended on pointer/media-query detection.
-      document.documentElement.classList.add('target-cursor-ready');
-
-      let pointerX = window.innerWidth / 2;
-      let pointerY = window.innerHeight / 2;
-      let hasMoved = false;
-      let activeTarget = null;
-      let spinOrigin = performance.now();
-
-      let transitionStart = 0;
-      let transitionFrom = null;
-      let transitionType = 'free';
-
-      let current = [
-        { x: pointerX - FREE_RADIUS - CORNER_SIZE / 2, y: pointerY - FREE_RADIUS - CORNER_SIZE / 2, a: 0 },
-        { x: pointerX + FREE_RADIUS - CORNER_SIZE / 2, y: pointerY - FREE_RADIUS - CORNER_SIZE / 2, a: 0 },
-        { x: pointerX + FREE_RADIUS - CORNER_SIZE / 2, y: pointerY + FREE_RADIUS - CORNER_SIZE / 2, a: 0 },
-        { x: pointerX - FREE_RADIUS - CORNER_SIZE / 2, y: pointerY + FREE_RADIUS - CORNER_SIZE / 2, a: 0 }
-      ];
-
-      const clamp01 = value => Math.max(0, Math.min(1, value));
-      const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
-
-      function copyCurrent() {
-        return current.map(p => ({ x: p.x, y: p.y, a: p.a }));
-      }
-
-      function findTarget(node) {
-        return node?.closest?.('.cursor-target') || null;
-      }
-
-      function rotatedFreeGoals(now) {
-        const angle = ((now - spinOrigin) % SPIN_DURATION) / SPIN_DURATION * Math.PI * 2;
-        const cos = Math.cos(angle);
-        const sin = Math.sin(angle);
-
-        const base = [
-          [-FREE_RADIUS, -FREE_RADIUS],
-          [ FREE_RADIUS, -FREE_RADIUS],
-          [ FREE_RADIUS,  FREE_RADIUS],
-          [-FREE_RADIUS,  FREE_RADIUS]
-        ];
-
-        return base.map(([bx, by]) => {
-          const rx = bx * cos - by * sin;
-          const ry = bx * sin + by * cos;
-          return {
-            x: pointerX + rx - CORNER_SIZE / 2,
-            y: pointerY + ry - CORNER_SIZE / 2,
-            a: angle * 180 / Math.PI
-          };
-        });
-      }
-
-      function targetGoals() {
-        if (!activeTarget || !activeTarget.isConnected) return null;
-        const r = activeTarget.getBoundingClientRect();
-
-        return [
-          { x: r.left,                    y: r.top,                     a: 0 },
-          { x: r.right - CORNER_SIZE,     y: r.top,                     a: 0 },
-          { x: r.right - CORNER_SIZE,     y: r.bottom - CORNER_SIZE,    a: 0 },
-          { x: r.left,                    y: r.bottom - CORNER_SIZE,    a: 0 }
-        ];
-      }
-
-      function beginTransition(type, now = performance.now()) {
-        transitionFrom = copyCurrent();
-        transitionStart = now;
-        transitionType = type;
-      }
-
-      function enterTarget(target, now = performance.now()) {
-        if (!target || activeTarget === target) return;
-        beginTransition('target', now);
-        activeTarget = target;
-        overlay.classList.add('is-target');
-      }
-
-      function leaveTarget(now = performance.now()) {
-        if (!activeTarget) return;
-        beginTransition('free', now);
-        activeTarget = null;
-        overlay.classList.remove('is-target');
-        spinOrigin = now;
-      }
-
-      function updateTargetUnderPointer(now = performance.now()) {
-        const node = document.elementFromPoint(pointerX, pointerY);
-        const target = findTarget(node);
-
-        if (target && target !== activeTarget) {
-          enterTarget(target, now);
-        } else if (!target && activeTarget) {
-          leaveTarget(now);
-        }
-      }
-
-      function setCorner(index, state) {
-        const el = corners[index];
-        el.style.transform =
-          `translate3d(${state.x}px, ${state.y}px, 0) rotate(${state.a}deg)`;
-      }
-
-      function frame(now) {
-        dot.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0)`;
-
-        let goals = activeTarget ? targetGoals() : rotatedFreeGoals(now);
-        if (!goals) goals = rotatedFreeGoals(now);
-
-        const inTransition = transitionFrom && (now - transitionStart) < SNAP_DURATION;
-
-        if (inTransition) {
-          const t = easeOutCubic(clamp01((now - transitionStart) / SNAP_DURATION));
-
-          for (let i = 0; i < 4; i++) {
-            const from = transitionFrom[i];
-            const to = goals[i];
-            current[i] = {
-              x: from.x + (to.x - from.x) * t,
-              y: from.y + (to.y - from.y) * t,
-              a: from.a + (to.a - from.a) * t
-            };
-            setCorner(i, current[i]);
-          }
-        } else {
-          transitionFrom = null;
-          for (let i = 0; i < 4; i++) {
-            current[i] = goals[i];
-            setCorner(i, current[i]);
-          }
-        }
-
-        requestAnimationFrame(frame);
-      }
-
-      function onMouseMove(event) {
-        pointerX = event.clientX;
-        pointerY = event.clientY;
-
-        if (!hasMoved) {
-          hasMoved = true;
-          overlay.classList.add('is-visible');
-          spinOrigin = performance.now();
-        }
-
-        const target = findTarget(event.target);
-        if (target && target !== activeTarget) {
-          enterTarget(target);
-        } else if (!target && activeTarget) {
-          leaveTarget();
-        }
-      }
-
-      // Mouse events are intentionally used here rather than PointerEvent gating.
-      // They are the most reliable option for a desktop custom cursor, including
-      // browser previews and embedded frames.
-      document.addEventListener('mousemove', onMouseMove, { passive: true });
-
-      document.addEventListener('mouseover', event => {
-        const target = findTarget(event.target);
-        if (target) enterTarget(target);
-      }, { passive: true });
-
-      document.addEventListener('mouseout', event => {
-        if (!event.relatedTarget) {
-          overlay.classList.remove('is-visible');
-          return;
-        }
-
-        const nextTarget = findTarget(event.relatedTarget);
-        if (!nextTarget && activeTarget) leaveTarget();
-      }, { passive: true });
-
-      document.addEventListener('mousedown', () => {
-        dot.style.width = '3px';
-        dot.style.height = '3px';
-        dot.style.marginLeft = '-1.5px';
-        dot.style.marginTop = '-1.5px';
-      });
-
-      document.addEventListener('mouseup', () => {
-        dot.style.width = '4px';
-        dot.style.height = '4px';
-        dot.style.marginLeft = '-2px';
-        dot.style.marginTop = '-2px';
-      });
-
-      window.addEventListener('scroll', () => {
-        if (hasMoved) updateTargetUnderPointer();
-      }, { passive: true });
-
-      window.addEventListener('blur', () => {
-        overlay.classList.remove('is-visible');
-      });
-
-      window.addEventListener('focus', () => {
-        if (hasMoved) overlay.classList.add('is-visible');
-      });
-
-      requestAnimationFrame(frame);
-    })();
-  </script>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-
     const io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -966,7 +5950,8 @@
           style: 'currency',
           currency,
           maximumFractionDigits: 0,
-          minimumFractionDigits: 0
+          minimumFractionDigits: 0,
+          useGrouping: false
         });
 
         priceEls.forEach(el => {
@@ -1143,7 +6128,7 @@
       dotDensity: 1.15,
       dotSize: 1.15,
       scale: 9,
-      autoRotateSpeed: reduceMotion ? 0 : 1,
+      autoRotateSpeed: 1,
       direction: 'right',
       initialLatitude: 23,
       initialLongitude: -23,
@@ -1196,7 +6181,7 @@
     }
 
     function startLoop() {
-      if (rafId || !visible || document.hidden || !renderer || destroyed || reduceMotion) return;
+      if (rafId || !visible || document.hidden || !renderer || destroyed) return;
       rafId = requestAnimationFrame(tick);
     }
 
@@ -1400,5 +6385,835 @@
       globeGroup = null;
     }, { once: true });
   </script>
+
+  <script>
+    (() => {
+      const intro = document.querySelector('.wordmark-intro');
+      const wordmark = document.querySelector('.wordmark-motion');
+      if (!intro || !wordmark) return;
+
+      let visible = false;
+      let animation = null;
+
+      const reset = () => {
+        animation?.cancel();
+        animation = null;
+        wordmark.style.opacity = '0';
+        wordmark.style.transform = 'translate3d(0, 34px, 0)';
+      };
+
+      const play = () => {
+        animation?.cancel();
+
+        // Set the start frame first so the motion is visible even on initial load.
+        wordmark.style.opacity = '0';
+        wordmark.style.transform = 'translate3d(0, 34px, 0)';
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            animation = wordmark.animate(
+              [
+                { opacity: 0, transform: 'translate3d(0, 34px, 0)' },
+                { opacity: 1, transform: 'translate3d(0, 0, 0)' }
+              ],
+              {
+                duration: 900,
+                easing: 'cubic-bezier(.22,.61,.36,1)',
+                fill: 'forwards'
+              }
+            );
+
+            animation.onfinish = () => {
+              wordmark.style.opacity = '1';
+              wordmark.style.transform = 'translate3d(0, 0, 0)';
+            };
+          });
+        });
+      };
+
+      if (!('IntersectionObserver' in window)) {
+        wordmark.style.opacity = '1';
+        wordmark.style.transform = 'none';
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+
+        if (entry.isIntersecting && entry.intersectionRatio > 0) {
+          if (!visible) {
+            visible = true;
+            play();
+          }
+        } else if (visible) {
+          // Only arm the next replay after the wordmark section has fully left view.
+          visible = false;
+          reset();
+        }
+      }, {
+        threshold: [0, 0.01, 0.1]
+      });
+
+      reset();
+      observer.observe(intro);
+    })();
+  </script>
+<script>
+    (() => {
+      const copy = document.querySelector('.global-copy');
+      const title = copy?.querySelector('[data-global-title]');
+      const content = copy?.querySelector('[data-global-content]');
+      const cards = [...document.querySelectorAll('.service[data-context]')];
+
+      if (!copy || !title || !content || !cards.length) return;
+
+      const bolt = `
+        <span class="response-bolt" aria-hidden="true">
+          <svg viewBox="0 0 16 16" focusable="false">
+            <path d="M9.3 1.5 4.7 8h3L6.8 14.5 11.5 7.7H8.4L9.3 1.5Z"></path>
+          </svg>
+        </span>
+      `;
+
+      const defaultSlides = [
+        {
+          html: `
+            <div class="homepage-slide cursor-snap-text">
+              <h2 class="slide-heading">Operating Globally</h2>
+              <p class="slide-body">Providing remote multidisciplinary support to NGOs and independent entities in 160+ countries, territories and markets around the world.</p>
+              <p class="slide-closing">Across borders, disciplines and time zones.</p>
+            </div>
+          `
+        },
+        {
+          html: `
+            <div class="homepage-slide homepage-slide-statement cursor-snap-text">
+              <h2 class="slide-heading">Deepliners are multi-skilled human operatives deployed remotely alongside your team to solve problems, build better systems and make new ideas real.</h2>
+            </div>
+          `
+        },
+        {
+          html: `
+            <div class="homepage-slide homepage-slide-statement cursor-snap-text">
+              <h2 class="slide-heading">Digital systems, tools and ideas are our terrain, so you can stay focused on yours.</h2>
+            </div>
+          `
+        },
+        {
+          html: `
+            <div class="homepage-slide homepage-slide-statement homepage-slide-final cursor-snap-text">
+              <h2 class="slide-heading">
+                <span class="final-statement-lead">
+                  <span class="mobile-final-line">When everyone else says</span>
+                  <span class="mobile-final-line">“it can’t be done”</span>
+                </span>
+                <span class="final-statement-hit">Deepliners get it done.</span>
+              </h2>
+            </div>
+          `
+        }
+      ];
+
+      const contexts = {
+        overwatch: {
+          title: 'Overwatch',
+          html: `
+            <div class="service-context-layout">
+              <p class="context-emphasis context-emphasis-lead">Keep operations moving.</p>
+
+              <p class="service-context-intro">Dependable technical support for the day-to-day problems that interrupt work, waste time or simply need sorting. Troubleshooting, setup, maintenance, platform admin and general digital support, handled remotely and without unnecessary friction.</p>
+
+              <div class="context-section">
+                <span class="context-label">Best For</span>
+                <p>Small teams that need reliable technical backup without hiring a fixed internal resource.</p>
+              </div>
+
+              <div class="context-meta-row" aria-label="Overwatch service information">
+                <div class="context-meta">
+                  <span class="context-meta-label">Availability</span>
+                  <span class="context-meta-value">Up to 15 hours per week</span>
+                </div>
+                <div class="context-meta">
+                  <span class="context-meta-label">Response Time</span>
+                  <span class="context-meta-value">${bolt}<span>Same business day</span></span>
+                </div>
+              </div>
+            </div>
+          `
+        },
+
+        forge: {
+          title: 'Forge',
+          html: `
+            <div class="service-context-layout">
+              <p class="service-context-intro">Purpose-built workflows, automations, integrations and digital solutions designed to make the way your organisation works simpler, faster and more capable.</p>
+
+              <div class="context-subsection context-subsection-full">
+                <span class="context-emphasis context-emphasis-lead forge-lead">Comfortable in all conditions.</span>
+                <p class="context-detail">From the latest agentic intelligence and industry-standard platforms like Microsoft 365, to custom internal scripts and legacy software. Deepline operatives adapt to the systems you already use and build from there.</p>
+              </div>
+
+              <div class="context-section">
+                <span class="context-label">Best For</span>
+                <p>Organisations dealing with repetitive work, disconnected tools, inefficient processes or growing operational complexity.</p>
+              </div>
+            </div>
+          `
+        },
+
+        eden: {
+          title: 'Eden',
+          html: `
+            <div class="service-context-layout">
+              <p class="service-context-intro">Creative direction, brand, interface and concept development for projects that need a strong idea, a coherent system and a considered final expression.</p>
+
+              <div class="context-subsection context-subsection-full">
+                <p class="context-detail">From early-stage thinking through to visual and digital execution, Eden brings creative direction and practical delivery into the same process.</p>
+              </div>
+
+              <p class="context-emphasis context-emphasis-lead">From first thought to finished form.</p>
+
+              <div class="context-section">
+                <span class="context-label">Best For</span>
+                <p>Teams developing something new, repositioning an existing idea, or needing a sharper creative perspective to elevate a project.</p>
+              </div>
+            </div>
+          `
+        }
+      };
+
+      let activeKey = 'default';
+      let activeSlide = 0;
+      let typingTimer = 0;
+      let sequence = 0;
+      let currentHoverText = '';
+      let defaultRestoreTimer = 0;
+      let cursorBlinkTimer = 0;
+      let slideTimer = 0;
+
+      const jitter = (min, max) =>
+        Math.round(min + Math.random() * (max - min));
+
+      const clearTypingTimer = () => {
+        if (typingTimer) {
+          window.clearTimeout(typingTimer);
+          typingTimer = 0;
+        }
+      };
+
+      const clearDefaultRestore = () => {
+        if (defaultRestoreTimer) {
+          window.clearTimeout(defaultRestoreTimer);
+          defaultRestoreTimer = 0;
+        }
+      };
+
+      const clearSlideTimer = () => {
+        if (slideTimer) {
+          window.clearTimeout(slideTimer);
+          slideTimer = 0;
+        }
+      };
+
+      const stopCursorBlink = () => {
+        if (cursorBlinkTimer) {
+          window.clearInterval(cursorBlinkTimer);
+          cursorBlinkTimer = 0;
+        }
+      };
+
+      const startCursorBlink = cursor => {
+        stopCursorBlink();
+
+        let visible = true;
+        cursor.style.setProperty('opacity', '1', 'important');
+
+        cursorBlinkTimer = window.setInterval(() => {
+          visible = !visible;
+          cursor.style.setProperty(
+            'opacity',
+            visible ? '1' : '0',
+            'important'
+          );
+        }, 350);
+      };
+
+      const setStaticTitle = text => {
+        clearTypingTimer();
+        stopCursorBlink();
+        currentHoverText = '';
+        title.removeAttribute('aria-label');
+        title.replaceChildren(document.createTextNode(text));
+      };
+
+      const mountHoverTypewriter = (initialText = '') => {
+        title.replaceChildren();
+
+        const typed = document.createElement('span');
+        typed.className = 'dl-type-text';
+        typed.textContent = initialText;
+
+        const cursor = document.createElement('span');
+        cursor.className = 'dl-type-cursor';
+        cursor.setAttribute('aria-hidden', 'true');
+        cursor.textContent = '▎';
+
+        title.append(typed, cursor);
+        startCursorBlink(cursor);
+
+        return typed;
+      };
+
+      const typingDelay = (char, index, text) => {
+        let delay = jitter(54, 126);
+
+        if (/[ilI1]/.test(char)) delay -= jitter(7, 16);
+        if (/[mwMW]/.test(char)) delay += jitter(8, 20);
+
+        if (
+          index > 1 &&
+          index < text.length - 1 &&
+          Math.random() < 0.18
+        ) {
+          delay += jitter(32, 92);
+        }
+
+        return Math.max(40, delay);
+      };
+
+      const backspaceDelay = () => {
+        let delay = jitter(32, 70);
+        if (Math.random() < 0.12) delay += jitter(24, 56);
+        return delay;
+      };
+
+      const animateHoverTitleTo = (nextText, token, previousText = '') => {
+        clearTypingTimer();
+        title.setAttribute('aria-label', nextText);
+
+        const typed = mountHoverTypewriter(previousText);
+        currentHoverText = previousText;
+        let typeIndex = 0;
+
+        const typeOne = () => {
+          if (token !== sequence || activeKey === 'default') return;
+
+          if (typeIndex < nextText.length) {
+            const char = nextText.charAt(typeIndex);
+            typed.textContent += char;
+            currentHoverText = typed.textContent;
+            typeIndex += 1;
+
+            if (typeIndex < nextText.length) {
+              typingTimer = window.setTimeout(
+                typeOne,
+                typingDelay(char, typeIndex, nextText)
+              );
+            } else {
+              typingTimer = 0;
+            }
+          }
+        };
+
+        const beginTyping = () => {
+          if (token !== sequence || activeKey === 'default') return;
+          typed.textContent = '';
+          currentHoverText = '';
+          typingTimer = window.setTimeout(typeOne, jitter(105, 190));
+        };
+
+        const deleteOne = () => {
+          if (token !== sequence || activeKey === 'default') return;
+
+          if (typed.textContent.length > 0) {
+            typed.textContent = typed.textContent.slice(0, -1);
+            currentHoverText = typed.textContent;
+            typingTimer = window.setTimeout(deleteOne, backspaceDelay());
+          } else {
+            typingTimer = window.setTimeout(beginTyping, jitter(80, 150));
+          }
+        };
+
+        if (previousText) {
+          typingTimer = window.setTimeout(deleteOne, jitter(55, 110));
+        } else {
+          typingTimer = window.setTimeout(beginTyping, jitter(80, 145));
+        }
+      };
+
+      const fadeContentTo = (nextHTML, token, duration = 330) => {
+        content.getAnimations().forEach(animation => animation.cancel());
+
+        const outgoing = content.animate(
+          [
+            { opacity: 1, transform: 'translate3d(0,0,0)' },
+            { opacity: 0, transform: 'translate3d(0,7px,0)' }
+          ],
+          {
+            duration: 180,
+            easing: 'cubic-bezier(.4,0,.2,1)',
+            fill: 'forwards'
+          }
+        );
+
+        outgoing.finished.then(() => {
+          if (token !== sequence) return;
+
+          content.innerHTML = nextHTML;
+          content.style.opacity = '0';
+          content.style.transform = 'translate3d(0,9px,0)';
+
+          requestAnimationFrame(() => {
+            if (token !== sequence) return;
+
+            const incoming = content.animate(
+              [
+                { opacity: 0, transform: 'translate3d(0,9px,0)' },
+                { opacity: 1, transform: 'translate3d(0,0,0)' }
+              ],
+              {
+                duration,
+                delay: 50,
+                easing: 'cubic-bezier(.22,.61,.36,1)',
+                fill: 'forwards'
+              }
+            );
+
+            incoming.finished.then(() => {
+              if (token !== sequence) return;
+              content.style.opacity = '';
+              content.style.transform = '';
+            }).catch(() => {});
+          });
+        }).catch(() => {});
+      };
+
+      const scheduleSlide = () => {
+        clearSlideTimer();
+        if (activeKey !== 'default') return;
+
+        slideTimer = window.setTimeout(() => {
+          if (activeKey !== 'default') return;
+
+          activeSlide = (activeSlide + 1) % defaultSlides.length;
+          const token = ++sequence;
+
+          setStaticTitle('');
+          fadeContentTo(defaultSlides[activeSlide].html, token, 420);
+
+          slideTimer = window.setTimeout(() => {
+            if (token === sequence && activeKey === 'default') {
+              scheduleSlide();
+            }
+          }, 500);
+        }, 7800);
+      };
+
+      const renderDefaultSlide = (index = 0, animate = false) => {
+        activeSlide = index;
+        const token = ++sequence;
+
+        copy.classList.remove('is-service-context');
+        setStaticTitle('');
+
+        if (animate) {
+          fadeContentTo(defaultSlides[index].html, token, 420);
+          window.setTimeout(() => {
+            if (token === sequence && activeKey === 'default') {
+              scheduleSlide();
+            }
+          }, 500);
+        } else {
+          content.innerHTML = defaultSlides[index].html;
+          scheduleSlide();
+        }
+      };
+
+      const moveDefaultSlide = direction => {
+        if (activeKey !== 'default') return;
+
+        clearSlideTimer();
+
+        const total = defaultSlides.length;
+        const nextIndex = (activeSlide + direction + total) % total;
+
+        renderDefaultSlide(nextIndex, true);
+      };
+
+      document.addEventListener('keydown', event => {
+        // Do not hijack arrow keys while the user is interacting with
+        // an editable/form control.
+        const editable = event.target?.closest?.(
+          'input, textarea, select, [contenteditable="true"], [contenteditable=""]'
+        );
+        if (editable) return;
+
+        if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          moveDefaultSlide(1);
+        } else if (event.key === 'ArrowLeft') {
+          event.preventDefault();
+          moveDefaultSlide(-1);
+        }
+      });
+
+      // Mobile swipe navigation for the default rotating slides.
+      // Horizontal intent must be clear so normal vertical scrolling
+      // and pinch-zoom gestures are left alone.
+      let swipeStartX = 0;
+      let swipeStartY = 0;
+      let swipeStartTime = 0;
+      let swipeTracking = false;
+
+      const swipeSurface = document.querySelector('#global');
+
+      swipeSurface?.addEventListener('touchstart', event => {
+        if (
+          window.innerWidth > 960 ||
+          activeKey !== 'default' ||
+          event.touches.length !== 1
+        ) {
+          swipeTracking = false;
+          return;
+        }
+
+        const touch = event.touches[0];
+        swipeStartX = touch.clientX;
+        swipeStartY = touch.clientY;
+        swipeStartTime = performance.now();
+        swipeTracking = true;
+      }, { passive: true });
+
+      swipeSurface?.addEventListener('touchend', event => {
+        if (
+          !swipeTracking ||
+          window.innerWidth > 960 ||
+          activeKey !== 'default' ||
+          event.changedTouches.length !== 1
+        ) {
+          swipeTracking = false;
+          return;
+        }
+
+        const touch = event.changedTouches[0];
+        const dx = touch.clientX - swipeStartX;
+        const dy = touch.clientY - swipeStartY;
+        const elapsed = performance.now() - swipeStartTime;
+
+        swipeTracking = false;
+
+        const horizontal = Math.abs(dx);
+        const vertical = Math.abs(dy);
+
+        if (
+          elapsed <= 800 &&
+          horizontal >= 44 &&
+          horizontal > vertical * 1.25
+        ) {
+          // Swipe left = next. Swipe right = previous.
+          moveDefaultSlide(dx < 0 ? 1 : -1);
+        }
+      }, { passive: true });
+
+      swipeSurface?.addEventListener('touchcancel', () => {
+        swipeTracking = false;
+      }, { passive: true });
+
+      const enterCard = key => {
+        if (!contexts[key]) return;
+
+        clearDefaultRestore();
+        clearSlideTimer();
+
+        if (key === activeKey) return;
+
+        const previousText =
+          activeKey === 'default' ? '' : currentHoverText;
+
+        activeKey = key;
+        const token = ++sequence;
+        const next = contexts[key];
+
+        copy.classList.add('is-service-context');
+        fadeContentTo(next.html, token);
+        animateHoverTitleTo(next.title, token, previousText);
+      };
+
+      const restoreDefault = () => {
+        clearDefaultRestore();
+        if (activeKey === 'default') return;
+
+        activeKey = 'default';
+        renderDefaultSlide(0, true);
+      };
+
+      const scheduleDefaultRestore = () => {
+        // On mobile/touch layouts, a tapped card should stay active while
+        // the page jumps back up to show its corresponding information.
+        if (window.innerWidth < 961) return;
+
+        clearDefaultRestore();
+        defaultRestoreTimer = window.setTimeout(restoreDefault, 80);
+      };
+
+      activeKey = 'default';
+      renderDefaultSlide(0, false);
+
+      cards.forEach(card => {
+        const key = card.dataset.context;
+
+        card.addEventListener('pointerenter', () => enterCard(key));
+        card.addEventListener('pointerleave', scheduleDefaultRestore);
+        card.addEventListener('mouseenter', () => enterCard(key));
+        card.addEventListener('mouseleave', scheduleDefaultRestore);
+        card.addEventListener('focusin', () => enterCard(key));
+        card.addEventListener('focusout', event => {
+          if (!card.contains(event.relatedTarget)) {
+            scheduleDefaultRestore();
+          }
+        });
+
+        card.addEventListener('click', () => {
+          if (window.innerWidth >= 961) return;
+
+          // Explicitly activate the tapped service, then jump the viewport
+          // to the top so the corresponding information is immediately visible.
+          enterCard(key);
+
+          requestAnimationFrame(() => {
+            window.scrollTo({
+              top: 0,
+              left: 0,
+              behavior: 'auto'
+            });
+          });
+        });
+      });
+
+      // Mobile dismissal:
+      // once service information is open, a tap anywhere outside that
+      // information restores the normal rotating homepage slides.
+      // Service cards are exempt so tapping another card can switch context.
+      document.addEventListener('click', event => {
+        if (window.innerWidth >= 961 || activeKey === 'default') return;
+
+        const serviceInfo = event.target?.closest?.('.service-context-layout');
+        const serviceCard = event.target?.closest?.('.service[data-context]');
+
+        if (serviceInfo || serviceCard) return;
+
+        clearDefaultRestore();
+        restoreDefault();
+      });
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll('.service')];
+      if (!cards.length) return;
+
+      const alignTaglines = () => {
+        if (window.innerWidth < 961) {
+          cards.forEach(card => card.style.removeProperty('--tagline-first-bullet-y'));
+          return;
+        }
+
+        cards.forEach(card => {
+          const firstBullet = card.querySelector('ul li:first-child');
+          if (!firstBullet) return;
+
+          const cardRect = card.getBoundingClientRect();
+          const bulletRect = firstBullet.getBoundingClientRect();
+          const y = bulletRect.top - cardRect.top;
+
+          card.style.setProperty('--tagline-first-bullet-y', `${y}px`);
+        });
+      };
+
+      let resizeRaf = 0;
+      const scheduleAlign = () => {
+        cancelAnimationFrame(resizeRaf);
+        resizeRaf = requestAnimationFrame(alignTaglines);
+      };
+
+      alignTaglines();
+      requestAnimationFrame(alignTaglines);
+      window.addEventListener('resize', scheduleAlign, { passive: true });
+
+      if (document.fonts?.ready) {
+        document.fonts.ready.then(scheduleAlign).catch(() => {});
+      }
+    })();
+  </script>
+
+  <script>
+    (() => {
+      const copy = document.querySelector('#global.global > .global-copy');
+      const content = copy?.querySelector('[data-global-content]');
+
+      if (!copy || !content) return;
+
+      const getRenderedTextRect = el => {
+        const walker = document.createTreeWalker(
+          el,
+          NodeFilter.SHOW_TEXT,
+          {
+            acceptNode(node) {
+              return node.nodeValue && node.nodeValue.trim()
+                ? NodeFilter.FILTER_ACCEPT
+                : NodeFilter.FILTER_REJECT;
+            }
+          }
+        );
+
+        const rects = [];
+        let node;
+
+        while ((node = walker.nextNode())) {
+          const range = document.createRange();
+          range.selectNodeContents(node);
+
+          for (const rect of range.getClientRects()) {
+            if (rect.width > 0 && rect.height > 0) rects.push(rect);
+          }
+
+          if (range.detach) range.detach();
+        }
+
+        if (!rects.length) return null;
+
+        return {
+          left: Math.min(...rects.map(r => r.left)),
+          right: Math.max(...rects.map(r => r.right))
+        };
+      };
+
+      let raf = 0;
+
+      const centreVisibleText = () => {
+        cancelAnimationFrame(raf);
+
+        raf = requestAnimationFrame(() => {
+          if (copy.classList.contains('is-service-context')) {
+            copy.style.setProperty('--copy-optical-x', '0px');
+            return;
+          }
+
+          const slide = content.querySelector('.homepage-slide');
+          if (!slide) {
+            copy.style.setProperty('--copy-optical-x', '0px');
+            return;
+          }
+
+          // Measure from the uncorrected true viewport centre first.
+          copy.style.setProperty('--copy-optical-x', '0px');
+
+          requestAnimationFrame(() => {
+            const rect = getRenderedTextRect(slide);
+            if (!rect) return;
+
+            const renderedCentre = (rect.left + rect.right) / 2;
+
+            // Use the actual rendered DEEPLINE wordmark as the centre axis.
+            // This is more reliable on mobile than assuming window.innerWidth
+            // exactly matches the visible browser crop at every zoom/device scale.
+            const wordmark = document.querySelector('.wordmark');
+            const wordmarkRect = wordmark?.getBoundingClientRect();
+
+            const targetCentre = wordmarkRect && wordmarkRect.width
+              ? (wordmarkRect.left + wordmarkRect.right) / 2
+              : (
+                  window.visualViewport
+                    ? window.visualViewport.offsetLeft + (window.visualViewport.width / 2)
+                    : document.documentElement.clientWidth / 2
+                );
+
+            const correction = targetCentre - renderedCentre;
+
+            copy.style.setProperty(
+              '--copy-optical-x',
+              `${correction.toFixed(2)}px`
+            );
+          });
+        });
+      };
+
+      const observer = new MutationObserver(centreVisibleText);
+      observer.observe(content, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+
+      const resizeObserver = new ResizeObserver(centreVisibleText);
+      resizeObserver.observe(content);
+
+      window.addEventListener('resize', centreVisibleText, { passive: true });
+
+      if (document.fonts?.ready) {
+        document.fonts.ready.then(centreVisibleText).catch(() => {});
+      }
+
+      centreVisibleText();
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const blockClipboard = event => {
+        event.preventDefault();
+      };
+
+      document.addEventListener('copy', blockClipboard, true);
+      document.addEventListener('cut', blockClipboard, true);
+      document.addEventListener('paste', blockClipboard, true);
+      document.addEventListener('dragstart', blockClipboard, true);
+
+      document.addEventListener('selectstart', event => {
+        event.preventDefault();
+      }, true);
+
+      document.addEventListener('keydown', event => {
+        const key = event.key.toLowerCase();
+        const modifier = event.ctrlKey || event.metaKey;
+
+        if (
+          modifier &&
+          (key === 'c' || key === 'x' || key === 'v' || key === 'a')
+        ) {
+          event.preventDefault();
+        }
+      }, true);
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const topbar = document.querySelector('.site-topbar');
+      const mainWordmark = document.querySelector('.wordmark');
+
+      if (!topbar || !mainWordmark) return;
+
+      let raf = 0;
+
+      const updateTopbar = () => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          const passedWordmark = mainWordmark.getBoundingClientRect().bottom <= 0;
+          topbar.classList.toggle('is-visible', passedWordmark);
+        });
+      };
+
+      window.addEventListener('scroll', updateTopbar, { passive: true });
+      window.addEventListener('resize', updateTopbar, { passive: true });
+      updateTopbar();
+    })();
+  </script>
+
 </body>
 </html>
