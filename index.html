@@ -5626,6 +5626,118 @@
       }
     }
 
+
+    /* =========================================================
+       MOBILE CUSTOM CURSOR — CARD-ONLY SNAP BEHAVIOUR
+       The cursor may only enter target mode for service cards.
+       Once targeted, the same card remains locked through scrolling
+       until a physical tap outside the cards releases it.
+       ========================================================= */
+    @media (max-width: 960px) {
+      .service[data-context] {
+        -webkit-tap-highlight-color: transparent;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE TOPBAR — THICKER / LARGER CONTROLS
+       ========================================================= */
+    @media (max-width: 960px) {
+      .site-topbar {
+        height: 82px !important;
+        background: rgba(5,5,5,.66) !important;
+        -webkit-backdrop-filter: blur(22px) saturate(130%) !important;
+        backdrop-filter: blur(22px) saturate(130%) !important;
+      }
+
+      .site-topbar .topbar-inner {
+        height: 82px !important;
+        padding-inline: max(18px, var(--pad)) !important;
+        gap: 16px !important;
+      }
+
+      .site-topbar .topbar-wordmark {
+        font-size: 19px !important;
+        font-weight: 400 !important;
+        line-height: 1 !important;
+        letter-spacing: .105em !important;
+        transform: none !important;
+      }
+
+      .site-topbar .nav-cta {
+        min-height: 44px !important;
+        padding: 0 17px !important;
+        border-radius: 8px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        line-height: 1 !important;
+        letter-spacing: .055em !important;
+        white-space: nowrap !important;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .site-topbar {
+        height: 76px !important;
+      }
+
+      .site-topbar .topbar-inner {
+        height: 76px !important;
+        padding-inline: 14px !important;
+        gap: 10px !important;
+      }
+
+      .site-topbar .topbar-wordmark {
+        font-size: 17px !important;
+      }
+
+      .site-topbar .nav-cta {
+        min-height: 40px !important;
+        padding-inline: 13px !important;
+        font-size: 10.5px !important;
+      }
+    }
+
+    /* Prevent transform animation hints from encouraging unnecessary
+       compositing jitter on the default mobile copy while scrolling. */
+    @media (max-width: 960px) {
+      #global.global > .global-copy:not(.is-service-context) {
+        will-change: auto !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE CUSTOM CURSOR — FULLY ENABLED
+       ========================================================= */
+    @media (max-width: 960px) {
+      .dl-cursor {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE MAIN WORDMARK — STRONGER SCALE
+       Make DEEPLINE clearly wider/larger than the CTA on iOS and
+       other mobile widths, without changing its centre or Y position.
+       ========================================================= */
+    @media (max-width: 680px) {
+      .wordmark {
+        font-size: clamp(50px, 15.2vw, 72px) !important;
+        letter-spacing: .08em !important;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .wordmark {
+        font-size: clamp(48px, 15vw, 55px) !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -5785,10 +5897,53 @@
         if (!next) snapTo(null);
       }, { passive: true });
 
+      // Re-evaluate the element beneath the cursor as the page scrolls,
+      // matching the original custom-cursor behaviour.
       window.addEventListener('scroll', () => {
         const node = document.elementFromPoint(x, y);
         snapTo(detectTarget(node));
       }, { passive: true });
+
+      // Full mobile/touch support: the custom cursor follows the user's
+      // physical touch position and uses the same targets as desktop.
+      const updateTouchCursor = (clientX, clientY, node) => {
+        x = clientX;
+        y = clientY;
+        snapTo(detectTarget(node));
+      };
+
+      document.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'mouse') return;
+        updateTouchCursor(event.clientX, event.clientY, event.target);
+      }, { passive: true });
+
+      document.addEventListener('pointermove', event => {
+        if (event.pointerType === 'mouse') return;
+        updateTouchCursor(event.clientX, event.clientY, event.target);
+      }, { passive: true });
+
+      document.addEventListener('pointerup', event => {
+        if (event.pointerType === 'mouse') return;
+        x = event.clientX;
+        y = event.clientY;
+        snapTo(detectTarget(event.target));
+      }, { passive: true });
+
+      if (!window.PointerEvent) {
+        document.addEventListener('touchstart', event => {
+          if (event.touches.length !== 1) return;
+          const touch = event.touches[0];
+          const node = document.elementFromPoint(touch.clientX, touch.clientY);
+          updateTouchCursor(touch.clientX, touch.clientY, node);
+        }, { passive: true });
+
+        document.addEventListener('touchmove', event => {
+          if (event.touches.length !== 1) return;
+          const touch = event.touches[0];
+          const node = document.elementFromPoint(touch.clientX, touch.clientY);
+          updateTouchCursor(touch.clientX, touch.clientY, node);
+        }, { passive: true });
+      }
 
       // The main copy is replaced dynamically as slides rotate and service
       // hover content changes. Re-evaluate the target after each mutation so
@@ -7093,6 +7248,11 @@
 
       let raf = 0;
 
+      const getViewportWidth = () =>
+        window.visualViewport?.width || document.documentElement.clientWidth;
+
+      let lastViewportWidth = getViewportWidth();
+
       const centreVisibleText = () => {
         cancelAnimationFrame(raf);
 
@@ -7103,41 +7263,44 @@
           }
 
           const slide = content.querySelector('.homepage-slide');
-          if (!slide) {
-            copy.style.setProperty('--copy-optical-x', '0px');
-            return;
-          }
+          if (!slide) return;
 
-          // Measure from the uncorrected true viewport centre first.
-          copy.style.setProperty('--copy-optical-x', '0px');
+          const rect = getRenderedTextRect(slide);
+          if (!rect) return;
 
-          requestAnimationFrame(() => {
-            const rect = getRenderedTextRect(slide);
-            if (!rect) return;
+          const renderedCentre = (rect.left + rect.right) / 2;
 
-            const renderedCentre = (rect.left + rect.right) / 2;
+          // Use the actual rendered DEEPLINE wordmark as the centre axis.
+          const wordmark = document.querySelector('.wordmark');
+          const wordmarkRect = wordmark?.getBoundingClientRect();
 
-            // Use the actual rendered DEEPLINE wordmark as the centre axis.
-            // This is more reliable on mobile than assuming window.innerWidth
-            // exactly matches the visible browser crop at every zoom/device scale.
-            const wordmark = document.querySelector('.wordmark');
-            const wordmarkRect = wordmark?.getBoundingClientRect();
+          const targetCentre = wordmarkRect && wordmarkRect.width
+            ? (wordmarkRect.left + wordmarkRect.right) / 2
+            : (
+                window.visualViewport
+                  ? window.visualViewport.offsetLeft + (window.visualViewport.width / 2)
+                  : document.documentElement.clientWidth / 2
+              );
 
-            const targetCentre = wordmarkRect && wordmarkRect.width
-              ? (wordmarkRect.left + wordmarkRect.right) / 2
-              : (
-                  window.visualViewport
-                    ? window.visualViewport.offsetLeft + (window.visualViewport.width / 2)
-                    : document.documentElement.clientWidth / 2
-                );
+          // IMPORTANT: adjust from the CURRENT correction instead of briefly
+          // zeroing the transform. That zero-reset was visible during mobile
+          // scroll/toolbar resize events and caused the horizontal shake.
+          const currentCorrection =
+            parseFloat(
+              getComputedStyle(copy).getPropertyValue('--copy-optical-x')
+            ) || 0;
 
-            const correction = targetCentre - renderedCentre;
+          const delta = targetCentre - renderedCentre;
 
-            copy.style.setProperty(
-              '--copy-optical-x',
-              `${correction.toFixed(2)}px`
-            );
-          });
+          // Ignore sub-pixel noise from mobile browser UI / fractional scaling.
+          if (Math.abs(delta) < 0.35) return;
+
+          const nextCorrection = currentCorrection + delta;
+
+          copy.style.setProperty(
+            '--copy-optical-x',
+            `${nextCorrection.toFixed(2)}px`
+          );
         });
       };
 
@@ -7151,7 +7314,23 @@
       const resizeObserver = new ResizeObserver(centreVisibleText);
       resizeObserver.observe(content);
 
-      window.addEventListener('resize', centreVisibleText, { passive: true });
+      // Mobile browser chrome commonly changes viewport HEIGHT while scrolling.
+      // Re-centre only when the viewport WIDTH genuinely changes.
+      const handleViewportResize = () => {
+        const width = getViewportWidth();
+
+        if (Math.abs(width - lastViewportWidth) < 0.5) return;
+
+        lastViewportWidth = width;
+        centreVisibleText();
+      };
+
+      window.addEventListener('resize', handleViewportResize, { passive: true });
+      window.visualViewport?.addEventListener(
+        'resize',
+        handleViewportResize,
+        { passive: true }
+      );
 
       if (document.fonts?.ready) {
         document.fonts.ready.then(centreVisibleText).catch(() => {});
