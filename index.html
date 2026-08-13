@@ -1,35 +1,1404 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Deepline Support</title>
-  <meta name="description" content="Deepline Support">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Deepline — remote multidisciplinary support, digital systems and creative direction for NGOs and independent organisations." />
+  <meta name="theme-color" content="#050505" />
+  <title>Deepline — Remote multidisciplinary support</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23050505'/%3E%3Cpath d='M12 21h22c11 0 18 5 18 11s-7 11-18 11H12' fill='none' stroke='%23f4f4ef' stroke-width='5'/%3E%3C/svg%3E" />
   <style>
-    :root { color-scheme: dark; }
+    :root {
+      --bg: #050505;
+      --panel: #0a0a0a;
+      --ink: #f2f2ed;
+      --muted: #a1a19a;
+      --line: rgba(242,242,237,.16);
+      --line-strong: rgba(242,242,237,.3);
+      --signal: #83c8ff;
+      --max: 1380px;
+      --pad: clamp(20px, 4vw, 64px);
+    }
+
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 70% -10%, rgba(131,200,255,.08), transparent 34rem),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: var(--signal); color: #06131c; }
+    a { color: inherit; text-decoration: none; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    .shell { width: min(100%, var(--max)); margin: 0 auto; padding-inline: var(--pad); }
+    .hairline { border-top: 1px solid var(--line); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .eyebrow {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(16px);
+      background: rgba(5,5,5,.78);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 650;
+      letter-spacing: .22em;
+      font-size: 13px;
+    }
+    .brand-mark { width: 22px; height: 11px; position: relative; display: inline-block; }
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: var(--ink);
+    }
+    .brand-mark::before { top: 1px; }
+    .brand-mark::after { bottom: 1px; width: 72%; }
+    .nav-links { display: flex; gap: clamp(14px, 2vw, 30px); align-items: center; }
+    .nav-links a {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      transition: color .2s ease;
+    }
+    .nav-links a:hover, .nav-links a:focus-visible { color: var(--ink); }
+    .nav-cta { color: var(--ink) !important; }
+    .nav-cta::after { content: " ↗"; color: var(--signal); }
+
+
+    .wordmark-intro {
+      min-height: calc(100svh - 72px);
       display: grid;
       place-items: center;
-      padding: 2rem;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0b0f14;
-      color: #f5f7fa;
+      border-bottom: 1px solid var(--line);
+      overflow: hidden;
     }
-    a {
-      color: inherit;
-      padding: .9rem 1.25rem;
-      border: 1px solid #394553;
-      border-radius: 999px;
-      text-decoration: none;
-      background: #151c24;
+    .wordmark {
+      margin: 0;
+      font-size: clamp(62px, 13.5vw, 210px);
+      line-height: .84;
+      letter-spacing: .11em;
+      font-weight: 430;
+      white-space: nowrap;
+      transform: translateX(.055em);
     }
-    a:hover { background: #202b37; }
+
+    .hero {
+      min-height: calc(100svh - 72px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+      align-items: stretch;
+    }
+    .hero-copy {
+      padding: clamp(72px, 9vw, 146px) var(--pad) clamp(56px, 8vw, 118px);
+      padding-left: max(var(--pad), calc((100vw - var(--max))/2 + var(--pad)));
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 72px;
+    }
+    .hero-side {
+      padding: clamp(36px, 5vw, 76px) max(var(--pad), calc((100vw - var(--max))/2 + var(--pad))) 44px var(--pad);
+      padding-right: max(var(--pad), calc((100vw - var(--max))/2 + var(--pad)));
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 48px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-side::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .4;
+      background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, #000, transparent 78%);
+      pointer-events: none;
+    }
+    .hero-side > * { position: relative; z-index: 1; }
+    h1 {
+      max-width: 1000px;
+      margin: 18px 0 0;
+      font-size: clamp(56px, 8.7vw, 144px);
+      line-height: .86;
+      letter-spacing: -.065em;
+      font-weight: 530;
+    }
+    h1 .soft { color: #8f8f88; }
+    .hero-intro {
+      display: grid;
+      grid-template-columns: minmax(0, 620px) auto;
+      gap: 42px;
+      align-items: end;
+    }
+    .hero-intro p {
+      margin: 0;
+      color: #c8c8c2;
+      font-size: clamp(18px, 2vw, 27px);
+      line-height: 1.35;
+      letter-spacing: -.025em;
+    }
+    .primary-link {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      white-space: nowrap;
+      font-size: 13px;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    .primary-link .arrow {
+      display: grid;
+      place-items: center;
+      width: 42px; height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      transition: transform .25s ease, border-color .25s ease;
+    }
+    .primary-link:hover .arrow { transform: translate(3px,-3px); border-color: var(--signal); }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 12px;
+      color: #c8c8c2;
+    }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--signal);
+      box-shadow: 0 0 16px rgba(131,200,255,.75);
+    }
+    .depth-scale { margin-top: auto; }
+    .depth-scale strong { display: block; margin-top: 10px; font-size: clamp(24px, 3vw, 38px); font-weight: 480; letter-spacing: -.04em; }
+    .depth-line { height: 1px; width: 100%; background: var(--line); position: relative; margin-top: 18px; }
+    .depth-line::before {
+      content: "";
+      position: absolute;
+      left: 0; top: -1px;
+      width: 34%; height: 3px;
+      background: var(--ink);
+      animation: scan 5s ease-in-out infinite alternate;
+    }
+    @keyframes scan { to { width: 88%; } }
+
+    section { scroll-margin-top: 72px; }
+    .section-head {
+      padding: 28px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 32px;
+      align-items: start;
+    }
+    .section-head h2 {
+      margin: -6px 0 0;
+      font-size: clamp(35px, 5vw, 78px);
+      line-height: .95;
+      letter-spacing: -.05em;
+      font-weight: 500;
+    }
+    .section-head p:last-child {
+      margin: 0;
+      max-width: 680px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .services { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .service {
+      min-height: 560px;
+      padding: 34px clamp(24px, 3vw, 44px) 36px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--line);
+      transition: background .25s ease;
+    }
+    .service:last-child { border-right: 0; }
+    .service:hover { background: rgba(255,255,255,.025); }
+    .service-number { color: #686862; font-size: 11px; margin-bottom: 72px; }
+    .service h3 { margin: 0 0 8px; font-size: clamp(34px, 3.2vw, 51px); letter-spacing: -.05em; font-weight: 520; }
+    .service .tagline { margin: 0 0 32px; color: #d6d6d1; font-size: 16px; }
+    .service ul { list-style: none; padding: 0; margin: 0; color: var(--muted); line-height: 1.85; font-size: 14px; }
+    .service li { display: flex; align-items: center; gap: 9px; }
+    .service li::before {
+      content: "✓";
+      width: 17px;
+      height: 17px;
+      border: 1px solid #4e4e49;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      color: #d9d9d3;
+      font-size: 9px;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+    .price { margin-top: auto; padding-top: 44px; }
+    .price small { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 8px; }
+    .price strong { font-size: clamp(30px, 3vw, 42px); font-weight: 500; letter-spacing: -.04em; }
+    .price strong span { color: var(--muted); font-size: .48em; font-weight: 420; letter-spacing: 0; }
+    .price .fx-prefix {
+      color: var(--muted);
+      font-size: .42em;
+      font-weight: 420;
+      letter-spacing: 0;
+      vertical-align: .16em;
+      margin-right: .2em;
+    }
+    .pricing-disclaimer {
+      padding: 14px var(--pad) 18px;
+      color: #696963;
+      font-size: 10px;
+      line-height: 1.55;
+      letter-spacing: .03em;
+      border-bottom: 1px solid var(--line);
+    }
+    .pricing-disclaimer span { color: #85857e; }
+
+    .method-grid { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+    .manifesto { padding: clamp(48px, 7vw, 100px) var(--pad) clamp(52px, 7vw, 100px) max(var(--pad), calc((100vw - var(--max))/2 + var(--pad))); border-right: 1px solid var(--line); }
+    .manifesto blockquote {
+      margin: 24px 0 0;
+      max-width: 730px;
+      font-size: clamp(36px, 5vw, 72px);
+      line-height: 1.02;
+      letter-spacing: -.055em;
+      font-weight: 440;
+    }
+    .manifesto blockquote .muted { color: #777771; }
+    .steps { padding-right: max(var(--pad), calc((100vw - var(--max))/2 + var(--pad))); }
+    .step { padding: 32px var(--pad); border-bottom: 1px solid var(--line); min-height: 175px; display: grid; grid-template-columns: 64px 1fr; gap: 16px; align-items: start; }
+    .step:last-child { border-bottom: 0; }
+    .step .num { color: var(--signal); font-size: 11px; }
+    .step h3 { margin: 0 0 10px; font-size: 24px; font-weight: 500; letter-spacing: -.03em; }
+    .step p { margin: 0; color: var(--muted); max-width: 460px; line-height: 1.55; font-size: 15px; }
+
+    .global { position: relative; overflow: hidden; min-height: 760px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .global .shell { display: grid; grid-template-columns: minmax(300px, .8fr) minmax(440px, 1.2fr); min-height: 760px; align-items: center; }
+    .global-copy { position: relative; z-index: 4; padding-block: 72px; }
+    .global-copy h2 { margin: 18px 0 28px; max-width: 680px; font-size: clamp(52px, 7vw, 104px); line-height: .9; letter-spacing: -.06em; font-weight: 500; }
+    .global-copy p { color: #c4c4bd; max-width: 560px; font-size: 18px; line-height: 1.55; }
+    .global-stat { display: flex; gap: 34px; margin-top: 44px; }
+    .global-stat div { min-width: 110px; }
+    .global-stat strong { display: block; font-size: 32px; font-weight: 500; letter-spacing: -.04em; }
+    .global-stat span { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+    .globe-stage {
+      position: relative;
+      align-self: stretch;
+      min-height: 690px;
+      overflow: hidden;
+    }
+    .globe-stage::before {
+      content: "";
+      position: absolute;
+      right: -10%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: min(860px, 64vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.055), transparent 72%);
+      pointer-events: none;
+    }
+    #globe {
+      position: absolute;
+      right: -18%;
+      top: 54%;
+      transform: translateY(-50%);
+      width: min(980px, 76vw);
+      height: min(980px, 76vw);
+      max-width: none;
+      aspect-ratio: 1;
+      display: block;
+      pointer-events: none;
+      opacity: .98;
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgba(0,0,0,.92) 50%, rgba(0,0,0,.55) 58%, rgba(0,0,0,.2) 64%, transparent 72%);
+      mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgba(0,0,0,.92) 50%, rgba(0,0,0,.55) 58%, rgba(0,0,0,.2) 64%, transparent 72%);
+    }
+    #globe canvas { width: 100% !important; height: 100% !important; display: block; }
+    .globe-fallback {
+      position: absolute;
+      right: -16%;
+      top: 54%;
+      transform: translateY(-50%);
+      width: min(920px, 70vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.10);
+      background: radial-gradient(circle, rgba(255,255,255,.035), transparent 68%);
+      opacity: .20;
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgba(0,0,0,.82) 52%, transparent 72%);
+      mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgba(0,0,0,.82) 52%, transparent 72%);
+    }
+    .globe-note { position: absolute; right: 0; bottom: 40px; color: #64645e; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+
+    .contact {
+      min-height: 72svh;
+      padding: clamp(70px, 10vw, 150px) 0 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 84px;
+    }
+    .contact h2 { margin: 20px 0 36px; max-width: 1100px; font-size: clamp(55px, 9vw, 138px); line-height: .88; letter-spacing: -.065em; font-weight: 500; }
+    .contact h2 span { color: #777770; }
+    .email {
+      display: inline-block;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--line-strong);
+      font-size: clamp(18px, 2.2vw, 30px);
+      letter-spacing: -.02em;
+    }
+    .email:hover { border-color: var(--signal); }
+    footer { display: flex; justify-content: space-between; gap: 24px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+
+
+
+
+    /* Tactical target cursor — fixed overlay, no framework/runtime dependency. */
+    html.target-cursor-ready,
+    html.target-cursor-ready * {
+      cursor: none !important;
+    }
+
+    .target-cursor-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .target-cursor-dot,
+    .target-cursor-corner {
+      position: fixed;
+      left: 0;
+      top: 0;
+      pointer-events: none;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .target-cursor-overlay.is-visible .target-cursor-dot,
+    .target-cursor-overlay.is-visible .target-cursor-corner {
+      opacity: 1;
+    }
+
+    .target-cursor-dot {
+      width: 4px;
+      height: 4px;
+      margin-left: -2px;
+      margin-top: -2px;
+      border-radius: 50%;
+      background: rgba(244,244,239,.94);
+      transition: background-color .18s ease;
+    }
+
+    .target-cursor-corner {
+      width: 12px;
+      height: 12px;
+      border: 3px solid rgba(244,244,239,.94);
+      transition: border-color .18s ease;
+      transform-origin: 50% 50%;
+    }
+
+    .target-cursor-overlay.is-target .target-cursor-dot {
+      background: #fff;
+    }
+
+    .target-cursor-overlay.is-target .target-cursor-corner {
+      border-color: #fff;
+    }
+
+    .target-cursor-corner.corner-tl {
+      border-right: 0;
+      border-bottom: 0;
+    }
+    .target-cursor-corner.corner-tr {
+      border-left: 0;
+      border-bottom: 0;
+    }
+    .target-cursor-corner.corner-br {
+      border-left: 0;
+      border-top: 0;
+    }
+    .target-cursor-corner.corner-bl {
+      border-right: 0;
+      border-top: 0;
+    }
+
+    @media (max-width: 960px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-copy { min-height: 78svh; border-right: 0; border-bottom: 1px solid var(--line); padding-left: var(--pad); }
+      .hero-side { min-height: 340px; padding-right: var(--pad); }
+      .hero-intro { grid-template-columns: 1fr; }
+      .services { grid-template-columns: 1fr; }
+      .service { min-height: 430px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .service:last-child { border-bottom: 0; }
+      .service-number { margin-bottom: 42px; }
+      .method-grid { grid-template-columns: 1fr; }
+      .manifesto { padding-left: var(--pad); border-right: 0; border-bottom: 1px solid var(--line); }
+      .steps { padding-right: 0; }
+      .global .shell { grid-template-columns: 1fr; min-height: auto; }
+      .globe-stage { min-height: 520px; margin-top: -50px; }
+      #globe { right: -28%; top: 56%; width: min(860px, 112vw); height: min(860px, 112vw); }
+      .globe-fallback { right: -26%; top: 56%; width: min(800px, 104vw); }
+    }
+
+    @media (max-width: 680px) {
+      .wordmark-intro { min-height: calc(88svh - 72px); }
+      .wordmark {
+        font-size: clamp(51px, 17vw, 104px);
+        letter-spacing: .07em;
+        transform: translateX(.035em);
+      }
+      .nav-links a:not(.nav-cta) { display: none; }
+      .hero-copy { min-height: 72svh; padding-top: 70px; gap: 48px; }
+      h1 { font-size: clamp(52px, 19vw, 86px); }
+      .section-head { grid-template-columns: 1fr; }
+      .section-head h2 { margin-top: 0; }
+      .service { padding-inline: var(--pad); }
+      .manifesto blockquote { font-size: 39px; }
+      .step { grid-template-columns: 44px 1fr; padding-inline: var(--pad); }
+      .global { min-height: 0; }
+      .global .shell { padding-inline: var(--pad); }
+      .global-copy { padding-top: 66px; padding-bottom: 20px; }
+      .global-copy h2 { font-size: 56px; }
+      .global-stat { gap: 20px; flex-wrap: wrap; }
+      .globe-stage { min-height: 410px; }
+      #globe { right: -43%; width: 138vw; height: 138vw; }
+      .globe-fallback { right: -38%; width: 128vw; }
+      .globe-note { right: 8px; bottom: 18px; }
+      footer { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
   </style>
 </head>
 <body>
-  <a href="./aspen/">Open Aspen videos</a>
+  <header>
+    <div class="shell nav">
+      <a class="brand cursor-target" href="#top" aria-label="Deepline home"><span class="brand-mark" aria-hidden="true"></span>DEEPLINE</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#services">Services</a>
+        <a href="#method">Method</a>
+        <a href="#global">Global</a>
+        <a class="nav-cta cursor-target" href="mailto:osh@deepline.support">Start a project</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="wordmark-intro" aria-label="Deepline">
+      <h1 class="wordmark">DEEPLINE</h1>
+    </section>
+
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div>
+          <p class="eyebrow mono">Remote multidisciplinary support / Global</p>
+          <h1 id="hero-title">Problems,<br><span class="soft">solved deeply.</span></h1>
+        </div>
+        <div class="hero-intro">
+          <p>Deepline identifies problems, develops effective solutions and drives projects from concept to completion.</p>
+          <a class="primary-link cursor-target" href="#services">Explore capabilities <span class="arrow" aria-hidden="true">↘</span></a>
+        </div>
+      </div>
+      <aside class="hero-side" aria-label="Deepline operating profile">
+        <div>
+          <p class="eyebrow mono">Operating profile</p>
+          <p class="status" style="margin-top:18px"><span class="status-dot"></span>Available for remote engagements</p>
+        </div>
+        <div class="depth-scale">
+          <p class="eyebrow mono">Signal</p>
+          <strong>Technical.<br>Resourceful.<br>Versatile.</strong>
+          <div class="depth-line" aria-hidden="true"></div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="services">
+      <div class="shell section-head reveal">
+        <p class="eyebrow mono">01 / Capabilities</p>
+        <div>
+          <h2>Three modes.<br>One operative.</h2>
+          <p>Choose the depth of engagement that fits the problem: dependable day-to-day support, crafted systems and workflows, or creative direction from first idea to finished expression.</p>
+        </div>
+      </div>
+      <div class="services">
+        <article class="service reveal cursor-target">
+          <span class="service-number mono">01 — SUPPORT</span>
+          <h3>Overwatch</h3>
+          <p class="tagline">Reliable remote support.</p>
+          <ul>
+            <li>IT assistance</li>
+            <li>Troubleshooting</li>
+            <li>Software setup</li>
+            <li>Website maintenance</li>
+            <li>Platform administration</li>
+            <li>Lightweight digital tasks & fixes</li>
+          </ul>
+          <div class="price"><small>Service starting at</small><strong class="fx-price" data-gbp="800" data-suffix="/mo">£800<span>/mo</span></strong></div>
+        </article>
+
+        <article class="service reveal cursor-target">
+          <span class="service-number mono">02 — SYSTEMS</span>
+          <h3>Forge</h3>
+          <p class="tagline">Crafted digital solutions.</p>
+          <ul>
+            <li>Automation</li>
+            <li>Workflow design</li>
+            <li>Process improvement</li>
+            <li>Systems integration</li>
+            <li>Custom tools</li>
+          </ul>
+          <div class="price"><small>Projects from</small><strong class="fx-price" data-gbp="1000">£1,000</strong></div>
+        </article>
+
+        <article class="service reveal cursor-target">
+          <span class="service-number mono">03 — CREATIVE</span>
+          <h3>Eden</h3>
+          <p class="tagline">Pure creation.</p>
+          <ul>
+            <li>Brand identity</li>
+            <li>UI / UX</li>
+            <li>Concept development</li>
+            <li>Creative direction</li>
+          </ul>
+          <div class="price"><small>Projects from</small><strong class="fx-price" data-gbp="1000">£1,000</strong></div>
+        </article>
+      </div>
+      <div class="pricing-disclaimer mono">
+        <span>Currency note —</span> Deepline prices and invoices in GBP sterling. USD/EUR figures are approximate local equivalents based on recent reference exchange rates; your bank or payment provider may use a different rate and may apply fees. The GBP price is the controlling price.
+      </div>
+    </section>
+
+    <section id="method" class="method-grid">
+      <div class="manifesto reveal">
+        <p class="eyebrow mono">02 / Approach</p>
+        <blockquote>When everyone else says <span class="muted">“it can’t be done”</span> — Deepline gets it done.</blockquote>
+      </div>
+      <div class="steps">
+        <article class="step reveal">
+          <span class="num mono">01</span>
+          <div><h3>Identify the real problem.</h3><p>Strip away noise, map the constraints and find the point where action creates the most leverage.</p></div>
+        </article>
+        <article class="step reveal">
+          <span class="num mono">02</span>
+          <div><h3>Build the right intervention.</h3><p>Technical execution and creative thinking live in the same workflow, not in separate silos.</p></div>
+        </article>
+        <article class="step reveal">
+          <span class="num mono">03</span>
+          <div><h3>Carry it through.</h3><p>From quick fixes to full projects, Deepline stays close to implementation until the solution works in the real world.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="global" class="global">
+      <div class="shell">
+        <div class="global-copy reveal">
+          <p class="eyebrow mono">03 / Reach</p>
+          <h2>Operating globally.</h2>
+          <p>Remote support for NGOs and independent entities across borders, time zones and technical environments.</p>
+          <div class="global-stat">
+            <div><strong>160+</strong><span>Countries & markets</span></div>
+            <div><strong>Remote</strong><span>By default</span></div>
+          </div>
+        </div>
+        <div class="globe-stage" aria-label="Animated global network globe">
+          <div class="globe-fallback" aria-hidden="true"></div>
+          <div id="globe" aria-hidden="true"></div>
+          <span class="globe-note mono">Auto-rotating globe / OriginKit reference</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="shell contact">
+      <div class="reveal">
+        <p class="eyebrow mono">04 / Contact</p>
+        <h2>Need something<br><span>made possible?</span></h2>
+        <a class="email cursor-target" href="mailto:osh@deepline.support">osh@deepline.support ↗</a>
+      </div>
+      <footer>
+        <span>Deepline / Global operative</span>
+        <span>Remote multidisciplinary support</span>
+        <span>© <span id="year"></span></span>
+      </footer>
+    </section>
+  </main>
+
+
+
+
+
+
+
+
+
+  <script>
+    (() => {
+      const SPIN_DURATION = 5000;
+      const SNAP_DURATION = 350;
+      const CORNER_SIZE = 12;
+      const FREE_RADIUS = 17;
+
+      const overlay = document.createElement('div');
+      overlay.className = 'target-cursor-overlay';
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.innerHTML = `
+        <span class="target-cursor-dot"></span>
+        <span class="target-cursor-corner corner-tl"></span>
+        <span class="target-cursor-corner corner-tr"></span>
+        <span class="target-cursor-corner corner-br"></span>
+        <span class="target-cursor-corner corner-bl"></span>
+      `;
+      document.body.appendChild(overlay);
+
+      const dot = overlay.querySelector('.target-cursor-dot');
+      const corners = [...overlay.querySelectorAll('.target-cursor-corner')];
+
+      // If this script has executed, hide the browser cursor immediately.
+      // This avoids the previous situation where the native cursor could remain visible
+      // because initialization depended on pointer/media-query detection.
+      document.documentElement.classList.add('target-cursor-ready');
+
+      let pointerX = window.innerWidth / 2;
+      let pointerY = window.innerHeight / 2;
+      let hasMoved = false;
+      let activeTarget = null;
+      let spinOrigin = performance.now();
+
+      let transitionStart = 0;
+      let transitionFrom = null;
+      let transitionType = 'free';
+
+      let current = [
+        { x: pointerX - FREE_RADIUS - CORNER_SIZE / 2, y: pointerY - FREE_RADIUS - CORNER_SIZE / 2, a: 0 },
+        { x: pointerX + FREE_RADIUS - CORNER_SIZE / 2, y: pointerY - FREE_RADIUS - CORNER_SIZE / 2, a: 0 },
+        { x: pointerX + FREE_RADIUS - CORNER_SIZE / 2, y: pointerY + FREE_RADIUS - CORNER_SIZE / 2, a: 0 },
+        { x: pointerX - FREE_RADIUS - CORNER_SIZE / 2, y: pointerY + FREE_RADIUS - CORNER_SIZE / 2, a: 0 }
+      ];
+
+      const clamp01 = value => Math.max(0, Math.min(1, value));
+      const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+
+      function copyCurrent() {
+        return current.map(p => ({ x: p.x, y: p.y, a: p.a }));
+      }
+
+      function findTarget(node) {
+        return node?.closest?.('.cursor-target') || null;
+      }
+
+      function rotatedFreeGoals(now) {
+        const angle = ((now - spinOrigin) % SPIN_DURATION) / SPIN_DURATION * Math.PI * 2;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+
+        const base = [
+          [-FREE_RADIUS, -FREE_RADIUS],
+          [ FREE_RADIUS, -FREE_RADIUS],
+          [ FREE_RADIUS,  FREE_RADIUS],
+          [-FREE_RADIUS,  FREE_RADIUS]
+        ];
+
+        return base.map(([bx, by]) => {
+          const rx = bx * cos - by * sin;
+          const ry = bx * sin + by * cos;
+          return {
+            x: pointerX + rx - CORNER_SIZE / 2,
+            y: pointerY + ry - CORNER_SIZE / 2,
+            a: angle * 180 / Math.PI
+          };
+        });
+      }
+
+      function targetGoals() {
+        if (!activeTarget || !activeTarget.isConnected) return null;
+        const r = activeTarget.getBoundingClientRect();
+
+        return [
+          { x: r.left,                    y: r.top,                     a: 0 },
+          { x: r.right - CORNER_SIZE,     y: r.top,                     a: 0 },
+          { x: r.right - CORNER_SIZE,     y: r.bottom - CORNER_SIZE,    a: 0 },
+          { x: r.left,                    y: r.bottom - CORNER_SIZE,    a: 0 }
+        ];
+      }
+
+      function beginTransition(type, now = performance.now()) {
+        transitionFrom = copyCurrent();
+        transitionStart = now;
+        transitionType = type;
+      }
+
+      function enterTarget(target, now = performance.now()) {
+        if (!target || activeTarget === target) return;
+        beginTransition('target', now);
+        activeTarget = target;
+        overlay.classList.add('is-target');
+      }
+
+      function leaveTarget(now = performance.now()) {
+        if (!activeTarget) return;
+        beginTransition('free', now);
+        activeTarget = null;
+        overlay.classList.remove('is-target');
+        spinOrigin = now;
+      }
+
+      function updateTargetUnderPointer(now = performance.now()) {
+        const node = document.elementFromPoint(pointerX, pointerY);
+        const target = findTarget(node);
+
+        if (target && target !== activeTarget) {
+          enterTarget(target, now);
+        } else if (!target && activeTarget) {
+          leaveTarget(now);
+        }
+      }
+
+      function setCorner(index, state) {
+        const el = corners[index];
+        el.style.transform =
+          `translate3d(${state.x}px, ${state.y}px, 0) rotate(${state.a}deg)`;
+      }
+
+      function frame(now) {
+        dot.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0)`;
+
+        let goals = activeTarget ? targetGoals() : rotatedFreeGoals(now);
+        if (!goals) goals = rotatedFreeGoals(now);
+
+        const inTransition = transitionFrom && (now - transitionStart) < SNAP_DURATION;
+
+        if (inTransition) {
+          const t = easeOutCubic(clamp01((now - transitionStart) / SNAP_DURATION));
+
+          for (let i = 0; i < 4; i++) {
+            const from = transitionFrom[i];
+            const to = goals[i];
+            current[i] = {
+              x: from.x + (to.x - from.x) * t,
+              y: from.y + (to.y - from.y) * t,
+              a: from.a + (to.a - from.a) * t
+            };
+            setCorner(i, current[i]);
+          }
+        } else {
+          transitionFrom = null;
+          for (let i = 0; i < 4; i++) {
+            current[i] = goals[i];
+            setCorner(i, current[i]);
+          }
+        }
+
+        requestAnimationFrame(frame);
+      }
+
+      function onMouseMove(event) {
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+
+        if (!hasMoved) {
+          hasMoved = true;
+          overlay.classList.add('is-visible');
+          spinOrigin = performance.now();
+        }
+
+        const target = findTarget(event.target);
+        if (target && target !== activeTarget) {
+          enterTarget(target);
+        } else if (!target && activeTarget) {
+          leaveTarget();
+        }
+      }
+
+      // Mouse events are intentionally used here rather than PointerEvent gating.
+      // They are the most reliable option for a desktop custom cursor, including
+      // browser previews and embedded frames.
+      document.addEventListener('mousemove', onMouseMove, { passive: true });
+
+      document.addEventListener('mouseover', event => {
+        const target = findTarget(event.target);
+        if (target) enterTarget(target);
+      }, { passive: true });
+
+      document.addEventListener('mouseout', event => {
+        if (!event.relatedTarget) {
+          overlay.classList.remove('is-visible');
+          return;
+        }
+
+        const nextTarget = findTarget(event.relatedTarget);
+        if (!nextTarget && activeTarget) leaveTarget();
+      }, { passive: true });
+
+      document.addEventListener('mousedown', () => {
+        dot.style.width = '3px';
+        dot.style.height = '3px';
+        dot.style.marginLeft = '-1.5px';
+        dot.style.marginTop = '-1.5px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        dot.style.width = '4px';
+        dot.style.height = '4px';
+        dot.style.marginLeft = '-2px';
+        dot.style.marginTop = '-2px';
+      });
+
+      window.addEventListener('scroll', () => {
+        if (hasMoved) updateTargetUnderPointer();
+      }, { passive: true });
+
+      window.addEventListener('blur', () => {
+        overlay.classList.remove('is-visible');
+      });
+
+      window.addEventListener('focus', () => {
+        if (hasMoved) overlay.classList.add('is-visible');
+      });
+
+      requestAnimationFrame(frame);
+    })();
+  </script>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+
+  <script>
+    // Lightweight price localisation.
+    // GBP remains the contractual/base price. USD/EUR are display-only estimates.
+    (() => {
+      const priceEls = [...document.querySelectorAll('.fx-price')];
+      if (!priceEls.length) return;
+
+      const EURO_AREA = new Set([
+        'AT','BE','BG','HR','CY','EE','FI','FR','DE','GR','IE','IT',
+        'LV','LT','LU','MT','NL','PT','SK','SI','ES'
+      ]);
+
+      const CACHE_KEY = 'deepline-fx-v1';
+      const COUNTRY_KEY = 'deepline-country-v1';
+      const FX_TTL = 12 * 60 * 60 * 1000;
+      const COUNTRY_TTL = 7 * 24 * 60 * 60 * 1000;
+
+      function safeRead(key) {
+        try { return JSON.parse(localStorage.getItem(key) || 'null'); }
+        catch { return null; }
+      }
+      function safeWrite(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+      }
+
+      function localeCountry() {
+        try {
+          for (const tag of navigator.languages || [navigator.language]) {
+            const region = new Intl.Locale(tag).region;
+            if (region) return region.toUpperCase();
+          }
+        } catch {}
+        return '';
+      }
+
+      function currencyForCountry(country) {
+        if (country === 'US') return 'USD';
+        if (EURO_AREA.has(country)) return 'EUR';
+        return 'GBP';
+      }
+
+      function render(currency, rate = 1) {
+        const formatter = new Intl.NumberFormat(undefined, {
+          style: 'currency',
+          currency,
+          maximumFractionDigits: 0,
+          minimumFractionDigits: 0
+        });
+
+        priceEls.forEach(el => {
+          const gbp = Number(el.dataset.gbp);
+          const suffix = el.dataset.suffix || '';
+          if (!Number.isFinite(gbp)) return;
+
+          if (currency === 'GBP') {
+            el.innerHTML = `${formatter.format(gbp)}${suffix ? `<span>${suffix}</span>` : ''}`;
+          } else {
+            const converted = Math.round(gbp * rate);
+            el.innerHTML = `<span class="fx-prefix">≈</span>${formatter.format(converted)}${suffix ? `<span>${suffix}</span>` : ''}`;
+          }
+        });
+
+        document.documentElement.dataset.currency = currency;
+      }
+
+      async function fetchWithTimeout(url, ms = 1800) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), ms);
+        try {
+          const response = await fetch(url, {
+            signal: controller.signal,
+            cache: 'no-store',
+            credentials: 'omit'
+          });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return await response.json();
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
+      async function detectCountry() {
+        const cached = safeRead(COUNTRY_KEY);
+        if (cached?.country && Date.now() - cached.at < COUNTRY_TTL) {
+          return cached.country;
+        }
+
+        // Country-level lookup only. If it fails, fall back to the visitor's browser locale.
+        try {
+          const data = await fetchWithTimeout('https://api.country.is/', 1400);
+          const country = String(data?.country || '').toUpperCase();
+          if (/^[A-Z]{2}$/.test(country)) {
+            safeWrite(COUNTRY_KEY, { country, at: Date.now() });
+            return country;
+          }
+        } catch {}
+
+        return localeCountry();
+      }
+
+      function parseRates(data) {
+        const rates = {};
+
+        if (Array.isArray(data)) {
+          for (const row of data) {
+            const quote = String(row?.quote || row?.currency || '').toUpperCase();
+            const rate = Number(row?.rate);
+            if (quote && Number.isFinite(rate)) rates[quote] = rate;
+          }
+        } else if (data && typeof data === 'object') {
+          if (data.rates && typeof data.rates === 'object') {
+            for (const [quote, value] of Object.entries(data.rates)) {
+              const rate = Number(value);
+              if (Number.isFinite(rate)) rates[String(quote).toUpperCase()] = rate;
+            }
+          }
+          if (data.quote && Number.isFinite(Number(data.rate))) {
+            rates[String(data.quote).toUpperCase()] = Number(data.rate);
+          }
+        }
+
+        return rates;
+      }
+
+      async function getRates() {
+        const cached = safeRead(CACHE_KEY);
+        if (
+          cached?.rates &&
+          Date.now() - cached.at < FX_TTL &&
+          Number.isFinite(cached.rates.USD) &&
+          Number.isFinite(cached.rates.EUR)
+        ) {
+          return cached.rates;
+        }
+
+        // Frankfurter provides current central-bank reference rates with no API key.
+        const data = await fetchWithTimeout(
+          'https://api.frankfurter.dev/v2/rates?base=GBP&quotes=USD,EUR',
+          1800
+        );
+        const rates = parseRates(data);
+
+        if (!Number.isFinite(rates.USD) || !Number.isFinite(rates.EUR)) {
+          // Support the single-rate response shape as a resilient fallback.
+          const [usd, eur] = await Promise.all([
+            fetchWithTimeout('https://api.frankfurter.dev/v2/rate/GBP/USD', 1800),
+            fetchWithTimeout('https://api.frankfurter.dev/v2/rate/GBP/EUR', 1800)
+          ]);
+          rates.USD = Number(usd?.rate);
+          rates.EUR = Number(eur?.rate);
+        }
+
+        if (Number.isFinite(rates.USD) && Number.isFinite(rates.EUR)) {
+          safeWrite(CACHE_KEY, { rates, at: Date.now() });
+          return rates;
+        }
+
+        throw new Error('FX rates unavailable');
+      }
+
+      async function localisePrices() {
+        // Optional query-string override makes QA easy: ?currency=USD / EUR / GBP
+        const requested = new URLSearchParams(location.search).get('currency')?.toUpperCase();
+        let currency = ['GBP','USD','EUR'].includes(requested) ? requested : '';
+
+        if (!currency) {
+          const country = await detectCountry();
+          currency = currencyForCountry(country);
+        }
+
+        if (currency === 'GBP') {
+          render('GBP', 1);
+          return;
+        }
+
+        try {
+          const rates = await getRates();
+          const rate = rates[currency];
+          if (Number.isFinite(rate)) render(currency, rate);
+          else render('GBP', 1);
+        } catch {
+          render('GBP', 1);
+        }
+      }
+
+      // Do not compete with the critical first paint.
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(localisePrices, { timeout: 900 });
+      } else {
+        setTimeout(localisePrices, 120);
+      }
+    })();
+  </script>
+
+  <!--
+    The globe is implemented with Cobe, matching the dotted WebGL globe approach used by
+    the OriginKit Features 02 reference supplied for this project.
+  -->
+  <script type="module">
+    const container = document.getElementById('globe');
+    const stage = document.querySelector('.globe-stage');
+    const fallback = document.querySelector('.globe-fallback');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let three;
+    let d3geo;
+    let initPromise;
+    let renderer;
+    let scene;
+    let camera;
+    let globeGroup;
+    let resizeObserver;
+    let rafId = 0;
+    let visible = false;
+    let destroyed = false;
+    let dotMesh;
+
+    const config = {
+      oceanColor: '#050505',
+      dotColor: '#f2f2ed',
+      dotDensity: 1.15,
+      dotSize: 1.15,
+      scale: 9,
+      autoRotateSpeed: reduceMotion ? 0 : 1,
+      direction: 'right',
+      initialLatitude: 23,
+      initialLongitude: -23,
+    };
+
+    const LAND_URL = 'https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/50m/physical/ne_50m_land.json';
+
+    const lerp = (x, x0, x1, y0, y1) => y0 + ((x - x0) / (x1 - x0)) * (y1 - y0);
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const rotateSpeed = clamp(lerp(clamp(config.autoRotateSpeed, 0, 10), 0, 10, 0, 0.9), 0, 0.9);
+    const spinDir = config.direction === 'left' ? -rotateSpeed : rotateSpeed;
+    const latStepDeg = lerp(clamp(config.dotDensity, 1, 10), 1, 10, 24, 8) * 0.08;
+    const dotRadius = 0.01 * lerp(clamp(config.dotSize, 1, 10), 1, 10, 0.1, 0.5);
+    const globeScale = lerp(clamp(config.scale, 1, 20), 1, 20, 0.2, 2);
+
+    function latLngToVec3(lat, lng) {
+      const latR = lat * (Math.PI / 180);
+      const lngR = lng * (Math.PI / 180);
+      return {
+        x: Math.cos(latR) * Math.sin(lngR),
+        y: Math.sin(latR),
+        z: Math.cos(latR) * Math.cos(lngR),
+      };
+    }
+
+    function stopLoop() {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+
+    function render() {
+      if (renderer && scene && camera) renderer.render(scene, camera);
+    }
+
+    let lastFrame = 0;
+    function tick(now) {
+      if (!visible || document.hidden || !renderer || !globeGroup || destroyed) {
+        lastFrame = 0;
+        stopLoop();
+        return;
+      }
+      const interval = 1000 / 30;
+      if (!lastFrame || now - lastFrame >= interval) {
+        const dt = lastFrame ? Math.min(now - lastFrame, 70) : interval;
+        if (spinDir !== 0) globeGroup.rotation.y += spinDir * 0.00085 * dt;
+        render();
+        lastFrame = now;
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function startLoop() {
+      if (rafId || !visible || document.hidden || !renderer || destroyed || reduceMotion) return;
+      rafId = requestAnimationFrame(tick);
+    }
+
+    async function loadDeps() {
+      if (!initPromise) {
+        initPromise = Promise.all([
+          import('https://esm.sh/three@0.160.0'),
+          import('https://esm.sh/d3-geo@3')
+        ]);
+      }
+      const [threeMod, d3geoMod] = await initPromise;
+      three = threeMod;
+      d3geo = d3geoMod;
+    }
+
+    async function addLandDots(radius) {
+      const { SphereGeometry, MeshBasicMaterial, InstancedMesh, Matrix4, Color } = three;
+      const { geoEquirectangular, geoPath } = d3geo;
+      const res = await fetch(LAND_URL);
+      const geojson = await res.json();
+
+      const size = [2048, 1024];
+      const canvas = document.createElement('canvas');
+      canvas.width = size[0];
+      canvas.height = size[1];
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      const projection = geoEquirectangular().fitSize(size, { type: 'Sphere' });
+      const path = geoPath().projection(projection).context(ctx);
+
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, size[0], size[1]);
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      geojson.features.forEach((f) => path(f));
+      ctx.fill();
+
+      const data = ctx.getImageData(0, 0, size[0], size[1]).data;
+      const isLand = (lng, lat) => {
+        const x = Math.round((lng + 180) / 360 * size[0]) % size[0];
+        const y = Math.round((90 - lat) / 180 * size[1]);
+        const idx = (clamp(y, 0, size[1] - 1) * size[0] + x) * 4;
+        return data[idx] > 128;
+      };
+
+      const points = [];
+      for (let lat = -90; lat <= 90; lat += latStepDeg) {
+        const cosLat = Math.cos(lat * Math.PI / 180);
+        const lngStep = cosLat > 0.01 ? latStepDeg / Math.max(0.3, cosLat) : 360;
+        for (let lng = -180; lng < 180; lng += lngStep) {
+          if (isLand(lng, lat)) points.push([lng, lat]);
+        }
+      }
+      if (!points.length || destroyed) return;
+
+      const dotGeometry = new SphereGeometry(dotRadius, 4, 4);
+      const dotMaterial = new MeshBasicMaterial({ color: new Color(config.dotColor) });
+      dotMesh = new InstancedMesh(dotGeometry, dotMaterial, points.length);
+      const matrix = new Matrix4();
+      points.forEach(([lng, lat], i) => {
+        const p = latLngToVec3(lat, lng);
+        matrix.setPosition(p.x * radius, p.y * radius, p.z * radius);
+        dotMesh.setMatrixAt(i, matrix);
+      });
+      dotMesh.instanceMatrix.needsUpdate = true;
+      globeGroup.add(dotMesh);
+      render();
+    }
+
+    async function ensureGlobe() {
+      if (renderer || destroyed) return;
+      try {
+        await loadDeps();
+        if (!visible || destroyed) return;
+
+        const {
+          Scene, PerspectiveCamera, WebGLRenderer, SphereGeometry, MeshStandardMaterial,
+          Color, Mesh, Group, AmbientLight, DirectionalLight, ShaderMaterial,
+          AdditiveBlending
+        } = three;
+
+        const radius = 1 * globeScale;
+        scene = new Scene();
+        camera = new PerspectiveCamera(50, container.clientWidth / Math.max(container.clientHeight, 1), 0.1, 1000);
+        camera.position.set(0, 0, 2.5 / globeScale);
+        camera.lookAt(0, 0, 0);
+
+        renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.35));
+        renderer.outputColorSpace = 'srgb';
+        container.appendChild(renderer.domElement);
+        renderer.domElement.style.width = '100%';
+        renderer.domElement.style.height = '100%';
+        renderer.domElement.style.display = 'block';
+
+        const ocean = new Mesh(
+          new SphereGeometry(radius, 64, 64),
+          new MeshStandardMaterial({ color: new Color(config.oceanColor), roughness: 0.88, metalness: 0.08 })
+        );
+
+        const rim = new Mesh(
+          new SphereGeometry(radius * 1.003, 64, 64),
+          new ShaderMaterial({
+            transparent: true,
+            depthWrite: false,
+            blending: AdditiveBlending,
+            vertexShader: `
+              varying vec3 vNormal;
+              varying vec3 vViewDirection;
+              varying vec3 vWorldNormal;
+              void main() {
+                vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
+                vNormal = normalize(normalMatrix * normal);
+                vViewDirection = normalize(-modelViewPosition.xyz);
+                vWorldNormal = normalize(mat3(modelMatrix) * normal);
+                gl_Position = projectionMatrix * modelViewPosition;
+              }
+            `,
+            fragmentShader: `
+              varying vec3 vNormal;
+              varying vec3 vViewDirection;
+              varying vec3 vWorldNormal;
+              void main() {
+                float fresnel = 1.0 - max(dot(normalize(vNormal), normalize(vViewDirection)), 0.0);
+                fresnel = pow(fresnel, 4.2);
+                float topMask = smoothstep(0.05, 0.85, normalize(vWorldNormal).y);
+                float opacity = fresnel * mix(0.05, 0.42, topMask);
+                gl_FragColor = vec4(vec3(0.95), opacity);
+              }
+            `,
+          })
+        );
+
+        globeGroup = new Group();
+        globeGroup.rotation.y = config.initialLongitude * Math.PI / 180;
+        globeGroup.rotation.x = config.initialLatitude * Math.PI / 180;
+        globeGroup.add(ocean, rim);
+        scene.add(globeGroup);
+
+        scene.add(new AmbientLight(0xffffff, 0.03));
+        const keyLight = new DirectionalLight(0xffffff, 0.62);
+        keyLight.position.set(0, 3.5, -5);
+        const fillLight = new DirectionalLight(0xffffff, 0.05);
+        fillLight.position.set(0, 0, 3);
+        scene.add(keyLight, fillLight);
+
+        render();
+        fallback.style.opacity = '.08';
+        addLandDots(radius).catch((error) => console.warn('Land dots unavailable', error));
+
+        resizeObserver = new ResizeObserver(() => {
+          if (!renderer || !camera) return;
+          const w = container.clientWidth;
+          const h = Math.max(container.clientHeight, 1);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
+          render();
+        });
+        resizeObserver.observe(container);
+
+        startLoop();
+      } catch (error) {
+        console.warn('Globe unavailable; using fallback.', error);
+        fallback.style.opacity = '.32';
+      }
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      visible = entries[0]?.isIntersecting ?? false;
+      if (visible) {
+        ensureGlobe();
+        startLoop();
+      } else {
+        stopLoop();
+      }
+    }, { rootMargin: '500px 0px', threshold: 0 });
+    observer.observe(stage);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopLoop();
+      else if (visible) startLoop();
+    });
+
+    window.addEventListener('pagehide', () => {
+      destroyed = true;
+      stopLoop();
+      observer.disconnect();
+      resizeObserver?.disconnect();
+      if (renderer) {
+        renderer.dispose();
+        renderer.forceContextLoss?.();
+        renderer.domElement?.remove();
+      }
+      dotMesh?.geometry?.dispose?.();
+      dotMesh?.material?.dispose?.();
+      renderer = null;
+      scene = null;
+      camera = null;
+      globeGroup = null;
+    }, { once: true });
+  </script>
 </body>
 </html>
