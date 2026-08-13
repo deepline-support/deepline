@@ -5870,6 +5870,217 @@
       }
     }
 
+
+    /* =========================================================
+       MOBILE OPENING COMPOSITION
+       Wordmark -> rotating text -> Start a Project -> breathing room.
+       Cards begin just beyond the first viewport.
+       ========================================================= */
+    .mobile-content-cta {
+      display: none;
+    }
+
+    @media (max-width: 960px) {
+      /* Desktop CTA remains in its original DOM position but is not part
+         of the mobile opening composition. */
+      .main-page-cta {
+        display: none !important;
+      }
+
+      .wordmark-intro {
+        min-height: 158px !important;
+        height: 158px !important;
+        padding-top: 26px !important;
+        padding-bottom: 10px !important;
+        margin: 0 !important;
+      }
+
+      #global.global {
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+
+        /* Opening composition ends a little below one screen so the cards
+           sit just out of sight until the user scrolls. */
+        min-height: calc(100svh - 158px + 56px) !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 var(--pad) 96px !important;
+        overflow: visible !important;
+      }
+
+      #global.global .shell {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 100% !important;
+        margin: 0 !important;
+        pointer-events: none !important;
+      }
+
+      #global.global > .global-copy {
+        position: relative !important;
+        z-index: 5 !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+
+        width: min(100%, 680px) !important;
+        max-width: 680px !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context) {
+        transform: translateX(var(--copy-optical-x, 0px)) !important;
+      }
+
+      .mobile-content-cta {
+        position: relative !important;
+        z-index: 12 !important;
+        inset: auto !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        width: min(58vw, 238px) !important;
+        min-width: 188px !important;
+        min-height: 50px !important;
+        box-sizing: border-box !important;
+
+        margin: clamp(28px, 4.6svh, 42px) auto 0 !important;
+        padding: 0 22px !important;
+
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: #f4f4ef !important;
+        color: #050505 !important;
+        box-shadow: none !important;
+
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        letter-spacing: .065em !important;
+        text-transform: uppercase !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        white-space: nowrap !important;
+      }
+
+      .mobile-content-cta::before {
+        content: none !important;
+        display: none !important;
+      }
+
+      .mobile-content-cta span {
+        color: #050505 !important;
+        mix-blend-mode: normal !important;
+      }
+
+      #services {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .wordmark-intro {
+        min-height: 146px !important;
+        height: 146px !important;
+        padding-top: 20px !important;
+        padding-bottom: 8px !important;
+      }
+
+      #global.global {
+        min-height: calc(100svh - 146px + 52px) !important;
+        padding-bottom: 92px !important;
+      }
+
+      .mobile-content-cta {
+        width: min(56vw, 220px) !important;
+        min-width: 180px !important;
+      }
+    }
+
+    /* =========================================================
+       iOS-SAFE METALLIC WORDMARK
+       The animated gradient lives on the real text rather than a pseudo
+       duplicate, which is substantially more reliable in Mobile Safari.
+       ========================================================= */
+    @media (max-width: 960px) {
+      .wordmark .wordmark-motion::after {
+        content: none !important;
+        display: none !important;
+      }
+
+      .wordmark-sheen-text {
+        display: inline-block;
+        color: #e7e7e2;
+      }
+
+      @supports (-webkit-background-clip: text) {
+        .wordmark-sheen-text {
+          color: transparent !important;
+          -webkit-text-fill-color: transparent !important;
+          -webkit-background-clip: text !important;
+          background-clip: text !important;
+
+          background-image:
+            linear-gradient(
+              112deg,
+              #777773 0%,
+              #b5b5af 18%,
+              #f3f3ee 35%,
+              #ffffff 43%,
+              #9f9f99 52%,
+              #eeeeea 68%,
+              #777773 100%
+            ) !important;
+          background-size: 320% 100% !important;
+          background-position: var(--ios-sheen-x, 12%) 50% !important;
+
+          animation:
+            deepline-ios-metal-sheen 3.8s
+            cubic-bezier(.45,0,.22,1)
+            infinite !important;
+
+          will-change: background-position;
+        }
+
+        .wordmark-sheen-text.tilt-sheen-active {
+          animation: none !important;
+          transition: background-position 80ms linear !important;
+        }
+      }
+    }
+
+    @keyframes deepline-ios-metal-sheen {
+      0%, 10% {
+        background-position: 4% 50%;
+      }
+      48%, 60% {
+        background-position: 58% 50%;
+      }
+      100% {
+        background-position: 96% 50%;
+      }
+    }
+
+    /* Even with iOS Reduce Motion enabled, retain a visible metallic finish.
+       Tilt/touch updates still work without a continuous sweep. */
+    @media (max-width: 960px) and (prefers-reduced-motion: reduce) {
+      .wordmark-sheen-text {
+        animation: none !important;
+        background-position: var(--ios-sheen-x, 48%) 50% !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -6153,7 +6364,7 @@
   <main id="top">
     <section class="wordmark-intro" aria-label="Deepline">
       <a class="main-page-cta nav-cta cursor-target" href="mailto:deploy@deepline.support?subject=Project"><span>Start a project ↗</span></a>
-      <h1 class="wordmark"><span class="wordmark-motion">DEEPLINE</span></h1>
+      <h1 class="wordmark"><span class="wordmark-motion"><span class="wordmark-sheen-text">DEEPLINE</span></span></h1>
     </section>
 
     <section id="global" class="global">
@@ -6175,6 +6386,10 @@
           </div>
         </div>
       </div>
+
+      <a class="mobile-content-cta nav-cta" href="mailto:deploy@deepline.support?subject=Project">
+        <span>Start a project ↗</span>
+      </a>
     </section>
 <section id="services">
       <div class="services">
@@ -7573,12 +7788,12 @@
 
   <script>
     (() => {
-      const mark = document.querySelector('.wordmark .wordmark-motion');
-      if (!mark) return;
+      const sheen = document.querySelector('.wordmark-sheen-text');
+      if (!sheen) return;
 
       const mobileQuery = window.matchMedia('(max-width: 960px)');
       let orientationBound = false;
-      let sensorActive = false;
+      let permissionRequested = false;
 
       const clamp = (value, min, max) =>
         Math.min(max, Math.max(min, value));
@@ -7586,23 +7801,20 @@
       const applyOrientation = event => {
         if (!mobileQuery.matches || event.gamma == null) return;
 
-        sensorActive = true;
-        mark.classList.add('tilt-sheen-active');
+        const gamma = clamp(event.gamma, -42, 42);
+        const position = 50 + (gamma / 42) * 46;
 
-        // gamma is left/right device tilt. Map a useful central range to
-        // the highlight travel without letting extreme angles fling it away.
-        const gamma = clamp(event.gamma, -38, 38);
-        const sheenX = 50 + (gamma / 38) * 43;
-
-        mark.style.setProperty(
-          '--wordmark-sheen-x',
-          `${sheenX.toFixed(2)}%`
+        sheen.classList.add('tilt-sheen-active');
+        sheen.style.setProperty(
+          '--ios-sheen-x',
+          `${position.toFixed(2)}%`
         );
       };
 
       const bindOrientation = () => {
         if (orientationBound) return;
         orientationBound = true;
+
         window.addEventListener(
           'deviceorientation',
           applyOrientation,
@@ -7610,51 +7822,52 @@
         );
       };
 
-      const enableIOSOrientation = async () => {
-        const orientationAPI = window.DeviceOrientationEvent;
+      const requestIOSMotion = async () => {
+        if (permissionRequested) return;
+        permissionRequested = true;
 
-        if (
-          !orientationAPI ||
-          typeof orientationAPI.requestPermission !== 'function'
-        ) {
+        const API = window.DeviceOrientationEvent;
+
+        if (!API) return;
+
+        if (typeof API.requestPermission !== 'function') {
           bindOrientation();
           return;
         }
 
         try {
-          const permission = await orientationAPI.requestPermission();
-          if (permission === 'granted') bindOrientation();
+          // iOS only permits this call from a direct user gesture.
+          const result = await API.requestPermission();
+          if (result === 'granted') bindOrientation();
         } catch (_) {
-          // Keep the autonomous metallic sheen if permission is declined
-          // or the browser does not permit the request.
+          // The CSS metallic sweep remains active as a guaranteed fallback.
         }
       };
 
+      // Non-iOS devices do not require the permission prompt.
       if (
         window.DeviceOrientationEvent &&
-        typeof window.DeviceOrientationEvent.requestPermission === 'function'
+        typeof window.DeviceOrientationEvent.requestPermission !== 'function'
       ) {
-        // iOS requires the request to originate from a physical gesture.
-        // Limit this to the wordmark itself so the site never interrupts
-        // an unrelated CTA/card tap with a motion-permission prompt.
-        mark.addEventListener(
-          'pointerdown',
-          enableIOSOrientation,
-          { once: true, passive: true }
-        );
-      } else {
         bindOrientation();
       }
 
-      // If orientation stops being useful after a rotation breakpoint,
-      // return gracefully to the autonomous sheen.
-      mobileQuery.addEventListener?.('change', event => {
-        if (!event.matches) {
-          mark.classList.remove('tilt-sheen-active');
-        } else if (sensorActive) {
-          mark.classList.add('tilt-sheen-active');
-        }
-      });
+      // iOS Safari: request permission on the user's first genuine touch.
+      // touchend is used because WebKit consistently treats it as a gesture.
+      document.addEventListener(
+        'touchend',
+        requestIOSMotion,
+        { once: true, passive: true }
+      );
+
+      // Pointer fallback for iPadOS / hybrid WebKit input.
+      document.addEventListener(
+        'pointerup',
+        event => {
+          if (event.pointerType !== 'mouse') requestIOSMotion();
+        },
+        { once: true, passive: true }
+      );
     })();
   </script>
 
