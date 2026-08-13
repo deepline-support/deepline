@@ -5738,6 +5738,122 @@
       }
     }
 
+
+    /* =========================================================
+       MOBILE OPENING — REDUCE TOP DEAD SPACE
+       ========================================================= */
+    @media (max-width: 960px) {
+      .wordmark-intro {
+        min-height: 276px !important;
+        padding-top: 56px !important;
+        padding-bottom: 78px !important;
+      }
+
+      .main-page-cta {
+        bottom: 14px !important;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .wordmark-intro {
+        min-height: 252px !important;
+        padding-top: 40px !important;
+        padding-bottom: 72px !important;
+      }
+
+      .main-page-cta {
+        bottom: 12px !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE WORDMARK — METALLIC / TILT-REACTIVE SHEEN
+       ========================================================= */
+    @media (max-width: 960px) {
+      .wordmark .wordmark-motion {
+        position: relative !important;
+        color: #d0d0ca !important;
+        text-shadow:
+          0 1px 0 rgba(255,255,255,.10),
+          0 -1px 0 rgba(0,0,0,.42) !important;
+        isolation: isolate;
+      }
+
+      .wordmark .wordmark-motion::after {
+        content: "DEEPLINE";
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+
+        font: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        letter-spacing: inherit;
+        white-space: inherit;
+
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
+
+        background-image:
+          linear-gradient(
+            105deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,.06) 34%,
+            rgba(255,255,255,.34) 43%,
+            rgba(255,255,255,1) 50%,
+            rgba(255,255,255,.42) 57%,
+            rgba(255,255,255,.08) 66%,
+            rgba(255,255,255,0) 100%
+          );
+        background-size: 235% 100%;
+        background-position: var(--wordmark-sheen-x, 50%) 50%;
+
+        opacity: .94;
+        mix-blend-mode: screen;
+        filter: blur(.08px);
+
+        animation:
+          deepline-mobile-sheen-idle 5.8s
+          cubic-bezier(.45,0,.25,1)
+          infinite alternate;
+      }
+
+      .wordmark .wordmark-motion.tilt-sheen-active::after {
+        animation: none !important;
+        transition:
+          background-position 110ms linear,
+          opacity 180ms ease !important;
+      }
+    }
+
+    @keyframes deepline-mobile-sheen-idle {
+      0%, 18%   { background-position: 8% 50%; opacity: .62; }
+      48%, 58%  { background-position: 54% 50%; opacity: .98; }
+      100%      { background-position: 94% 50%; opacity: .70; }
+    }
+
+
+    /* =========================================================
+       MOBILE CUSTOM CURSOR — TAP-TO-REVEAL / LOCKED TARGET MODE
+       ========================================================= */
+    @media (max-width: 960px) {
+      html:not(.mobile-cursor-started) .dl-cursor {
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+
+      html.mobile-cursor-started .dl-cursor {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transition: opacity 140ms ease !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -5849,6 +5965,22 @@
       }
 
       function frame(now) {
+        // Mobile targets are tap-locked. Keep the cursor physically attached
+        // to the SAME selected card / Start a Project control as the document
+        // moves beneath it. Scrolling never changes the selected target.
+        if (
+          window.innerWidth <= 960 &&
+          target &&
+          target.isConnected
+        ) {
+          const r = target.getBoundingClientRect();
+
+          if (r.width > 0 && r.height > 0) {
+            x = r.left + (r.width / 2);
+            y = r.top + (r.height / 2);
+          }
+        }
+
         cursor.style.transform = `translate3d(${x}px,${y}px,0)`;
 
         const g = goals();
@@ -5877,72 +6009,106 @@
       }
 
       function detectTarget(node) {
+        if (window.innerWidth <= 960) {
+          return node?.closest?.(
+            '.service[data-context], .nav-cta[href^="mailto:deploy@deepline.support"]'
+          ) || null;
+        }
+
         return node?.closest?.('.cursor-target, .cursor-snap-text') || null;
       }
 
       document.addEventListener('mousemove', event => {
+        if (window.innerWidth <= 960) return;
+
         x = event.clientX;
         y = event.clientY;
         snapTo(detectTarget(event.target));
       }, { passive: true });
 
       document.addEventListener('mouseover', event => {
+        if (window.innerWidth <= 960) return;
+
         const next = detectTarget(event.target);
         if (next) snapTo(next);
       }, { passive: true });
 
       document.addEventListener('mouseout', event => {
+        if (window.innerWidth <= 960) return;
         if (!event.relatedTarget) return;
+
         const next = detectTarget(event.relatedTarget);
         if (!next) snapTo(null);
       }, { passive: true });
 
-      // Re-evaluate the element beneath the cursor as the page scrolls,
-      // matching the original custom-cursor behaviour.
+      // Desktop retains the original "what is beneath the cursor now?"
+      // behaviour. Mobile deliberately does not re-detect on scroll.
       window.addEventListener('scroll', () => {
+        if (window.innerWidth <= 960) return;
+
         const node = document.elementFromPoint(x, y);
         snapTo(detectTarget(node));
       }, { passive: true });
 
-      // Full mobile/touch support: the custom cursor follows the user's
-      // physical touch position and uses the same targets as desktop.
-      const updateTouchCursor = (clientX, clientY, node) => {
+      const activateMobileCursor = (clientX, clientY, node) => {
+        if (window.innerWidth > 960) return;
+
+        // Hidden on initial load; the first physical tap/touch reveals it.
+        document.documentElement.classList.add('mobile-cursor-started');
+
         x = clientX;
         y = clientY;
+
+        // Mobile detectTarget() intentionally returns ONLY:
+        // service cards and Start a Project mailto controls.
+        // A tap anywhere else releases the current snap.
         snapTo(detectTarget(node));
       };
 
       document.addEventListener('pointerdown', event => {
-        if (event.pointerType === 'mouse') return;
-        updateTouchCursor(event.clientX, event.clientY, event.target);
+        if (
+          window.innerWidth > 960 ||
+          event.pointerType === 'mouse'
+        ) return;
+
+        activateMobileCursor(
+          event.clientX,
+          event.clientY,
+          event.target
+        );
       }, { passive: true });
 
+      // Do NOT retarget on pointermove. On touchscreens pointermove is also
+      // emitted while scrolling; ignoring it is what keeps a selected target
+      // locked until the user physically taps elsewhere.
       document.addEventListener('pointermove', event => {
-        if (event.pointerType === 'mouse') return;
-        updateTouchCursor(event.clientX, event.clientY, event.target);
-      }, { passive: true });
-
-      document.addEventListener('pointerup', event => {
-        if (event.pointerType === 'mouse') return;
-        x = event.clientX;
-        y = event.clientY;
-        snapTo(detectTarget(event.target));
+        if (
+          window.innerWidth > 960 ||
+          event.pointerType === 'mouse'
+        ) return;
       }, { passive: true });
 
       if (!window.PointerEvent) {
         document.addEventListener('touchstart', event => {
-          if (event.touches.length !== 1) return;
+          if (
+            window.innerWidth > 960 ||
+            event.touches.length !== 1
+          ) return;
+
           const touch = event.touches[0];
-          const node = document.elementFromPoint(touch.clientX, touch.clientY);
-          updateTouchCursor(touch.clientX, touch.clientY, node);
+          const node = document.elementFromPoint(
+            touch.clientX,
+            touch.clientY
+          );
+
+          activateMobileCursor(
+            touch.clientX,
+            touch.clientY,
+            node
+          );
         }, { passive: true });
 
-        document.addEventListener('touchmove', event => {
-          if (event.touches.length !== 1) return;
-          const touch = event.touches[0];
-          const node = document.elementFromPoint(touch.clientX, touch.clientY);
-          updateTouchCursor(touch.clientX, touch.clientY, node);
-        }, { passive: true });
+        // Deliberately no touchmove targeting on mobile.
       }
 
       // The main copy is replaced dynamically as slides rotate and service
@@ -5951,6 +6117,8 @@
       const dynamicCopy = document.querySelector('.global-copy');
       if (dynamicCopy) {
         const textTargetObserver = new MutationObserver(() => {
+          if (window.innerWidth <= 960) return;
+
           requestAnimationFrame(() => {
             const node = document.elementFromPoint(x, y);
             snapTo(detectTarget(node));
@@ -7391,6 +7559,94 @@
       window.addEventListener('scroll', updateTopbar, { passive: true });
       window.addEventListener('resize', updateTopbar, { passive: true });
       updateTopbar();
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const mark = document.querySelector('.wordmark .wordmark-motion');
+      if (!mark) return;
+
+      const mobileQuery = window.matchMedia('(max-width: 960px)');
+      let orientationBound = false;
+      let sensorActive = false;
+
+      const clamp = (value, min, max) =>
+        Math.min(max, Math.max(min, value));
+
+      const applyOrientation = event => {
+        if (!mobileQuery.matches || event.gamma == null) return;
+
+        sensorActive = true;
+        mark.classList.add('tilt-sheen-active');
+
+        // gamma is left/right device tilt. Map a useful central range to
+        // the highlight travel without letting extreme angles fling it away.
+        const gamma = clamp(event.gamma, -38, 38);
+        const sheenX = 50 + (gamma / 38) * 43;
+
+        mark.style.setProperty(
+          '--wordmark-sheen-x',
+          `${sheenX.toFixed(2)}%`
+        );
+      };
+
+      const bindOrientation = () => {
+        if (orientationBound) return;
+        orientationBound = true;
+        window.addEventListener(
+          'deviceorientation',
+          applyOrientation,
+          { passive: true }
+        );
+      };
+
+      const enableIOSOrientation = async () => {
+        const orientationAPI = window.DeviceOrientationEvent;
+
+        if (
+          !orientationAPI ||
+          typeof orientationAPI.requestPermission !== 'function'
+        ) {
+          bindOrientation();
+          return;
+        }
+
+        try {
+          const permission = await orientationAPI.requestPermission();
+          if (permission === 'granted') bindOrientation();
+        } catch (_) {
+          // Keep the autonomous metallic sheen if permission is declined
+          // or the browser does not permit the request.
+        }
+      };
+
+      if (
+        window.DeviceOrientationEvent &&
+        typeof window.DeviceOrientationEvent.requestPermission === 'function'
+      ) {
+        // iOS requires the request to originate from a physical gesture.
+        // Limit this to the wordmark itself so the site never interrupts
+        // an unrelated CTA/card tap with a motion-permission prompt.
+        mark.addEventListener(
+          'pointerdown',
+          enableIOSOrientation,
+          { once: true, passive: true }
+        );
+      } else {
+        bindOrientation();
+      }
+
+      // If orientation stops being useful after a rotation breakpoint,
+      // return gracefully to the autonomous sheen.
+      mobileQuery.addEventListener?.('change', event => {
+        if (!event.matches) {
+          mark.classList.remove('tilt-sheen-active');
+        } else if (sensorActive) {
+          mark.classList.add('tilt-sheen-active');
+        }
+      });
     })();
   </script>
 
