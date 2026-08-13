@@ -5837,20 +5837,36 @@
     }
 
 
+
+
     /* =========================================================
-       MOBILE CUSTOM CURSOR — TAP-TO-REVEAL / LOCKED TARGET MODE
+       MOBILE CARD SELECTION INDICATOR — NO CUSTOM CURSOR
        ========================================================= */
     @media (max-width: 960px) {
-      html:not(.mobile-cursor-started) .dl-cursor {
+      /* No cursor/dot/free-roaming indicator on mobile. */
+      .dl-cursor {
+        display: none !important;
         opacity: 0 !important;
         visibility: hidden !important;
       }
 
-      html.mobile-cursor-started .dl-cursor {
+      /* Show only the four snap corners while a card is selected. */
+      html.mobile-card-indicator-active .dl-cursor.is-target {
         display: block !important;
         opacity: 1 !important;
         visibility: visible !important;
-        transition: opacity 140ms ease !important;
+      }
+
+      .dl-cursor-dot {
+        display: none !important;
+      }
+
+      .dl-cursor-rotor {
+        display: block !important;
+      }
+
+      .dl-cursor.is-target .dl-cursor-corner {
+        border-color: #fff !important;
       }
     }
 
@@ -5890,7 +5906,6 @@
       let x = innerWidth / 2;
       let y = innerHeight / 2;
       let target = null;
-      let mobileLockedRect = null;
       let modeStart = performance.now();
       let from = FREE.map(p => ({...p}));
       let current = FREE.map(p => ({...p}));
@@ -5943,13 +5958,9 @@
 
         const isMobile = window.innerWidth <= 960;
 
-        const r = isMobile && mobileLockedRect
-          ? mobileLockedRect
-          : (
-              target.classList.contains('cursor-snap-text')
-                ? getTightTextRect(target)
-                : target.getBoundingClientRect()
-            );
+        const r = target.classList.contains('cursor-snap-text') && !isMobile
+          ? getTightTextRect(target)
+          : target.getBoundingClientRect();
 
         const padX =
           !isMobile && target.classList.contains('cursor-snap-text') ? 10 : 0;
@@ -5965,23 +5976,34 @@
       }
 
       function snapTo(next) {
-        const sameTarget = next === target;
-
-        // Desktop keeps the original no-op behaviour.
-        // Mobile re-taps may occur at a different point on the same card,
-        // so allow the cursor geometry to refresh from that new physical tap.
-        if (sameTarget && window.innerWidth > 960) return;
+        if (next === target) return;
 
         from = current.map(p => ({...p}));
         target = next;
         modeStart = performance.now();
         cursor.classList.toggle('is-target', !!target);
+
+        if (window.innerWidth <= 960) {
+          document.documentElement.classList.toggle(
+            'mobile-card-indicator-active',
+            !!target
+          );
+        }
+
         if (!target) spinStart = performance.now();
       }
 
       function frame(now) {
-        // On mobile x/y and the snapped rectangle are deliberately frozen
-        // between physical taps. Scrolling must never move the cursor.
+        if (
+          window.innerWidth <= 960 &&
+          target &&
+          target.isConnected
+        ) {
+          const r = target.getBoundingClientRect();
+          x = r.left + (r.width / 2);
+          y = r.top + (r.height / 2);
+        }
+
         cursor.style.transform = `translate3d(${x}px,${y}px,0)`;
 
         const g = goals();
@@ -6011,9 +6033,7 @@
 
       function detectTarget(node) {
         if (window.innerWidth <= 960) {
-          return node?.closest?.(
-            '.service[data-context], .nav-cta[href^="mailto:deploy@deepline.support"]'
-          ) || null;
+          return node?.closest?.('.service[data-context]') || null;
         }
 
         return node?.closest?.('.cursor-target, .cursor-snap-text') || null;
@@ -6052,39 +6072,12 @@
         snapTo(detectTarget(node));
       }, { passive: true });
 
-      const activateMobileCursor = (clientX, clientY, node) => {
+      const activateMobileIndicator = (node) => {
         if (window.innerWidth > 960) return;
-
-        // Hidden on initial load; the first physical tap/touch reveals it.
-        document.documentElement.classList.add('mobile-cursor-started');
-
-        // Freeze the actual tap position in viewport coordinates.
-        // Nothing except another physical tap changes these values.
-        x = clientX;
-        y = clientY;
 
         const nextTarget = detectTarget(node);
 
-        if (nextTarget) {
-          const r = nextTarget.getBoundingClientRect();
-
-          // Snapshot the target's CURRENT viewport rectangle. Do not read the
-          // element rect again while scrolling: this is what makes the whole
-          // cursor (dot + brackets) remain perfectly stationary.
-          mobileLockedRect = {
-            left: r.left,
-            top: r.top,
-            right: r.right,
-            bottom: r.bottom,
-            width: r.width,
-            height: r.height
-          };
-        } else {
-          mobileLockedRect = null;
-        }
-
-        // Valid mobile targets remain cards + Start a Project controls only.
-        // Tapping elsewhere releases target mode at the new fixed tap point.
+        // Tap a card to select it. Tap literally anywhere else to clear.
         snapTo(nextTarget);
       };
 
@@ -6094,11 +6087,7 @@
           event.pointerType === 'mouse'
         ) return;
 
-        activateMobileCursor(
-          event.clientX,
-          event.clientY,
-          event.target
-        );
+        activateMobileIndicator(event.target);
       }, { passive: true });
 
       // Do NOT retarget on pointermove. On touchscreens pointermove is also
@@ -6124,11 +6113,7 @@
             touch.clientY
           );
 
-          activateMobileCursor(
-            touch.clientX,
-            touch.clientY,
-            node
-          );
+          activateMobileIndicator(node);
         }, { passive: true });
 
         // Deliberately no touchmove targeting on mobile.
