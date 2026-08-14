@@ -7236,6 +7236,148 @@
       to   { background-position: 66% 50%; }
     }
 
+
+    /* =========================================================
+       SENSOR-GATED METALLIC MATERIAL
+       Before motion/orientation permission + a real sensor event:
+       price numerals and the mobile wordmark remain plain white.
+       Once sensor data is actually flowing, the subtle metallic
+       material appears and follows device tilt.
+       ========================================================= */
+    @media (max-width: 960px), (hover: none) and (pointer: coarse) {
+
+      /* ---------- PRICE: FALLBACK / PRE-PERMISSION ---------- */
+      #services .price strong.fx-price .price-metal {
+        display: inline-block !important;
+
+        font-size: 1em !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+        letter-spacing: inherit !important;
+
+        color: #f4f4ef !important;
+        -webkit-text-fill-color: #f4f4ef !important;
+
+        background: none !important;
+        filter: none !important;
+        animation: none !important;
+        transition: none !important;
+      }
+
+      /* /mo remains deliberately secondary and optically aligned
+         to the bottom of the full-size price numerals. */
+      #services .price strong.fx-price .price-suffix {
+        display: inline-block !important;
+
+        font-size: .43em !important;
+        font-weight: 420 !important;
+        line-height: 1 !important;
+        letter-spacing: 0 !important;
+
+        color: var(--muted) !important;
+        -webkit-text-fill-color: var(--muted) !important;
+
+        background: none !important;
+        filter: none !important;
+
+        vertical-align: baseline !important;
+        position: relative !important;
+        top: -.12em !important;
+      }
+
+      /* ---------- PRICE: SENSOR ACTIVE ---------- */
+      html.price-tilt-active
+      #services .price strong.fx-price .price-metal {
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+
+        background-image:
+          linear-gradient(
+            var(--price-sheen-angle, 104deg),
+            #a0a09b 0%,
+            #b2b1ac 14%,
+            #d2d1cc 29%,
+            #f0f0eb 40%,
+            #e7e7e2 47%,
+            #afaea9 57%,
+            #c7c6c1 69%,
+            #ecece7 80%,
+            #cbcAc5 89%,
+            #9d9d98 100%
+          ) !important;
+
+        background-size: 285% 100% !important;
+        background-position:
+          var(--price-sheen-x, 50%)
+          50% !important;
+        background-repeat: no-repeat !important;
+
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+
+        filter: contrast(1.02);
+        transition:
+          background-position 55ms linear,
+          filter 140ms ease !important;
+        will-change: background-position;
+      }
+
+
+      /* ---------- WORDMARK: FALLBACK / PRE-PERMISSION ---------- */
+      .wordmark .wordmark-motion {
+        color: #f4f4ef !important;
+        -webkit-text-fill-color: #f4f4ef !important;
+
+        background: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+
+        /* Keep the entrance transform/opacity animation independent. */
+        animation: none !important;
+      }
+
+      .wordmark .wordmark-motion::after {
+        content: none !important;
+        display: none !important;
+      }
+
+      /* ---------- WORDMARK: SENSOR ACTIVE ---------- */
+      .wordmark .wordmark-motion.tilt-sheen-active {
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+
+        background-image:
+          linear-gradient(
+            var(--wordmark-sheen-angle, 104deg),
+            #a0a09b 0%,
+            #b2b1ac 14%,
+            #d2d1cc 29%,
+            #f0f0eb 40%,
+            #e7e7e2 47%,
+            #afaea9 57%,
+            #c7c6c1 69%,
+            #ecece7 80%,
+            #cbcAc5 89%,
+            #9d9d98 100%
+          ) !important;
+
+        background-size: 285% 100% !important;
+        background-position:
+          var(--wordmark-sheen-x, 50%)
+          50% !important;
+        background-repeat: no-repeat !important;
+
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+
+        filter: contrast(1.02);
+        transition:
+          background-position 55ms linear,
+          filter 140ms ease !important;
+        will-change: transform, opacity, background-position;
+      }
+    }
+
   </style>
 </head>
 <body>
