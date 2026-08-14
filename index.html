@@ -6385,6 +6385,27 @@
       }
     }
 
+
+    /* =========================================================
+       GLOBE — INITIAL PAGE-LOAD FADE
+       Applies on mobile, tablet and desktop. Opacity only: no
+       translation/scale, so the globe never shifts during entry.
+       ========================================================= */
+    .globe-stage {
+      opacity: 0;
+      animation:
+        deepline-globe-load-fade 1.25s
+        cubic-bezier(.22,.61,.36,1)
+        .14s
+        forwards;
+      will-change: opacity;
+    }
+
+    @keyframes deepline-globe-load-fade {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
   </style>
 </head>
 <body>
