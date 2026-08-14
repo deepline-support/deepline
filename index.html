@@ -7707,6 +7707,32 @@
       }
     }
 
+
+    /* =========================================================
+       MOBILE CURSOR — SERVICE CARDS ONLY
+       START A PROJECT (main + topbar) can never display the snap UI.
+       Desktop cursor behaviour is untouched.
+       ========================================================= */
+    @media (max-width: 960px) {
+      .dl-cursor {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+
+      html.mobile-card-indicator-active
+      .dl-cursor.is-target {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+
+      .main-page-cta,
+      .site-topbar .nav-cta {
+        -webkit-tap-highlight-color: transparent;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -7912,9 +7938,20 @@
       const activateMobileIndicator = (node) => {
         if (window.innerWidth > 960) return;
 
+        // START A PROJECT controls must never show the mobile snap indicator.
+        if (
+          node?.closest?.('.main-page-cta, .site-topbar .nav-cta')
+        ) {
+          snapTo(null);
+          document.documentElement.classList.remove(
+            'mobile-card-indicator-active'
+          );
+          return;
+        }
+
         const nextTarget = detectTarget(node);
 
-        // Tap a card to select it. Tap literally anywhere else to clear.
+        // Mobile snap remains card-only.
         snapTo(nextTarget);
       };
 
