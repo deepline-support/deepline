@@ -7487,6 +7487,226 @@
       }
     }
 
+
+    /* =========================================================
+       PRICE TYPEFACE — SAME AS SITE COPY
+       ========================================================= */
+    #services .price,
+    #services .price * {
+      font-family:
+        Inter,
+        ui-sans-serif,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif !important;
+    }
+
+
+    /* =========================================================
+       FIRST DEFAULT SLIDE — DESKTOP LINE-FLOW FIX
+       The highlight remains one phrase, but the first slide gets a
+       wider centred text field so "human operatives" is not forced
+       wholesale onto the next line by the nowrap highlight wrapper.
+       ========================================================= */
+    @media (min-width: 961px) {
+      #global.global > .global-copy:not(.is-service-context) {
+        width: min(1120px, calc(100vw - (var(--pad) * 2))) !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context)
+      .homepage-slide-human {
+        width: 100% !important;
+        max-width: 1120px !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context)
+      .homepage-slide-human .slide-heading {
+        width: 100% !important;
+        max-width: 1120px !important;
+      }
+    }
+
+
+
+
+    /* =========================================================
+       MOBILE WORDMARK — ROBUST LOCAL FONT FALLBACK
+       Preserve Bahnschrift / DIN where available; Android/WebView
+       browsers can fall through to their condensed sans family.
+       No remote font request is required.
+       ========================================================= */
+    @media (max-width: 960px) {
+      .wordmark,
+      .wordmark *,
+      .wordmark-motion,
+      .wordmark-motion *,
+      .topbar-wordmark {
+        font-family:
+          Bahnschrift,
+          "DIN Alternate",
+          "Roboto Condensed",
+          "Arial Narrow",
+          "HelveticaNeue-Condensed",
+          "sans-serif-condensed",
+          Arial,
+          Helvetica,
+          sans-serif !important;
+
+        font-synthesis: none !important;
+        font-kerning: normal !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE SCROLL — NATIVE / STABLE
+       No JS touchmove cancellation; no scroll-time viewport reflow.
+       ========================================================= */
+    @media (hover: none) and (pointer: coarse) {
+      html,
+      body {
+        touch-action: pan-y !important;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      main#top,
+      #global.global,
+      #services,
+      .site-copyright {
+        overflow-anchor: none !important;
+      }
+
+      /* Fixed blurred chrome gets an isolated compositing layer so it does
+         not repeatedly invalidate the scrolling page beneath it. */
+      .site-topbar {
+        transform: translateZ(0) !important;
+        -webkit-transform: translateZ(0) !important;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+    }
+
+
+    /* =========================================================
+       DESKTOP FIRST DEFAULT SLIDE — EXACT REFERENCE LINE BREAKS
+       1. Deepliners are multi-skilled human operatives
+       2. deployed remotely alongside your team to
+       3. solve problems, build better systems and make
+       4. new ideas real.
+       Mobile keeps its existing natural wrapping.
+       ========================================================= */
+    @media (min-width: 961px) {
+      #global.global > .global-copy:not(.is-service-context)
+      .homepage-slide-human {
+        width: min(1040px, calc(100vw - (var(--pad) * 2))) !important;
+        max-width: 1040px !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context)
+      .homepage-slide-human .slide-heading {
+        display: block !important;
+        width: max-content !important;
+        max-width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: left !important;
+      }
+
+      .homepage-slide-human .human-desktop-line {
+        display: block !important;
+        width: max-content !important;
+        max-width: 100% !important;
+        white-space: nowrap !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .homepage-slide-human .human-desktop-line {
+        display: inline !important;
+        width: auto !important;
+        max-width: none !important;
+        white-space: normal !important;
+      }
+    }
+
+
+    /* =========================================================
+       CARDSTACK — REBALANCED TITLE / TAGLINE / CAPABILITY RHYTHM
+       The tagline has exactly the same physical gap above and below.
+       Bullets therefore sit lower and breathe further from the headline.
+       ========================================================= */
+
+    @media (min-width: 961px) {
+      #services .service {
+        --card-tagline-gap: 14px;
+      }
+
+      #services .service h3 {
+        margin:
+          0
+          0
+          var(--card-tagline-gap)
+          !important;
+      }
+
+      #services .service .mobile-tagline {
+        display: block !important;
+        position: static !important;
+        inset: auto !important;
+
+        margin:
+          0
+          0
+          var(--card-tagline-gap)
+          !important;
+        padding: 0 !important;
+
+        transform: none !important;
+      }
+
+      #services .service ul {
+        position: static !important;
+        margin-top: 0 !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      #services .service {
+        --card-tagline-gap: 10px;
+      }
+    }
+
+    @media (max-width: 960px) {
+      #services .service {
+        --card-tagline-gap: clamp(15px, 4vw, 18px);
+      }
+
+      #services .service h3 {
+        margin:
+          0
+          0
+          var(--card-tagline-gap)
+          !important;
+      }
+
+      #services .service .mobile-tagline {
+        margin:
+          0
+          0
+          var(--card-tagline-gap)
+          !important;
+      }
+
+      #services .service ul {
+        margin-top: 0 !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -7785,8 +8005,8 @@
       <div class="global-copy reveal" aria-live="polite" aria-atomic="true">
         <h2 data-global-title></h2>
         <div class="global-context" data-global-content>
-          <div class="homepage-slide homepage-slide-statement blur-highlight-slide initial-load-slide">
-            <h2 class="slide-heading">Deepliners are multi-skilled <span class="blur-highlight-bit"><span class="blur-highlight-plate" aria-hidden="true"></span><span class="blur-highlight-text">human operatives</span><span class="blur-highlight-black" aria-hidden="true">human operatives</span></span> deployed remotely alongside your team to solve problems, build better systems and make new ideas real.</h2>
+          <div class="homepage-slide homepage-slide-statement homepage-slide-human blur-highlight-slide initial-load-slide">
+            <h2 class="slide-heading"><span class="human-desktop-line human-desktop-line-1">Deepliners are multi-skilled <span class="blur-highlight-bit"><span class="blur-highlight-plate" aria-hidden="true"></span><span class="blur-highlight-text">human operatives</span><span class="blur-highlight-black" aria-hidden="true">human operatives</span></span> </span><span class="human-desktop-line human-desktop-line-2">deployed remotely alongside your team to </span><span class="human-desktop-line human-desktop-line-3">solve problems, build better systems and make </span><span class="human-desktop-line human-desktop-line-4">new ideas real.</span></h2>
           </div>
         </div>
       </div>
@@ -7800,8 +8020,7 @@
             <li>IT assistance</li>
             <li>Troubleshooting</li>
             <li>Software setup</li>
-            <li>Website maintenance</li>
-            <li>Platform administration</li>
+            <li>Website/Platform maintenance</li>
             <li>Lightweight digital tasks & fixes</li>
           </ul>
           <div class="price"><small>SERVICE STARTING AT</small><strong class="fx-price" data-gbp="800" data-suffix="/mo"><span class="price-metal">£800</span><span class="price-suffix">/mo</span></strong></div>
@@ -7851,201 +8070,223 @@
   </script>
 
   <script>
-    // Lightweight price localisation.
-    // GBP remains the contractual/base price. USD/EUR are display-only estimates.
+    // Lightweight visitor-currency localisation.
+    // GBP is the base price. Other currencies are simple live display estimates.
     (() => {
       const priceEls = [...document.querySelectorAll('.fx-price')];
       if (!priceEls.length) return;
 
-      const EURO_AREA = new Set([
-        'AT','BE','BG','HR','CY','EE','FI','FR','DE','GR','IE','IT',
-        'LV','LT','LU','MT','NL','PT','SK','SI','ES'
-      ]);
+      const BASE = 'GBP';
+      const RATE_TTL = 4 * 60 * 60 * 1000;
 
-      const CACHE_KEY = 'deepline-fx-v1';
-      const COUNTRY_KEY = 'deepline-country-v1';
-      const FX_TTL = 12 * 60 * 60 * 1000;
-      const COUNTRY_TTL = 7 * 24 * 60 * 60 * 1000;
+      const COUNTRY_CURRENCY = {
+        GB:'GBP', US:'USD', SE:'SEK',
+        AT:'EUR', BE:'EUR', HR:'EUR', CY:'EUR', EE:'EUR', FI:'EUR',
+        FR:'EUR', DE:'EUR', GR:'EUR', IE:'EUR', IT:'EUR', LV:'EUR',
+        LT:'EUR', LU:'EUR', MT:'EUR', NL:'EUR', PT:'EUR', SK:'EUR',
+        SI:'EUR', ES:'EUR',
+        CH:'CHF', NO:'NOK', DK:'DKK', PL:'PLN', CZ:'CZK', HU:'HUF',
+        RO:'RON', BG:'BGN', IS:'ISK',
+        CA:'CAD', AU:'AUD', NZ:'NZD', JP:'JPY', CN:'CNY', HK:'HKD',
+        SG:'SGD', IN:'INR', KR:'KRW', BR:'BRL', MX:'MXN', ZA:'ZAR',
+        AE:'AED', SA:'SAR', IL:'ILS', TR:'TRY'
+      };
 
-      function safeRead(key) {
+      const cleanCurrency = value => {
+        const code = String(value || '').trim().toUpperCase();
+        return /^[A-Z]{3}$/.test(code) ? code : '';
+      };
+
+      const safeRead = key => {
         try { return JSON.parse(localStorage.getItem(key) || 'null'); }
         catch { return null; }
-      }
-      function safeWrite(key, value) {
-        try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
-      }
+      };
 
-      function localeCountry() {
-        try {
-          for (const tag of navigator.languages || [navigator.language]) {
-            const region = new Intl.Locale(tag).region;
-            if (region) return region.toUpperCase();
-          }
-        } catch {}
-        return '';
-      }
+      const safeWrite = (key, value) => {
+        try { localStorage.setItem(key, JSON.stringify(value)); }
+        catch {}
+      };
 
-      function currencyForCountry(country) {
-        if (country === 'US') return 'USD';
-        if (EURO_AREA.has(country)) return 'EUR';
-        return 'GBP';
-      }
-
-      function render(currency, rate = 1) {
-        const formatter = new Intl.NumberFormat(undefined, {
-          style: 'currency',
-          currency,
-          maximumFractionDigits: 0,
-          minimumFractionDigits: 0,
-          useGrouping: false
-        });
-
-        priceEls.forEach(el => {
-          const gbp = Number(el.dataset.gbp);
-          const suffix = el.dataset.suffix || '';
-          if (!Number.isFinite(gbp)) return;
-
-          if (currency === 'GBP') {
-            el.innerHTML =
-              `<span class="price-metal">${formatter.format(gbp)}</span>` +
-              (suffix ? `<span class="price-suffix">${suffix}</span>` : '');
-          } else {
-            const converted = Math.round(gbp * rate);
-            el.innerHTML =
-              `<span class="price-metal"><span class="fx-prefix">≈</span>${formatter.format(converted)}</span>` +
-              (suffix ? `<span class="price-suffix">${suffix}</span>` : '');
-          }
-        });
-
-        document.documentElement.dataset.currency = currency;
-      }
-
-      async function fetchWithTimeout(url, ms = 1800) {
+      async function fetchJSON(url, ms = 1800) {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), ms);
+
         try {
           const response = await fetch(url, {
             signal: controller.signal,
             cache: 'no-store',
             credentials: 'omit'
           });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
           return await response.json();
         } finally {
           clearTimeout(timer);
         }
       }
 
-      async function detectCountry() {
-        const cached = safeRead(COUNTRY_KEY);
-        if (cached?.country && Date.now() - cached.at < COUNTRY_TTL) {
-          return cached.country;
-        }
-
-        // Country-level lookup only. If it fails, fall back to the visitor's browser locale.
+      function localeCurrencyFallback() {
         try {
-          const data = await fetchWithTimeout('https://api.country.is/', 1400);
-          const country = String(data?.country || '').toUpperCase();
-          if (/^[A-Z]{2}$/.test(country)) {
-            safeWrite(COUNTRY_KEY, { country, at: Date.now() });
-            return country;
+          const languages =
+            navigator.languages?.length
+              ? navigator.languages
+              : [navigator.language];
+
+          for (const tag of languages) {
+            const region = new Intl.Locale(tag).region?.toUpperCase();
+            if (region && COUNTRY_CURRENCY[region]) {
+              return COUNTRY_CURRENCY[region];
+            }
           }
         } catch {}
 
-        return localeCountry();
+        return BASE;
       }
 
-      function parseRates(data) {
-        const rates = {};
-
-        if (Array.isArray(data)) {
-          for (const row of data) {
-            const quote = String(row?.quote || row?.currency || '').toUpperCase();
-            const rate = Number(row?.rate);
-            if (quote && Number.isFinite(rate)) rates[quote] = rate;
-          }
-        } else if (data && typeof data === 'object') {
-          if (data.rates && typeof data.rates === 'object') {
-            for (const [quote, value] of Object.entries(data.rates)) {
-              const rate = Number(value);
-              if (Number.isFinite(rate)) rates[String(quote).toUpperCase()] = rate;
-            }
-          }
-          if (data.quote && Number.isFinite(Number(data.rate))) {
-            rates[String(data.quote).toUpperCase()] = Number(data.rate);
-          }
-        }
-
-        return rates;
-      }
-
-      async function getRates() {
-        const cached = safeRead(CACHE_KEY);
-        if (
-          cached?.rates &&
-          Date.now() - cached.at < FX_TTL &&
-          Number.isFinite(cached.rates.USD) &&
-          Number.isFinite(cached.rates.EUR)
-        ) {
-          return cached.rates;
-        }
-
-        // Frankfurter provides current central-bank reference rates with no API key.
-        const data = await fetchWithTimeout(
-          'https://api.frankfurter.dev/v2/rates?base=GBP&quotes=USD,EUR',
-          1800
+      async function detectVisitorCurrency() {
+        // QA / explicit override: ?currency=USD, ?currency=SEK, etc.
+        const override = cleanCurrency(
+          new URLSearchParams(location.search).get('currency')
         );
-        const rates = parseRates(data);
+        if (override) return override;
 
-        if (!Number.isFinite(rates.USD) || !Number.isFinite(rates.EUR)) {
-          // Support the single-rate response shape as a resilient fallback.
-          const [usd, eur] = await Promise.all([
-            fetchWithTimeout('https://api.frankfurter.dev/v2/rate/GBP/USD', 1800),
-            fetchWithTimeout('https://api.frankfurter.dev/v2/rate/GBP/EUR', 1800)
-          ]);
-          rates.USD = Number(usd?.rate);
-          rates.EUR = Number(eur?.rate);
+        /*
+         * Primary lookup: keyless + browser-CORS enabled and returns the
+         * visitor's local currency directly. Do NOT persist this location,
+         * so travelling or switching VPN location updates on the next load.
+         */
+        try {
+          const data = await fetchJSON(
+            'https://ipaddress.to/api/lookup/my',
+            1600
+          );
+
+          const currency = cleanCurrency(
+            data?.location?.currency?.code
+          );
+
+          if (data?.success && currency) {
+            return currency;
+          }
+        } catch {}
+
+        // Independent browser-callable fallback.
+        try {
+          const data = await fetchJSON(
+            'https://ipapi.co/json/',
+            1600
+          );
+
+          const currency = cleanCurrency(data?.currency);
+          if (currency) return currency;
+        } catch {}
+
+        // Last IP fallback if the currency field itself is unavailable.
+        try {
+          const data = await fetchJSON(
+            'https://api.country.is/',
+            1300
+          );
+
+          const country =
+            String(data?.country || '').toUpperCase();
+
+          if (COUNTRY_CURRENCY[country]) {
+            return COUNTRY_CURRENCY[country];
+          }
+        } catch {}
+
+        return localeCurrencyFallback();
+      }
+
+      function formatAmount(currency, amount) {
+        return new Intl.NumberFormat(undefined, {
+          style: 'currency',
+          currency,
+          currencyDisplay: 'narrowSymbol',
+          maximumFractionDigits: 0,
+          minimumFractionDigits: 0,
+          useGrouping: false
+        }).format(amount);
+      }
+
+      function render(currency, rate = 1) {
+        priceEls.forEach(el => {
+          const gbp = Number(el.dataset.gbp);
+          const suffix = el.dataset.suffix || '';
+          if (!Number.isFinite(gbp)) return;
+
+          const converted =
+            currency === BASE
+              ? gbp
+              : Math.round(gbp * rate);
+
+          const prefix = currency === BASE ? '' : '≈';
+
+          el.innerHTML =
+            `<span class="price-metal">${prefix}${formatAmount(currency, converted)}</span>` +
+            (suffix
+              ? `<span class="price-suffix">${suffix}</span>`
+              : '');
+        });
+
+        document.documentElement.dataset.currency = currency;
+      }
+
+      async function getRate(currency) {
+        if (currency === BASE) return 1;
+
+        const cacheKey = `deepline-fx-v3-${currency}`;
+        const cached = safeRead(cacheKey);
+
+        if (
+          Number.isFinite(cached?.rate) &&
+          Date.now() - cached.at < RATE_TTL
+        ) {
+          return cached.rate;
         }
 
-        if (Number.isFinite(rates.USD) && Number.isFinite(rates.EUR)) {
-          safeWrite(CACHE_KEY, { rates, at: Date.now() });
-          return rates;
+        const data = await fetchJSON(
+          `https://api.frankfurter.dev/v2/rate/${BASE}/${currency}`,
+          2200
+        );
+
+        const rate = Number(data?.rate);
+        if (!Number.isFinite(rate) || rate <= 0) {
+          throw new Error('Exchange rate unavailable');
         }
 
-        throw new Error('FX rates unavailable');
+        safeWrite(cacheKey, {
+          rate,
+          at: Date.now()
+        });
+
+        return rate;
       }
 
       async function localisePrices() {
-        // Optional query-string override makes QA easy: ?currency=USD / EUR / GBP
-        const requested = new URLSearchParams(location.search).get('currency')?.toUpperCase();
-        let currency = ['GBP','USD','EUR'].includes(requested) ? requested : '';
+        const currency = await detectVisitorCurrency();
 
-        if (!currency) {
-          const country = await detectCountry();
-          currency = currencyForCountry(country);
-        }
-
-        if (currency === 'GBP') {
-          render('GBP', 1);
+        if (currency === BASE) {
+          render(BASE, 1);
           return;
         }
 
         try {
-          const rates = await getRates();
-          const rate = rates[currency];
-          if (Number.isFinite(rate)) render(currency, rate);
-          else render('GBP', 1);
+          const rate = await getRate(currency);
+          render(currency, rate);
         } catch {
-          render('GBP', 1);
+          // Keep the contractual GBP base if the selected currency has
+          // no current quote or a third-party service is unreachable.
+          render(BASE, 1);
         }
       }
 
-      // Do not compete with the critical first paint.
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(localisePrices, { timeout: 900 });
-      } else {
-        setTimeout(localisePrices, 120);
-      }
+      // Start promptly; the calls are non-blocking and do not gate first paint.
+      setTimeout(localisePrices, 40);
     })();
   </script>
 
@@ -8317,6 +8558,21 @@
       else if (visible) startLoop();
     });
 
+    // On touch devices, give native scrolling the rendering budget.
+    // Rotation resumes shortly after scrolling settles.
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+      let scrollResumeTimer = 0;
+
+      window.addEventListener('scroll', () => {
+        stopLoop();
+        window.clearTimeout(scrollResumeTimer);
+
+        scrollResumeTimer = window.setTimeout(() => {
+          if (visible && !document.hidden) startLoop();
+        }, 180);
+      }, { passive: true });
+    }
+
     window.addEventListener('pagehide', () => {
       destroyed = true;
       stopLoop();
@@ -8429,8 +8685,8 @@
       const defaultSlides = [
         {
           html: `
-            <div class="homepage-slide homepage-slide-statement blur-highlight-slide">
-              <h2 class="slide-heading">Deepliners are multi-skilled <span class="blur-highlight-bit"><span class="blur-highlight-plate" aria-hidden="true"></span><span class="blur-highlight-text">human operatives</span><span class="blur-highlight-black" aria-hidden="true">human operatives</span></span> deployed remotely alongside your team to solve problems, build better systems and make new ideas real.</h2>
+            <div class="homepage-slide homepage-slide-statement homepage-slide-human blur-highlight-slide">
+              <h2 class="slide-heading"><span class="human-desktop-line human-desktop-line-1">Deepliners are multi-skilled <span class="blur-highlight-bit"><span class="blur-highlight-plate" aria-hidden="true"></span><span class="blur-highlight-text">human operatives</span><span class="blur-highlight-black" aria-hidden="true">human operatives</span></span> </span><span class="human-desktop-line human-desktop-line-2">deployed remotely alongside your team to </span><span class="human-desktop-line human-desktop-line-3">solve problems, build better systems and make </span><span class="human-desktop-line human-desktop-line-4">new ideas real.</span></h2>
             </div>
           `
         },
@@ -9240,12 +9496,6 @@
       };
 
       window.addEventListener('resize', handleViewportResize, { passive: true });
-      window.visualViewport?.addEventListener(
-        'resize',
-        handleViewportResize,
-        { passive: true }
-      );
-
       if (document.fonts?.ready) {
         document.fonts.ready.then(centreVisibleText).catch(() => {});
       }
@@ -9293,18 +9543,51 @@
       if (!topbar || !mainWordmark) return;
 
       let raf = 0;
+      let revealY = 0;
+      let visible = false;
+      let lastWidth =
+        document.documentElement.clientWidth || window.innerWidth;
 
-      const updateTopbar = () => {
-        cancelAnimationFrame(raf);
+      const measure = () => {
+        const rect = mainWordmark.getBoundingClientRect();
+        revealY = rect.bottom + window.scrollY;
+      };
+
+      const apply = () => {
+        const nextVisible = window.scrollY >= revealY;
+
+        if (nextVisible === visible) return;
+
+        visible = nextVisible;
+        topbar.classList.toggle('is-visible', visible);
+      };
+
+      const onScroll = () => {
+        if (raf) return;
+
         raf = requestAnimationFrame(() => {
-          const passedWordmark = mainWordmark.getBoundingClientRect().bottom <= 0;
-          topbar.classList.toggle('is-visible', passedWordmark);
+          raf = 0;
+          apply();
         });
       };
 
-      window.addEventListener('scroll', updateTopbar, { passive: true });
-      window.addEventListener('resize', updateTopbar, { passive: true });
-      updateTopbar();
+      const onResize = () => {
+        const width =
+          document.documentElement.clientWidth || window.innerWidth;
+
+        // Ignore mobile browser toolbar height changes during ordinary scroll.
+        if (Math.abs(width - lastWidth) < 1) return;
+
+        lastWidth = width;
+        measure();
+        apply();
+      };
+
+      measure();
+      apply();
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onResize, { passive: true });
     })();
   </script>
 
@@ -9499,7 +9782,6 @@
 
       const requestIOSMotion = async () => {
         if (permissionRequested) return;
-        permissionRequested = true;
 
         const Orientation = window.DeviceOrientationEvent;
         const Motion = window.DeviceMotionEvent;
@@ -9517,8 +9799,10 @@
           return;
         }
 
+        permissionRequested = true;
+
         try {
-          // Start both permission prompts synchronously inside this user gesture.
+          // Start both requests synchronously inside the same physical click.
           const orientationRequest = orientationPermission
             ? Orientation.requestPermission()
             : Promise.resolve('granted');
@@ -9537,43 +9821,34 @@
             result.value === 'granted'
           );
 
+          const explicitlyDenied = results.some(result =>
+            result.status === 'fulfilled' &&
+            result.value === 'denied'
+          );
+
           if (granted) {
-            bindSensors();
             resetCalibration();
+          } else if (!explicitlyDenied) {
+            // A browser/runtime failure is retryable on the next click.
+            permissionRequested = false;
           }
         } catch (_) {
-          // Idle sheen remains available if motion permission is declined.
+          permissionRequested = false;
         }
       };
 
       const Orientation = window.DeviceOrientationEvent;
       const Motion = window.DeviceMotionEvent;
 
-      const ua = navigator.userAgent || '';
-      const platform = navigator.platform || '';
-
-      const isIOSLike =
-        /iPad|iPhone|iPod/i.test(ua) ||
-        (
-          platform === 'MacIntel' &&
-          navigator.maxTouchPoints > 1
-        );
-
       /*
-       * Bind immediately on every platform.
-       *
-       * Android / Chrome / Samsung can begin delivering sensor data
-       * straight away when the browser permits it, even if a modern
-       * implementation exposes requestPermission().
-       *
-       * iOS simply withholds sensor events until Apple's required
-       * permission has been granted, so the same listeners can safely
-       * remain attached before the prompt.
+       * Always attach listeners immediately.
+       * Browsers that expose sensor data without an explicit prompt can begin
+       * responding straight away. Browsers that gate the data simply deliver
+       * nothing until their permission API has been granted.
        */
       bindSensors();
 
-      const iosPermissionAPIAvailable =
-        isIOSLike &&
+      const permissionAPIAvailable =
         Boolean(
           (Orientation &&
             typeof Orientation.requestPermission === 'function') ||
@@ -9581,27 +9856,25 @@
             typeof Motion.requestPermission === 'function')
         );
 
-      if (iosPermissionAPIAvailable) {
+      if (permissionAPIAvailable) {
         const activate = event => {
           if (permissionRequested) return;
 
           const target = event.target;
 
-          // Do not interrupt the mailto action.
+          // Keep the project's mailto action instantaneous.
           if (target?.closest?.('a[href^="mailto:"]')) return;
 
           requestIOSMotion();
         };
 
-        // Apple's permission request must originate from a real user gesture.
+        /*
+         * A normal click is the most dependable user-activation source for
+         * WebKit's motion/orientation permission prompt. Because listeners are
+         * already bound, this does not delay Android-family sensor delivery.
+         */
         document.addEventListener(
           'click',
-          activate,
-          { capture: true, passive: true }
-        );
-
-        document.addEventListener(
-          'touchend',
           activate,
           { capture: true, passive: true }
         );
@@ -9880,51 +10153,7 @@
   </script>
 
 
-  <script>
-    (() => {
-      const touchDevice = window.matchMedia(
-        '(hover: none) and (pointer: coarse)'
-      );
 
-      if (!touchDevice.matches) return;
-
-      /*
-       * Do not force scrollTo() while a touch browser is scrolling or
-       * overscrolling. Programmatic correction can fight native scroll
-       * physics and cause footer-area bounce/jitter across mobile browsers.
-       *
-       * Copyright is already the final DOM element and decorative layers
-       * are clipped, so the native scroll range is the correct page end.
-       */
-
-      document.addEventListener('touchmove', event => {
-        if (event.touches.length > 1) {
-          event.preventDefault();
-        }
-      }, { passive: false });
-
-      ['gesturestart', 'gesturechange', 'gestureend'].forEach(type => {
-        document.addEventListener(type, event => {
-          event.preventDefault();
-        }, { passive: false });
-      });
-
-      const resetHorizontalOffset = () => {
-        if (Math.abs(window.scrollX) < 0.5) return;
-
-        window.scrollTo({
-          left: 0,
-          top: window.scrollY,
-          behavior: 'auto'
-        });
-      };
-
-      window.addEventListener('orientationchange', () => {
-        window.setTimeout(resetHorizontalOffset, 120);
-        window.setTimeout(resetHorizontalOffset, 420);
-      }, { passive: true });
-    })();
-  </script>
 
 
   <script>
