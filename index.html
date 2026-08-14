@@ -2,7 +2,7 @@
 <html lang="en-GB">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 
   <!-- Search -->
   <title>Deepline | Forward-Deployed Technical &amp; Creative Practice</title>
@@ -6017,6 +6017,291 @@
       }
     }
 
+
+    /* =========================================================
+       DEFAULT SLIDES — BLUR REVEAL + DELAYED WHITE HIGHLIGHT
+       The phrase is ordinary text first. After the slide resolves,
+       a white plate physically wipes left → right and a black text
+       layer is revealed over exactly the same distance.
+       ========================================================= */
+    .homepage-slide.blur-highlight-slide {
+      animation:
+        deepline-slide-blur-reveal .8s
+        cubic-bezier(.22,.61,.36,1)
+        both;
+    }
+
+    @keyframes deepline-slide-blur-reveal {
+      from {
+        filter: blur(8px);
+        opacity: .3;
+      }
+      to {
+        filter: blur(0);
+        opacity: 1;
+      }
+    }
+
+    .blur-highlight-bit {
+      position: relative;
+      display: inline-block;
+      isolation: isolate;
+      white-space: nowrap;
+      vertical-align: baseline;
+
+      /*
+       * Optical vertical balance:
+       * type sits below the mathematical centre of its line box, and the
+       * descending "g" makes the lower edge read tighter. Give the plate
+       * deliberately more physical room below so the VISIBLE white border
+       * above and below the lettering appears equal.
+       */
+      --highlight-pad-top: .11em;
+      --highlight-pad-bottom: .21em;
+      --highlight-pad-x: .10em;
+
+      padding:
+        var(--highlight-pad-top)
+        var(--highlight-pad-x)
+        var(--highlight-pad-bottom);
+
+      margin:
+        calc(var(--highlight-pad-top) * -1)
+        -.03em
+        calc(var(--highlight-pad-bottom) * -1);
+    }
+
+    .blur-highlight-plate {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      display: block;
+      background: #f4f4ef;
+      transform: scaleX(0);
+      transform-origin: left center;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .blur-highlight-text {
+      position: relative;
+      z-index: 1;
+      display: inline-block;
+      color: inherit;
+    }
+
+    .blur-highlight-black {
+      position: absolute;
+      z-index: 2;
+
+      /* Place the black duplicate on the exact original text position. */
+      left: var(--highlight-pad-x);
+      top: var(--highlight-pad-top);
+      right: var(--highlight-pad-x);
+      bottom: var(--highlight-pad-bottom);
+
+      display: block;
+      color: #050505;
+      font: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      letter-spacing: inherit;
+      white-space: nowrap;
+      pointer-events: none;
+      overflow: visible;
+
+      clip-path: inset(-.12em 100% -.20em -.06em);
+      -webkit-clip-path: inset(-.12em 100% -.20em -.06em);
+      will-change: clip-path;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .homepage-slide.blur-highlight-slide {
+        animation: none !important;
+        filter: none !important;
+        opacity: 1 !important;
+      }
+    }
+
+
+    /* =========================================================
+       MAIN START A PROJECT — PRESSED / TAP FEEDBACK
+       ========================================================= */
+    @media (max-width: 960px) {
+      .main-page-cta {
+        transition:
+          background-color 120ms ease,
+          color 120ms ease,
+          transform 120ms ease !important;
+      }
+
+      .main-page-cta:active {
+        background: #bdbdb8 !important;
+        color: #050505 !important;
+      }
+
+      .main-page-cta:active span {
+        color: #050505 !important;
+      }
+    }
+
+
+    /* =========================================================
+       TOUCH DEVICES — HARD CONTENT BOUNDARIES
+       Portrait and landscape use the same containment rules.
+       ========================================================= */
+    @media (hover: none) and (pointer: coarse) {
+      html,
+      body {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        overflow-x: hidden !important;
+        overscroll-behavior: none !important;
+
+        /* Vertical page movement only. Prevent pinch-generated free panning
+           into empty VisualViewport space on iOS / touch browsers. */
+        touch-action: pan-y !important;
+      }
+
+      @supports (overflow: clip) {
+        html,
+        body {
+          overflow-x: clip !important;
+        }
+      }
+
+      body {
+        min-height: 100dvh !important;
+        position: relative !important;
+      }
+
+      main#top {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        overflow-x: clip !important;
+      }
+
+      /* Decorative/oversized layers must never participate in document
+         overflow. Their visible artwork remains clipped to its real section. */
+      .wordmark-intro,
+      #global.global,
+      #global.global .shell,
+      #services,
+      #services .services,
+      #services .service,
+      .site-copyright {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: clip !important;
+      }
+
+      #global.global {
+        /* The globe is deliberately oversized; prevent that visual layer from
+           increasing either the horizontal or vertical document boundary. */
+        overflow: hidden !important;
+      }
+
+      .wordmark-intro {
+        overflow: hidden !important;
+      }
+
+      #services .service {
+        overflow: hidden !important;
+      }
+
+      .site-copyright {
+        /* Copyright is the literal final block of the mobile document. */
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+        flex-shrink: 0 !important;
+      }
+    }
+
+    /* Landscape phones can exceed the old 960px breakpoint. Keep them
+       contained as touch devices rather than allowing desktop geometry
+       to create an off-screen pannable canvas. */
+    @media (hover: none) and (pointer: coarse) and (orientation: landscape) {
+      html,
+      body,
+      main#top {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        overscroll-behavior: none !important;
+      }
+
+      @supports (overflow: clip) {
+        html,
+        body,
+        main#top {
+          overflow-x: clip !important;
+        }
+      }
+    }
+
+
+    /* =========================================================
+       TOUCH PRICE MATERIAL — TILT-REACTIVE METALLIC SHEEN
+       Static white/grey material by default; device tilt moves the
+       highlight across the glyphs when motion access is available.
+       ========================================================= */
+    @media (hover: none) and (pointer: coarse) {
+      #services .price strong.fx-price {
+        --price-sheen-x: 50%;
+        --price-sheen-angle: 104deg;
+
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+
+        background-image:
+          linear-gradient(
+            var(--price-sheen-angle),
+            #d3d3ce 0%,
+            #f0f0eb 20%,
+            #ffffff 36%,
+            #c5c5c0 50%,
+            #f9f9f4 64%,
+            #ddddD8 80%,
+            #f4f4ef 100%
+          ) !important;
+        background-size: 235% 100% !important;
+        background-position: var(--price-sheen-x) 50% !important;
+        background-repeat: no-repeat !important;
+
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+
+        filter: drop-shadow(0 0 0 rgba(255,255,255,0));
+        transition:
+          background-position 90ms linear,
+          filter 180ms ease !important;
+
+        will-change: background-position;
+      }
+
+      /* Currency approximation prefix and /mo suffix remain part of the
+         same reflective material instead of reverting to flat grey. */
+      #services .price strong.fx-price span,
+      #services .price strong.fx-price .fx-prefix {
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+      }
+
+      html.price-tilt-active #services .price strong.fx-price {
+        filter: drop-shadow(0 0 .01px rgba(255,255,255,.12));
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -6315,7 +6600,7 @@
       <div class="global-copy reveal" aria-live="polite" aria-atomic="true">
         <h2 data-global-title></h2>
         <div class="global-context" data-global-content>
-          <div class="homepage-slide cursor-snap-text">
+          <div class="homepage-slide blur-highlight-slide cursor-snap-text">
             <h2 class="slide-heading">Operating Globally</h2>
             <p class="slide-body">Providing remote multidisciplinary support to NGOs and independent entities in 160+ countries, territories and markets around the world.</p>
             <p class="slide-closing">Across borders, disciplines and time zones.</p>
@@ -6957,7 +7242,7 @@
       const defaultSlides = [
         {
           html: `
-            <div class="homepage-slide cursor-snap-text">
+            <div class="homepage-slide blur-highlight-slide cursor-snap-text">
               <h2 class="slide-heading">Operating Globally</h2>
               <p class="slide-body">Providing remote multidisciplinary support to NGOs and independent entities in 160+ countries, territories and markets around the world.</p>
               <p class="slide-closing">Across borders, disciplines and time zones.</p>
@@ -6966,27 +7251,27 @@
         },
         {
           html: `
-            <div class="homepage-slide homepage-slide-statement cursor-snap-text">
-              <h2 class="slide-heading">Deepliners are multi-skilled human operatives deployed remotely alongside your team to solve problems, build better systems and make new ideas real.</h2>
+            <div class="homepage-slide homepage-slide-statement blur-highlight-slide cursor-snap-text">
+              <h2 class="slide-heading">Deepliners are multi-skilled <span class="blur-highlight-bit"><span class="blur-highlight-plate" aria-hidden="true"></span><span class="blur-highlight-text">human operatives</span><span class="blur-highlight-black" aria-hidden="true">human operatives</span></span> deployed remotely alongside your team to solve problems, build better systems and make new ideas real.</h2>
             </div>
           `
         },
         {
           html: `
-            <div class="homepage-slide homepage-slide-statement cursor-snap-text">
+            <div class="homepage-slide homepage-slide-statement blur-highlight-slide cursor-snap-text">
               <h2 class="slide-heading">Digital systems, tools and ideas are our terrain, so you can stay focused on yours.</h2>
             </div>
           `
         },
         {
           html: `
-            <div class="homepage-slide homepage-slide-statement homepage-slide-final cursor-snap-text">
+            <div class="homepage-slide homepage-slide-statement homepage-slide-final blur-highlight-slide cursor-snap-text">
               <h2 class="slide-heading">
                 <span class="final-statement-lead">
                   <span class="mobile-final-line">When everyone else says</span>
                   <span class="mobile-final-line">“it can’t be done”</span>
                 </span>
-                <span class="final-statement-hit">Deepliners get it done.</span>
+                <span class="final-statement-hit"><span class="blur-highlight-bit"><span class="blur-highlight-plate" aria-hidden="true"></span><span class="blur-highlight-text">Deepliners get it done.</span><span class="blur-highlight-black" aria-hidden="true">Deepliners get it done.</span></span></span>
               </h2>
             </div>
           `
@@ -7092,6 +7377,65 @@
           window.clearTimeout(slideTimer);
           slideTimer = 0;
         }
+      };
+
+      const armDefaultSlideHighlights = () => {
+        if (activeKey !== 'default') return;
+
+        const bits = [...content.querySelectorAll('.blur-highlight-bit')];
+        if (!bits.length) return;
+
+        bits.forEach(bit => {
+          const plate = bit.querySelector('.blur-highlight-plate');
+          const black = bit.querySelector('.blur-highlight-black');
+
+          if (!plate || !black) return;
+
+          plate.getAnimations().forEach(animation => animation.cancel());
+          black.getAnimations().forEach(animation => animation.cancel());
+
+          // Plain lowercase text is visible first.
+          plate.style.transform = 'scaleX(0)';
+          black.style.clipPath = 'inset(-.12em 100% -.20em -.06em)';
+
+          // Wait until the 0.8s blur-in has resolved, then visibly wipe.
+          window.setTimeout(() => {
+            if (
+              activeKey !== 'default' ||
+              !bit.isConnected
+            ) return;
+
+            plate.animate(
+              [
+                { transform: 'scaleX(0)' },
+                { transform: 'scaleX(1)' }
+              ],
+              {
+                duration: 1000,
+                easing: 'cubic-bezier(.22,.61,.36,1)',
+                fill: 'forwards'
+              }
+            );
+
+            black.animate(
+              [
+                {
+                  clipPath: 'inset(-.12em 100% -.20em -.06em)',
+                  webkitClipPath: 'inset(-.12em 100% -.20em -.06em)'
+                },
+                {
+                  clipPath: 'inset(-.12em -.06em -.20em -.06em)',
+                  webkitClipPath: 'inset(-.12em -.06em -.20em -.06em)'
+                }
+              ],
+              {
+                duration: 1000,
+                easing: 'cubic-bezier(.22,.61,.36,1)',
+                fill: 'forwards'
+              }
+            );
+          }, 900);
+        });
       };
 
       const stopCursorBlink = () => {
@@ -7242,6 +7586,8 @@
           content.style.opacity = '0';
           content.style.transform = 'translate3d(0,9px,0)';
 
+          armDefaultSlideHighlights();
+
           requestAnimationFrame(() => {
             if (token !== sequence) return;
 
@@ -7304,6 +7650,7 @@
           }, 500);
         } else {
           content.innerHTML = defaultSlides[index].html;
+          armDefaultSlideHighlights();
           scheduleSlide();
         }
       };
@@ -7721,34 +8068,103 @@
   <script>
     (() => {
       const mark = document.querySelector('.wordmark .wordmark-motion');
-      if (!mark) return;
+      const prices = [...document.querySelectorAll('#services .price strong.fx-price')];
 
-      const mobileQuery = window.matchMedia('(max-width: 960px)');
+      if (!mark && !prices.length) return;
+
+      const touchDevice = window.matchMedia(
+        '(hover: none) and (pointer: coarse)'
+      );
+
       let orientationBound = false;
+      let permissionRequested = false;
       let sensorActive = false;
+      let framePending = false;
+      let latestEvent = null;
 
       const clamp = (value, min, max) =>
         Math.min(max, Math.max(min, value));
 
-      const applyOrientation = event => {
-        if (!mobileQuery.matches || event.gamma == null) return;
+      const screenAngle = () => {
+        const modern = Number(window.screen?.orientation?.angle);
+        if (Number.isFinite(modern)) return modern;
+
+        const legacy = Number(window.orientation);
+        return Number.isFinite(legacy) ? legacy : 0;
+      };
+
+      const horizontalTilt = event => {
+        const gamma = Number(event.gamma);
+        const beta = Number(event.beta);
+
+        if (!Number.isFinite(gamma) && !Number.isFinite(beta)) return 0;
+
+        const angle = ((screenAngle() % 360) + 360) % 360;
+
+        // In portrait, gamma is the natural left/right axis.
+        if (angle === 0 || angle === 180) {
+          const value = Number.isFinite(gamma) ? gamma : 0;
+          return angle === 180 ? -value : value;
+        }
+
+        // In landscape, use beta so the sheen still follows a physical
+        // left/right roll of the handset rather than swapping axes.
+        const value = Number.isFinite(beta) ? beta : 0;
+        return angle === 90 ? value : -value;
+      };
+
+      const renderTilt = () => {
+        framePending = false;
+
+        if (!touchDevice.matches || !latestEvent) return;
+
+        const rawTilt = clamp(horizontalTilt(latestEvent), -42, 42);
+        const normalized = rawTilt / 42;
+
+        // Keep the movement restrained: reflective rather than gimmicky.
+        const sheenX = 50 + (normalized * 34);
+        const angle = 104 - (normalized * 8);
 
         sensorActive = true;
-        mark.classList.add('tilt-sheen-active');
+        document.documentElement.classList.add('price-tilt-active');
 
-        // gamma is left/right device tilt. Map a useful central range to
-        // the highlight travel without letting extreme angles fling it away.
-        const gamma = clamp(event.gamma, -38, 38);
-        const sheenX = 50 + (gamma / 38) * 43;
+        prices.forEach(price => {
+          price.style.setProperty(
+            '--price-sheen-x',
+            `${sheenX.toFixed(2)}%`
+          );
+          price.style.setProperty(
+            '--price-sheen-angle',
+            `${angle.toFixed(2)}deg`
+          );
+        });
 
-        mark.style.setProperty(
-          '--wordmark-sheen-x',
-          `${sheenX.toFixed(2)}%`
-        );
+        // Preserve the existing mobile wordmark sheen using the same
+        // orientation event / permission grant.
+        if (mark) {
+          mark.classList.add('tilt-sheen-active');
+
+          const wordmarkX = 50 + (normalized * 43);
+          mark.style.setProperty(
+            '--wordmark-sheen-x',
+            `${wordmarkX.toFixed(2)}%`
+          );
+        }
+      };
+
+      const applyOrientation = event => {
+        if (!touchDevice.matches) return;
+
+        latestEvent = event;
+
+        if (framePending) return;
+        framePending = true;
+        requestAnimationFrame(renderTilt);
       };
 
       const bindOrientation = () => {
         if (orientationBound) return;
+
         orientationBound = true;
         window.addEventListener(
           'deviceorientation',
@@ -7758,6 +8174,9 @@
       };
 
       const enableIOSOrientation = async () => {
+        if (permissionRequested) return;
+        permissionRequested = true;
+
         const orientationAPI = window.DeviceOrientationEvent;
 
         if (
@@ -7769,11 +8188,15 @@
         }
 
         try {
+          // iOS 13+ requires this call from a real user gesture.
           const permission = await orientationAPI.requestPermission();
-          if (permission === 'granted') bindOrientation();
+
+          if (permission === 'granted') {
+            bindOrientation();
+          }
         } catch (_) {
-          // Keep the autonomous metallic sheen if permission is declined
-          // or the browser does not permit the request.
+          // The static white/grey material remains if permission is
+          // unavailable or declined.
         }
       };
 
@@ -7781,25 +8204,38 @@
         window.DeviceOrientationEvent &&
         typeof window.DeviceOrientationEvent.requestPermission === 'function'
       ) {
-        // iOS requires the request to originate from a physical gesture.
-        // Limit this to the wordmark itself so the site never interrupts
-        // an unrelated CTA/card tap with a motion-permission prompt.
-        mark.addEventListener(
+        // On iOS, request motion access from a meaningful interaction:
+        // tapping the main wordmark or any service card. This avoids
+        // interrupting the START A PROJECT mailto action.
+        document.addEventListener(
           'pointerdown',
-          enableIOSOrientation,
-          { once: true, passive: true }
+          event => {
+            if (!touchDevice.matches || permissionRequested) return;
+
+            const trigger = event.target?.closest?.(
+              '.wordmark, .service[data-context]'
+            );
+
+            if (!trigger) return;
+            enableIOSOrientation();
+          },
+          { passive: true }
         );
       } else {
+        // Android / browsers that don't require explicit permission.
         bindOrientation();
       }
 
-      // If orientation stops being useful after a rotation breakpoint,
-      // return gracefully to the autonomous sheen.
-      mobileQuery.addEventListener?.('change', event => {
+      touchDevice.addEventListener?.('change', event => {
         if (!event.matches) {
-          mark.classList.remove('tilt-sheen-active');
-        } else if (sensorActive) {
-          mark.classList.add('tilt-sheen-active');
+          document.documentElement.classList.remove('price-tilt-active');
+          mark?.classList.remove('tilt-sheen-active');
+          return;
+        }
+
+        if (sensorActive) {
+          document.documentElement.classList.add('price-tilt-active');
+          mark?.classList.add('tilt-sheen-active');
         }
       });
     })();
@@ -8042,6 +8478,105 @@
       }
 
       sync();
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const touchDevice = window.matchMedia(
+        '(hover: none) and (pointer: coarse)'
+      );
+
+      const copyright = document.querySelector('.site-copyright');
+      if (!copyright) return;
+
+      let raf = 0;
+      let correcting = false;
+
+      const viewportHeight = () =>
+        window.visualViewport?.height ||
+        document.documentElement.clientHeight ||
+        window.innerHeight;
+
+      const contentEndY = () => {
+        const rect = copyright.getBoundingClientRect();
+        return window.scrollY + rect.bottom;
+      };
+
+      const clampToContent = () => {
+        if (!touchDevice.matches || correcting) return;
+
+        cancelAnimationFrame(raf);
+
+        raf = requestAnimationFrame(() => {
+          const maxY = Math.max(
+            0,
+            Math.ceil(contentEndY() - viewportHeight())
+          );
+
+          const xOut = Math.abs(window.scrollX) > 0.5;
+          const yOut = window.scrollY > maxY + 0.5;
+
+          if (!xOut && !yOut) return;
+
+          correcting = true;
+
+          window.scrollTo({
+            left: 0,
+            top: Math.min(window.scrollY, maxY),
+            behavior: 'auto'
+          });
+
+          requestAnimationFrame(() => {
+            correcting = false;
+          });
+        });
+      };
+
+      window.addEventListener('scroll', clampToContent, { passive: true });
+      window.addEventListener('resize', clampToContent, { passive: true });
+      window.addEventListener('orientationchange', () => {
+        window.setTimeout(clampToContent, 80);
+        window.setTimeout(clampToContent, 320);
+      }, { passive: true });
+
+      window.visualViewport?.addEventListener(
+        'resize',
+        clampToContent,
+        { passive: true }
+      );
+
+      // A pinch creates a separate pannable visual viewport on iOS.
+      // Blocking multi-touch keeps the actual document bounds authoritative.
+      document.addEventListener('touchmove', event => {
+        if (
+          touchDevice.matches &&
+          event.touches.length > 1
+        ) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      // Safari-specific gesture events.
+      ['gesturestart', 'gesturechange', 'gestureend'].forEach(type => {
+        document.addEventListener(type, event => {
+          if (!touchDevice.matches) return;
+          event.preventDefault();
+        }, { passive: false });
+      });
+
+      // Dynamic service-context copy can change the real document end.
+      const mutationObserver = new MutationObserver(clampToContent);
+      mutationObserver.observe(document.querySelector('main#top'), {
+        subtree: true,
+        childList: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+
+      clampToContent();
     })();
   </script>
 
