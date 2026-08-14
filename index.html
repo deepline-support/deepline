@@ -6406,6 +6406,141 @@
       to   { opacity: 1; }
     }
 
+
+    /* =========================================================
+       DESKTOP PARITY — PRIMARY CTA MATCHES MOBILE
+       Same white square button, same dimensions, same centred placement
+       beneath the main wordmark inside the opening band.
+       ========================================================= */
+    @media (min-width: 961px) {
+      .wordmark-intro {
+        position: relative !important;
+      }
+
+      .main-page-cta {
+        position: absolute !important;
+        top: auto !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: 14px !important;
+
+        width: 238px !important;
+        min-width: 188px !important;
+        min-height: 50px !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        margin: 0 !important;
+        padding: 0 22px !important;
+
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: #f4f4ef !important;
+        color: #050505 !important;
+        box-shadow: none !important;
+
+        transform: translateX(-50%) !important;
+
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        letter-spacing: .065em !important;
+        text-transform: uppercase !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+
+        transition:
+          background-color 120ms ease,
+          color 120ms ease !important;
+      }
+
+      .main-page-cta::before,
+      .main-page-cta::after {
+        content: none !important;
+        display: none !important;
+      }
+
+      .main-page-cta span {
+        position: relative !important;
+        z-index: 1 !important;
+        color: #050505 !important;
+        mix-blend-mode: normal !important;
+      }
+
+      .main-page-cta:active {
+        background: #bdbdb8 !important;
+        color: #050505 !important;
+      }
+
+      .main-page-cta:active span {
+        color: #050505 !important;
+      }
+    }
+
+
+    /* =========================================================
+       DESKTOP SERVICE CARD TAGLINES — SAME PLACEMENT AS MOBILE
+       Directly below each title, before the capability list.
+       ========================================================= */
+    @media (min-width: 961px) {
+      #services .service .mobile-tagline {
+        display: block !important;
+        position: static !important;
+        inset: auto !important;
+
+        width: auto !important;
+        max-width: none !important;
+
+        margin: 0 0 12px !important;
+        padding: 0 !important;
+
+        transform: none !important;
+
+        font-size: 13px !important;
+        font-weight: 400 !important;
+        line-height: 1.3 !important;
+        letter-spacing: 0 !important;
+
+        color: #d6d6d1 !important;
+        text-align: left !important;
+        white-space: normal !important;
+        text-wrap: wrap !important;
+      }
+
+      #services .service h3 {
+        margin-bottom: 5px !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      #services .service .mobile-tagline {
+        margin-bottom: 9px !important;
+        font-size: 11.5px !important;
+        line-height: 1.25 !important;
+      }
+    }
+
+
+    /* =========================================================
+       DESKTOP DEFAULT SLIDES — TRUE VERTICAL MIDPOINT
+       Upper boundary = rendered bottom edge of DEEPLINE wordmark.
+       Lower boundary = rendered top edge of service card stack.
+       JS writes --desktop-default-copy-centre-y from those exact edges.
+       ========================================================= */
+    @media (min-width: 961px) {
+      #global.global > .global-copy:not(.is-service-context) {
+        top: var(--desktop-default-copy-centre-y, 50%) !important;
+        bottom: auto !important;
+
+        transform:
+          translateX(calc(-50% + var(--copy-optical-x, 0px)))
+          translateY(-50%) !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -6704,7 +6839,7 @@
       <div class="global-copy reveal" aria-live="polite" aria-atomic="true">
         <h2 data-global-title></h2>
         <div class="global-context" data-global-content>
-          <div class="homepage-slide blur-highlight-slide cursor-snap-text">
+          <div class="homepage-slide blur-highlight-slide">
             <h2 class="slide-heading">Operating Globally</h2>
             <p class="slide-body">Providing remote multidisciplinary support to NGOs and independent entities in 160+ countries, territories and markets around the world.</p>
             <p class="slide-closing">Across borders, disciplines and time zones.</p>
@@ -7346,7 +7481,7 @@
       const defaultSlides = [
         {
           html: `
-            <div class="homepage-slide blur-highlight-slide cursor-snap-text">
+            <div class="homepage-slide blur-highlight-slide">
               <h2 class="slide-heading">Operating Globally</h2>
               <p class="slide-body">Providing remote multidisciplinary support to NGOs and independent entities in 160+ countries, territories and markets around the world.</p>
               <p class="slide-closing">Across borders, disciplines and time zones.</p>
@@ -7355,21 +7490,21 @@
         },
         {
           html: `
-            <div class="homepage-slide homepage-slide-statement blur-highlight-slide cursor-snap-text">
+            <div class="homepage-slide homepage-slide-statement blur-highlight-slide">
               <h2 class="slide-heading">Deepliners are multi-skilled <span class="blur-highlight-bit"><span class="blur-highlight-plate" aria-hidden="true"></span><span class="blur-highlight-text">human operatives</span><span class="blur-highlight-black" aria-hidden="true">human operatives</span></span> deployed remotely alongside your team to solve problems, build better systems and make new ideas real.</h2>
             </div>
           `
         },
         {
           html: `
-            <div class="homepage-slide homepage-slide-statement blur-highlight-slide cursor-snap-text">
+            <div class="homepage-slide homepage-slide-statement blur-highlight-slide">
               <h2 class="slide-heading">Digital systems, tools and ideas are our terrain, so you can stay focused on yours.</h2>
             </div>
           `
         },
         {
           html: `
-            <div class="homepage-slide homepage-slide-statement homepage-slide-final blur-highlight-slide cursor-snap-text">
+            <div class="homepage-slide homepage-slide-statement homepage-slide-final blur-highlight-slide">
               <h2 class="slide-heading">
                 <span class="final-statement-lead">
                   <span class="mobile-final-line">When everyone else says</span>
@@ -8769,6 +8904,91 @@
         window.setTimeout(resetHorizontalOffset, 120);
         window.setTimeout(resetHorizontalOffset, 420);
       }, { passive: true });
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const desktop = window.matchMedia('(min-width: 961px)');
+      const global = document.querySelector('#global.global');
+      const wordmark = document.querySelector('.wordmark');
+      const services = document.querySelector('#services');
+
+      if (!global || !wordmark || !services) return;
+
+      let raf = 0;
+
+      const syncDesktopDefaultCopyCentre = () => {
+        cancelAnimationFrame(raf);
+
+        raf = requestAnimationFrame(() => {
+          if (!desktop.matches) {
+            global.style.removeProperty(
+              '--desktop-default-copy-centre-y'
+            );
+            return;
+          }
+
+          const wordmarkRect = wordmark.getBoundingClientRect();
+          const servicesRect = services.getBoundingClientRect();
+          const globalRect = global.getBoundingClientRect();
+
+          const upperLimit = wordmarkRect.bottom;
+          const lowerLimit = servicesRect.top;
+
+          if (
+            !Number.isFinite(upperLimit) ||
+            !Number.isFinite(lowerLimit) ||
+            lowerLimit <= upperLimit
+          ) {
+            return;
+          }
+
+          const centreViewportY =
+            (upperLimit + lowerLimit) / 2;
+
+          const centreInsideGlobal =
+            centreViewportY - globalRect.top;
+
+          global.style.setProperty(
+            '--desktop-default-copy-centre-y',
+            `${centreInsideGlobal.toFixed(2)}px`
+          );
+        });
+      };
+
+      window.addEventListener(
+        'resize',
+        syncDesktopDefaultCopyCentre,
+        { passive: true }
+      );
+
+      window.addEventListener(
+        'orientationchange',
+        syncDesktopDefaultCopyCentre,
+        { passive: true }
+      );
+
+      desktop.addEventListener?.(
+        'change',
+        syncDesktopDefaultCopyCentre
+      );
+
+      const resizeObserver = new ResizeObserver(
+        syncDesktopDefaultCopyCentre
+      );
+
+      resizeObserver.observe(wordmark);
+      resizeObserver.observe(services);
+
+      if (document.fonts?.ready) {
+        document.fonts.ready
+          .then(syncDesktopDefaultCopyCentre)
+          .catch(() => {});
+      }
+
+      syncDesktopDefaultCopyCentre();
     })();
   </script>
 
