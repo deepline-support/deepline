@@ -1,11 +1,112 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Deepline - remote multidisciplinary support, digital systems and creative direction for NGOs and independent organisations." />
+
+  <!-- Search -->
+  <title>Deepline | Forward-Deployed Technical &amp; Creative Practice</title>
+  <meta name="description" content="Independent forward-deployed technical and creative practice providing technical support, automation and creative direction for small businesses and NGOs." />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <link rel="canonical" href="https://deepline.support/" />
+
+  <!-- Entity / application -->
+  <meta name="application-name" content="Deepline" />
+  <meta name="author" content="Deepline" />
   <meta name="theme-color" content="#050505" />
-  <title>Deepline - Remote multidisciplinary support</title>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Deepline" />
+  <meta property="og:locale" content="en_GB" />
+  <meta property="og:url" content="https://deepline.support/" />
+  <meta property="og:title" content="Deepline | Forward-Deployed Technical &amp; Creative Practice" />
+  <meta property="og:description" content="Independent forward-deployed technical and creative practice providing technical support, automation and creative direction for small businesses and NGOs." />
+
+  <!-- X / Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Deepline | Forward-Deployed Technical &amp; Creative Practice" />
+  <meta name="twitter:description" content="Independent forward-deployed technical and creative practice providing technical support, automation and creative direction for small businesses and NGOs." />
+
+  <!-- Structured data: organisation + service architecture -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://deepline.support/#organization",
+      "name": "Deepline",
+      "url": "https://deepline.support/",
+      "description": "Independent forward-deployed technical and creative practice.",
+      "email": "deploy@deepline.support",
+      "areaServed": "Worldwide",
+      "knowsAbout": [
+        "IT support",
+        "technical support",
+        "digital maintenance",
+        "website maintenance",
+        "troubleshooting",
+        "workflow engineering",
+        "automation",
+        "internal tools",
+        "systems integration",
+        "process improvement",
+        "scripting",
+        "creative technology",
+        "creative direction",
+        "ideation",
+        "innovation",
+        "conceptual development",
+        "multidisciplinary problem-solving"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://deepline.support/#website",
+      "url": "https://deepline.support/",
+      "name": "Deepline",
+      "publisher": {
+        "@id": "https://deepline.support/#organization"
+      },
+      "inLanguage": "en-GB"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://deepline.support/#overwatch",
+      "name": "Overwatch",
+      "url": "https://deepline.support/#overwatch",
+      "serviceType": "IT support, technical support, digital maintenance and operational support",
+      "provider": {
+        "@id": "https://deepline.support/#organization"
+      },
+      "description": "Reliable remote support covering IT assistance, troubleshooting, software setup, website maintenance and platform administration."
+    },
+    {
+      "@type": "Service",
+      "@id": "https://deepline.support/#forge",
+      "name": "Forge",
+      "url": "https://deepline.support/#forge",
+      "serviceType": "Workflow engineering, automation, systems integration and technical implementation",
+      "provider": {
+        "@id": "https://deepline.support/#organization"
+      },
+      "description": "Purpose-built workflows, automations, integrations and digital solutions designed to make organisational processes simpler and more capable."
+    },
+    {
+      "@type": "Service",
+      "@id": "https://deepline.support/#eden",
+      "name": "Eden",
+      "url": "https://deepline.support/#eden",
+      "serviceType": "Creative technology, creative direction, ideation and conceptual development",
+      "provider": {
+        "@id": "https://deepline.support/#organization"
+      },
+      "description": "Creative direction, brand, interface and concept development for projects that need a strong idea, a coherent system and considered execution."
+    }
+  ]
+}
+  </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23050505'/%3E%3Cpath d='M12 21h22c11 0 18 5 18 11s-7 11-18 11H12' fill='none' stroke='%23f4f4ef' stroke-width='5'/%3E%3C/svg%3E" />
   <style>
     :root {
@@ -6222,10 +6323,10 @@
         </div>
       </div>
     </section>
-<section id="services">
+<section id="services" aria-label="Deepline services">
       <div class="services">
-        <article class="service reveal cursor-target" data-context="overwatch">
-          <h3>Overwatch</h3>
+        <article id="overwatch" class="service reveal cursor-target" data-context="overwatch" aria-labelledby="overwatch-title">
+          <h3 id="overwatch-title">Overwatch</h3>
           <p class="tagline mobile-tagline">Reliable remote support.</p>
           <ul>
             <li>IT assistance</li>
@@ -6238,8 +6339,8 @@
           <div class="price"><small>SERVICE STARTING AT</small><strong class="fx-price" data-gbp="800" data-suffix="/mo">£800<span>/mo</span></strong></div>
         </article>
 
-        <article class="service reveal cursor-target" data-context="forge">
-          <h3>Forge</h3>
+        <article id="forge" class="service reveal cursor-target" data-context="forge" aria-labelledby="forge-title">
+          <h3 id="forge-title">Forge</h3>
           <p class="tagline mobile-tagline">Crafted digital solutions.</p>
           <ul>
             <li>Automation</li>
@@ -6251,8 +6352,8 @@
           <div class="price"><small>PROJECTS FROM</small><strong class="fx-price" data-gbp="1000">£1000</strong></div>
         </article>
 
-        <article class="service reveal cursor-target" data-context="eden">
-          <h3>Eden</h3>
+        <article id="eden" class="service reveal cursor-target" data-context="eden" aria-labelledby="eden-title">
+          <h3 id="eden-title">Eden</h3>
           <p class="tagline mobile-tagline">Pure creation.</p>
           <ul>
             <li>Brand identity</li>
