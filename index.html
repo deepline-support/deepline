@@ -8224,10 +8224,8 @@
               ? gbp
               : Math.round(gbp * rate);
 
-          const prefix = currency === BASE ? '' : '≈';
-
           el.innerHTML =
-            `<span class="price-metal">${prefix}${formatAmount(currency, converted)}</span>` +
+            `<span class="price-metal">${formatAmount(currency, converted)}</span>` +
             (suffix
               ? `<span class="price-suffix">${suffix}</span>`
               : '');
