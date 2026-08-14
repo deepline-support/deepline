@@ -6302,6 +6302,46 @@
       }
     }
 
+
+    /* =========================================================
+       MOBILE SCROLL + SWIPE STABILITY
+       ========================================================= */
+    @media (hover: none) and (pointer: coarse) {
+      html,
+      body {
+        overscroll-behavior-x: none !important;
+        overscroll-behavior-y: none !important;
+      }
+
+      main#top {
+        overflow-x: clip !important;
+        overflow-y: visible !important;
+      }
+
+      .site-copyright {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+      }
+    }
+
+    @media (max-width: 960px) {
+      #global.global > .global-copy:not(.is-service-context) {
+        left: 50% !important;
+        right: auto !important;
+        width: min(940px, calc(100% - (var(--pad) * 2))) !important;
+        max-width: calc(100% - (var(--pad) * 2)) !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        transform: translate(-50%, -50%) !important;
+      }
+
+      #global.global > .global-copy:not(.is-service-context) .homepage-slide {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-inline: auto !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -7354,6 +7394,8 @@
       let defaultRestoreTimer = 0;
       let cursorBlinkTimer = 0;
       let slideTimer = 0;
+      let defaultSlideTransitionLocked = false;
+      let defaultSlideTransitionUnlockTimer = 0;
 
       const jitter = (min, max) =>
         Math.round(min + Math.random() * (max - min));
@@ -7565,7 +7607,11 @@
       };
 
       const fadeContentTo = (nextHTML, token, duration = 330) => {
+        // Swipes/autoplay can interrupt a transition. Always start from a
+        // clean geometry state so stale inline transforms never accumulate.
         content.getAnimations().forEach(animation => animation.cancel());
+        content.style.opacity = '';
+        content.style.transform = '';
 
         const outgoing = content.animate(
           [
@@ -7580,7 +7626,11 @@
         );
 
         outgoing.finished.then(() => {
-          if (token !== sequence) return;
+          if (token !== sequence) {
+            content.style.opacity = '';
+            content.style.transform = '';
+            return;
+          }
 
           content.innerHTML = nextHTML;
           content.style.opacity = '0';
@@ -7589,7 +7639,11 @@
           armDefaultSlideHighlights();
 
           requestAnimationFrame(() => {
-            if (token !== sequence) return;
+            if (token !== sequence) {
+              content.style.opacity = '';
+              content.style.transform = '';
+              return;
+            }
 
             const incoming = content.animate(
               [
@@ -7605,12 +7659,17 @@
             );
 
             incoming.finished.then(() => {
-              if (token !== sequence) return;
               content.style.opacity = '';
               content.style.transform = '';
-            }).catch(() => {});
+            }).catch(() => {
+              content.style.opacity = '';
+              content.style.transform = '';
+            });
           });
-        }).catch(() => {});
+        }).catch(() => {
+          content.style.opacity = '';
+          content.style.transform = '';
+        });
       };
 
       const scheduleSlide = () => {
@@ -7619,6 +7678,11 @@
 
         slideTimer = window.setTimeout(() => {
           if (activeKey !== 'default') return;
+
+          if (defaultSlideTransitionLocked) {
+            scheduleSlide();
+            return;
+          }
 
           activeSlide = (activeSlide + 1) % defaultSlides.length;
           const token = ++sequence;
@@ -7656,7 +7720,21 @@
       };
 
       const moveDefaultSlide = direction => {
-        if (activeKey !== 'default') return;
+        if (
+          activeKey !== 'default' ||
+          defaultSlideTransitionLocked
+        ) return;
+
+        defaultSlideTransitionLocked = true;
+
+        if (defaultSlideTransitionUnlockTimer) {
+          window.clearTimeout(defaultSlideTransitionUnlockTimer);
+        }
+
+        defaultSlideTransitionUnlockTimer = window.setTimeout(() => {
+          defaultSlideTransitionLocked = false;
+          defaultSlideTransitionUnlockTimer = 0;
+        }, 720);
 
         clearSlideTimer();
 
@@ -7925,6 +8003,11 @@
 
       const centreVisibleText = () => {
         cancelAnimationFrame(raf);
+
+        if (window.innerWidth <= 960) {
+          copy.style.setProperty('--copy-optical-x', '0px');
+          return;
+        }
 
         raf = requestAnimationFrame(() => {
           if (copy.classList.contains('is-service-context')) {
@@ -8488,95 +8571,43 @@
         '(hover: none) and (pointer: coarse)'
       );
 
-      const copyright = document.querySelector('.site-copyright');
-      if (!copyright) return;
+      if (!touchDevice.matches) return;
 
-      let raf = 0;
-      let correcting = false;
+      /*
+       * Do not force scrollTo() while iOS is scrolling/overscrolling.
+       * That fights Safari's native elastic boundary and causes the
+       * footer-area bounce/jitter.
+       *
+       * Copyright is already the final DOM element and decorative layers
+       * are clipped, so the native scroll range is the correct page end.
+       */
 
-      const viewportHeight = () =>
-        window.visualViewport?.height ||
-        document.documentElement.clientHeight ||
-        window.innerHeight;
-
-      const contentEndY = () => {
-        const rect = copyright.getBoundingClientRect();
-        return window.scrollY + rect.bottom;
-      };
-
-      const clampToContent = () => {
-        if (!touchDevice.matches || correcting) return;
-
-        cancelAnimationFrame(raf);
-
-        raf = requestAnimationFrame(() => {
-          const maxY = Math.max(
-            0,
-            Math.ceil(contentEndY() - viewportHeight())
-          );
-
-          const xOut = Math.abs(window.scrollX) > 0.5;
-          const yOut = window.scrollY > maxY + 0.5;
-
-          if (!xOut && !yOut) return;
-
-          correcting = true;
-
-          window.scrollTo({
-            left: 0,
-            top: Math.min(window.scrollY, maxY),
-            behavior: 'auto'
-          });
-
-          requestAnimationFrame(() => {
-            correcting = false;
-          });
-        });
-      };
-
-      window.addEventListener('scroll', clampToContent, { passive: true });
-      window.addEventListener('resize', clampToContent, { passive: true });
-      window.addEventListener('orientationchange', () => {
-        window.setTimeout(clampToContent, 80);
-        window.setTimeout(clampToContent, 320);
-      }, { passive: true });
-
-      window.visualViewport?.addEventListener(
-        'resize',
-        clampToContent,
-        { passive: true }
-      );
-
-      // A pinch creates a separate pannable visual viewport on iOS.
-      // Blocking multi-touch keeps the actual document bounds authoritative.
       document.addEventListener('touchmove', event => {
-        if (
-          touchDevice.matches &&
-          event.touches.length > 1
-        ) {
+        if (event.touches.length > 1) {
           event.preventDefault();
         }
       }, { passive: false });
 
-      // Safari-specific gesture events.
       ['gesturestart', 'gesturechange', 'gestureend'].forEach(type => {
         document.addEventListener(type, event => {
-          if (!touchDevice.matches) return;
           event.preventDefault();
         }, { passive: false });
       });
 
-      // Dynamic service-context copy can change the real document end.
-      const mutationObserver = new MutationObserver(clampToContent);
-      mutationObserver.observe(document.querySelector('main#top'), {
-        subtree: true,
-        childList: true,
-        characterData: true,
-        attributes: true,
-        attributeFilter: ['class', 'style']
-      });
+      const resetHorizontalOffset = () => {
+        if (Math.abs(window.scrollX) < 0.5) return;
 
-      clampToContent();
+        window.scrollTo({
+          left: 0,
+          top: window.scrollY,
+          behavior: 'auto'
+        });
+      };
+
+      window.addEventListener('orientationchange', () => {
+        window.setTimeout(resetHorizontalOffset, 120);
+        window.setTimeout(resetHorizontalOffset, 420);
+      }, { passive: true });
     })();
   </script>
 
