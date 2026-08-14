@@ -6252,8 +6252,8 @@
 
     /* =========================================================
        TOUCH PRICE MATERIAL — TILT-REACTIVE METALLIC SHEEN
-       Static white/grey material by default; device tilt moves the
-       highlight across the glyphs when motion access is available.
+       Stronger tonal contrast so the reflective effect is unmistakable,
+       while remaining monochrome and consistent with Deepline.
        ========================================================= */
     @media (hover: none) and (pointer: coarse) {
       #services .price strong.fx-price {
@@ -6266,40 +6266,62 @@
         background-image:
           linear-gradient(
             var(--price-sheen-angle),
-            #d3d3ce 0%,
-            #f0f0eb 20%,
-            #ffffff 36%,
-            #c5c5c0 50%,
-            #f9f9f4 64%,
-            #ddddD8 80%,
-            #f4f4ef 100%
+            #72726e 0%,
+            #9b9b96 12%,
+            #d4d4cf 25%,
+            #ffffff 38%,
+            #f7f7f2 43%,
+            #858580 54%,
+            #b8b8b3 66%,
+            #ffffff 79%,
+            #c9c9c4 88%,
+            #6f6f6b 100%
           ) !important;
-        background-size: 235% 100% !important;
+
+        background-size: 320% 100% !important;
         background-position: var(--price-sheen-x) 50% !important;
         background-repeat: no-repeat !important;
 
         -webkit-background-clip: text !important;
         background-clip: text !important;
 
-        filter: drop-shadow(0 0 0 rgba(255,255,255,0));
+        filter:
+          drop-shadow(0 0 .01px rgba(255,255,255,.20))
+          contrast(1.06);
+
         transition:
-          background-position 90ms linear,
-          filter 180ms ease !important;
+          background-position 70ms linear,
+          filter 160ms ease !important;
 
         will-change: background-position;
       }
 
-      /* Currency approximation prefix and /mo suffix remain part of the
-         same reflective material instead of reverting to flat grey. */
       #services .price strong.fx-price span,
       #services .price strong.fx-price .fx-prefix {
-        color: transparent !important;
-        -webkit-text-fill-color: transparent !important;
+        color: inherit !important;
+        -webkit-text-fill-color: inherit !important;
+      }
+
+      /* Until sensor permission becomes active, keep a very slow, restrained
+         material drift so the reflective treatment is still visible. */
+      html:not(.price-tilt-active) #services .price strong.fx-price {
+        animation:
+          deepline-price-idle-sheen 6.8s
+          cubic-bezier(.45,0,.25,1)
+          infinite alternate;
       }
 
       html.price-tilt-active #services .price strong.fx-price {
-        filter: drop-shadow(0 0 .01px rgba(255,255,255,.12));
+        animation: none !important;
+        filter:
+          drop-shadow(0 0 .01px rgba(255,255,255,.26))
+          contrast(1.08);
       }
+    }
+
+    @keyframes deepline-price-idle-sheen {
+      from { background-position: 34% 50%; }
+      to   { background-position: 66% 50%; }
     }
 
 
@@ -6339,6 +6361,27 @@
         width: 100% !important;
         max-width: 100% !important;
         margin-inline: auto !important;
+      }
+    }
+
+
+    /* =========================================================
+       CROSS-BROWSER MOBILE SCROLL STABILITY
+       Android Chrome / Pixel Chrome / Samsung Internet / iOS Safari
+       ========================================================= */
+    @media (hover: none) and (pointer: coarse) {
+      html,
+      body {
+        overscroll-behavior-x: none !important;
+        overscroll-behavior-y: none !important;
+        overflow-anchor: none !important;
+      }
+
+      main#top,
+      #global.global,
+      #services,
+      .site-copyright {
+        overflow-anchor: none !important;
       }
     }
 
@@ -7997,7 +8040,7 @@
       let raf = 0;
 
       const getViewportWidth = () =>
-        window.visualViewport?.width || document.documentElement.clientWidth;
+        document.documentElement.clientWidth || window.innerWidth;
 
       let lastViewportWidth = getViewportWidth();
 
@@ -8151,7 +8194,9 @@
   <script>
     (() => {
       const mark = document.querySelector('.wordmark .wordmark-motion');
-      const prices = [...document.querySelectorAll('#services .price strong.fx-price')];
+      const prices = [
+        ...document.querySelectorAll('#services .price strong.fx-price')
+      ];
 
       if (!mark && !prices.length) return;
 
@@ -8159,56 +8204,37 @@
         '(hover: none) and (pointer: coarse)'
       );
 
-      let orientationBound = false;
-      let permissionRequested = false;
-      let sensorActive = false;
-      let framePending = false;
-      let latestEvent = null;
+      let sensorsBound = false;
+      let permissionAttempted = false;
+      let orientationSeenAt = 0;
+      let latestTilt = 0;
+      let rafPending = false;
 
       const clamp = (value, min, max) =>
         Math.min(max, Math.max(min, value));
 
       const screenAngle = () => {
         const modern = Number(window.screen?.orientation?.angle);
-        if (Number.isFinite(modern)) return modern;
-
-        const legacy = Number(window.orientation);
-        return Number.isFinite(legacy) ? legacy : 0;
-      };
-
-      const horizontalTilt = event => {
-        const gamma = Number(event.gamma);
-        const beta = Number(event.beta);
-
-        if (!Number.isFinite(gamma) && !Number.isFinite(beta)) return 0;
-
-        const angle = ((screenAngle() % 360) + 360) % 360;
-
-        // In portrait, gamma is the natural left/right axis.
-        if (angle === 0 || angle === 180) {
-          const value = Number.isFinite(gamma) ? gamma : 0;
-          return angle === 180 ? -value : value;
+        if (Number.isFinite(modern)) {
+          return ((modern % 360) + 360) % 360;
         }
 
-        // In landscape, use beta so the sheen still follows a physical
-        // left/right roll of the handset rather than swapping axes.
-        const value = Number.isFinite(beta) ? beta : 0;
-        return angle === 90 ? value : -value;
+        const legacy = Number(window.orientation);
+        return Number.isFinite(legacy)
+          ? ((legacy % 360) + 360) % 360
+          : 0;
       };
 
-      const renderTilt = () => {
-        framePending = false;
+      const render = () => {
+        rafPending = false;
+        if (!touchDevice.matches) return;
 
-        if (!touchDevice.matches || !latestEvent) return;
+        const normalized = clamp(latestTilt, -1, 1);
 
-        const rawTilt = clamp(horizontalTilt(latestEvent), -42, 42);
-        const normalized = rawTilt / 42;
+        // Stronger travel than before so physical tilt is visibly obvious.
+        const sheenX = 50 + (normalized * 44);
+        const sheenAngle = 104 - (normalized * 12);
 
-        // Keep the movement restrained: reflective rather than gimmicky.
-        const sheenX = 50 + (normalized * 34);
-        const angle = 104 - (normalized * 8);
-
-        sensorActive = true;
         document.documentElement.classList.add('price-tilt-active');
 
         prices.forEach(price => {
@@ -8218,108 +8244,195 @@
           );
           price.style.setProperty(
             '--price-sheen-angle',
-            `${angle.toFixed(2)}deg`
+            `${sheenAngle.toFixed(2)}deg`
           );
         });
 
-        // Preserve the existing mobile wordmark sheen using the same
-        // orientation event / permission grant.
         if (mark) {
           mark.classList.add('tilt-sheen-active');
-
-          const wordmarkX = 50 + (normalized * 43);
           mark.style.setProperty(
             '--wordmark-sheen-x',
-            `${wordmarkX.toFixed(2)}%`
+            `${(50 + normalized * 43).toFixed(2)}%`
           );
         }
       };
 
-      const applyOrientation = event => {
-        if (!touchDevice.matches) return;
+      const queueTilt = normalized => {
+        latestTilt = clamp(normalized, -1, 1);
 
-        latestEvent = event;
-
-        if (framePending) return;
-        framePending = true;
-        requestAnimationFrame(renderTilt);
+        if (rafPending) return;
+        rafPending = true;
+        requestAnimationFrame(render);
       };
 
-      const bindOrientation = () => {
-        if (orientationBound) return;
+      const orientationTilt = event => {
+        if (!touchDevice.matches) return;
 
-        orientationBound = true;
+        const gamma = Number(event.gamma);
+        const beta = Number(event.beta);
+
+        if (!Number.isFinite(gamma) && !Number.isFinite(beta)) return;
+
+        orientationSeenAt = performance.now();
+
+        const angle = screenAngle();
+        let degrees = 0;
+
+        if (angle === 90 || angle === 270) {
+          degrees = Number.isFinite(beta) ? beta : 0;
+          if (angle === 270) degrees *= -1;
+        } else {
+          degrees = Number.isFinite(gamma) ? gamma : 0;
+          if (angle === 180) degrees *= -1;
+        }
+
+        queueTilt(clamp(degrees / 34, -1, 1));
+      };
+
+      const motionTilt = event => {
+        if (!touchDevice.matches) return;
+
+        // Prefer DeviceOrientation whenever it is actually delivering events.
+        if (performance.now() - orientationSeenAt < 350) return;
+
+        const gravity = event.accelerationIncludingGravity;
+        if (!gravity) return;
+
+        const x = Number(gravity.x);
+        const y = Number(gravity.y);
+
+        if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+
+        const angle = screenAngle();
+        let axis = x;
+
+        if (angle === 90) axis = -y;
+        else if (angle === 180) axis = -x;
+        else if (angle === 270) axis = y;
+
+        // ±6.5 m/s² gives a responsive but not twitchy useful range.
+        queueTilt(clamp(axis / 6.5, -1, 1));
+      };
+
+      const bindSensors = () => {
+        if (sensorsBound) return;
+        sensorsBound = true;
+
         window.addEventListener(
           'deviceorientation',
-          applyOrientation,
+          orientationTilt,
+          { passive: true }
+        );
+
+        window.addEventListener(
+          'devicemotion',
+          motionTilt,
           { passive: true }
         );
       };
 
-      const enableIOSOrientation = async () => {
-        if (permissionRequested) return;
-        permissionRequested = true;
+      const requestSensorAccess = async () => {
+        if (permissionAttempted || !touchDevice.matches) return;
+        permissionAttempted = true;
 
-        const orientationAPI = window.DeviceOrientationEvent;
+        const Orientation = window.DeviceOrientationEvent;
+        const Motion = window.DeviceMotionEvent;
 
-        if (
-          !orientationAPI ||
-          typeof orientationAPI.requestPermission !== 'function'
-        ) {
-          bindOrientation();
+        const orientationNeedsPermission =
+          Orientation &&
+          typeof Orientation.requestPermission === 'function';
+
+        const motionNeedsPermission =
+          Motion &&
+          typeof Motion.requestPermission === 'function';
+
+        // Android/Chrome and browsers without explicit permission gating.
+        if (!orientationNeedsPermission && !motionNeedsPermission) {
+          bindSensors();
           return;
         }
 
         try {
-          // iOS 13+ requires this call from a real user gesture.
-          const permission = await orientationAPI.requestPermission();
+          /*
+           * iOS requires requestPermission() from a physical user gesture.
+           * Start both permission calls synchronously inside the same gesture
+           * before awaiting either promise.
+           */
+          const orientationPromise = orientationNeedsPermission
+            ? Orientation.requestPermission()
+            : Promise.resolve('granted');
 
-          if (permission === 'granted') {
-            bindOrientation();
+          const motionPromise = motionNeedsPermission
+            ? Motion.requestPermission()
+            : Promise.resolve('granted');
+
+          const [orientationPermission, motionPermission] =
+            await Promise.allSettled([
+              orientationPromise,
+              motionPromise
+            ]);
+
+          const orientationGranted =
+            orientationPermission.status === 'fulfilled' &&
+            orientationPermission.value === 'granted';
+
+          const motionGranted =
+            motionPermission.status === 'fulfilled' &&
+            motionPermission.value === 'granted';
+
+          if (orientationGranted || motionGranted) {
+            bindSensors();
           }
         } catch (_) {
-          // The static white/grey material remains if permission is
-          // unavailable or declined.
+          // Keep the static/idle metallic material if sensor access fails.
         }
       };
 
-      if (
-        window.DeviceOrientationEvent &&
-        typeof window.DeviceOrientationEvent.requestPermission === 'function'
-      ) {
-        // On iOS, request motion access from a meaningful interaction:
-        // tapping the main wordmark or any service card. This avoids
-        // interrupting the START A PROJECT mailto action.
-        document.addEventListener(
-          'pointerdown',
-          event => {
-            if (!touchDevice.matches || permissionRequested) return;
+      // Browsers without explicit permission gating can start immediately.
+      const Orientation = window.DeviceOrientationEvent;
+      const Motion = window.DeviceMotionEvent;
 
-            const trigger = event.target?.closest?.(
-              '.wordmark, .service[data-context]'
-            );
+      const explicitPermissionRequired =
+        (Orientation &&
+          typeof Orientation.requestPermission === 'function') ||
+        (Motion &&
+          typeof Motion.requestPermission === 'function');
 
-            if (!trigger) return;
-            enableIOSOrientation();
-          },
-          { passive: true }
-        );
+      if (!explicitPermissionRequired) {
+        bindSensors();
       } else {
-        // Android / browsers that don't require explicit permission.
-        bindOrientation();
+        /*
+         * iOS: request on the first ordinary interaction anywhere on the site,
+         * excluding mailto links so START A PROJECT is never interrupted.
+         * pointerup + touchend are both covered; the guard prevents duplicates.
+         */
+        const activationHandler = event => {
+          if (permissionAttempted || !touchDevice.matches) return;
+
+          const target = event.target;
+          if (target?.closest?.('a[href^="mailto:"]')) return;
+
+          requestSensorAccess();
+        };
+
+        document.addEventListener(
+          'pointerup',
+          activationHandler,
+          { passive: true, capture: true }
+        );
+
+        document.addEventListener(
+          'touchend',
+          activationHandler,
+          { passive: true, capture: true }
+        );
       }
 
       touchDevice.addEventListener?.('change', event => {
-        if (!event.matches) {
-          document.documentElement.classList.remove('price-tilt-active');
-          mark?.classList.remove('tilt-sheen-active');
-          return;
-        }
+        if (event.matches) return;
 
-        if (sensorActive) {
-          document.documentElement.classList.add('price-tilt-active');
-          mark?.classList.add('tilt-sheen-active');
-        }
+        document.documentElement.classList.remove('price-tilt-active');
+        mark?.classList.remove('tilt-sheen-active');
       });
     })();
   </script>
@@ -8393,9 +8506,33 @@
       resizeObserver.observe(copy);
       resizeObserver.observe(content);
 
-      window.addEventListener('resize', syncMobileContextSpacing, {
-        passive: true
-      });
+      let lastLayoutWidth =
+        document.documentElement.clientWidth || window.innerWidth;
+
+      const handleContextViewportResize = () => {
+        const width =
+          document.documentElement.clientWidth || window.innerWidth;
+
+        // Mobile browsers on both Android and iOS change viewport HEIGHT
+        // as their address/tool bars collapse or expand during scrolling.
+        // That is not a layout-width change and must never resize the
+        // service-content field or alter the document height mid-scroll.
+        if (
+          window.innerWidth <= 960 &&
+          Math.abs(width - lastLayoutWidth) < 1
+        ) {
+          return;
+        }
+
+        lastLayoutWidth = width;
+        syncMobileContextSpacing();
+      };
+
+      window.addEventListener(
+        'resize',
+        handleContextViewportResize,
+        { passive: true }
+      );
 
       if (document.fonts?.ready) {
         document.fonts.ready
@@ -8537,13 +8674,16 @@
       const resize = new ResizeObserver(sync);
       resize.observe(content);
 
-      let lastWidth = window.innerWidth;
+      let lastWidth =
+        document.documentElement.clientWidth || window.innerWidth;
 
       const handleResize = () => {
-        const width = window.innerWidth;
+        const width =
+          document.documentElement.clientWidth || window.innerWidth;
 
-        // iOS browser chrome changes viewport height during scroll. That must
-        // not make the content bob. Recalculate only for a real width change.
+        // Mobile browser chrome on Android AND iOS changes viewport height
+        // during scroll. Never reflow/recentre the content for a height-only
+        // browser-UI change; recalculate only when the layout width changes.
         if (Math.abs(width - lastWidth) < 1 && mobile.matches) return;
 
         lastWidth = width;
@@ -8574,9 +8714,9 @@
       if (!touchDevice.matches) return;
 
       /*
-       * Do not force scrollTo() while iOS is scrolling/overscrolling.
-       * That fights Safari's native elastic boundary and causes the
-       * footer-area bounce/jitter.
+       * Do not force scrollTo() while a touch browser is scrolling or
+       * overscrolling. Programmatic correction can fight native scroll
+       * physics and cause footer-area bounce/jitter across mobile browsers.
        *
        * Copyright is already the final DOM element and decorative layers
        * are clipped, so the native scroll range is the correct page end.
