@@ -7378,6 +7378,115 @@
       }
     }
 
+
+    /* =========================================================
+       COPYRIGHT — WHITE
+       ========================================================= */
+    .site-copyright {
+      color: #f4f4ef !important;
+    }
+
+
+    /* =========================================================
+       DESKTOP CARD TYPOGRAPHY — RESTORE PRICE SCALE
+       The localisation markup now wraps the number in .price-metal.
+       Legacy generic span rules were shrinking that wrapper to ~.43em.
+       Restore only the desktop numeric price to the original strong size.
+       ========================================================= */
+    @media (min-width: 961px) {
+      #services .price strong.fx-price {
+        color: #f4f4ef !important;
+        -webkit-text-fill-color: #f4f4ef !important;
+      }
+
+      #services .price strong.fx-price .price-metal {
+        display: inline !important;
+
+        font-size: 1em !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+        letter-spacing: inherit !important;
+
+        color: inherit !important;
+        -webkit-text-fill-color: inherit !important;
+
+        background: none !important;
+        filter: none !important;
+        animation: none !important;
+      }
+
+      #services .price strong.fx-price .price-suffix {
+        display: inline !important;
+
+        font-size: .48em !important;
+        font-weight: 420 !important;
+        line-height: inherit !important;
+        letter-spacing: 0 !important;
+
+        color: var(--muted) !important;
+        -webkit-text-fill-color: var(--muted) !important;
+
+        background: none !important;
+        filter: none !important;
+
+        position: static !important;
+        vertical-align: baseline !important;
+      }
+    }
+
+
+    /* =========================================================
+       DESKTOP CARD TAGLINES — PERFECTLY EVEN VERTICAL RHYTHM
+       Title → tagline = tagline → first capability.
+       Keep everything in normal flow so no text can overlap.
+       ========================================================= */
+    @media (min-width: 961px) {
+      #services .service h3 {
+        margin: 0 0 8px !important;
+      }
+
+      #services .service .mobile-tagline {
+        display: block !important;
+        position: static !important;
+        inset: auto !important;
+
+        width: auto !important;
+        max-width: none !important;
+
+        margin: 0 0 8px !important;
+        padding: 0 !important;
+
+        transform: none !important;
+
+        font-size: 13px !important;
+        font-weight: 400 !important;
+        line-height: 1.3 !important;
+        letter-spacing: 0 !important;
+
+        color: #d6d6d1 !important;
+        text-align: left !important;
+        white-space: normal !important;
+        text-wrap: wrap !important;
+      }
+
+      #services .service ul {
+        position: static !important;
+        margin-top: 0 !important;
+      }
+    }
+
+    @media (min-width: 961px) and (max-height: 780px) {
+      #services .service h3 {
+        margin-bottom: 6px !important;
+      }
+
+      #services .service .mobile-tagline {
+        margin-bottom: 6px !important;
+        font-size: 11.5px !important;
+        line-height: 1.25 !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -9440,7 +9549,31 @@
       const Orientation = window.DeviceOrientationEvent;
       const Motion = window.DeviceMotionEvent;
 
-      const needsExplicitPermission =
+      const ua = navigator.userAgent || '';
+      const platform = navigator.platform || '';
+
+      const isIOSLike =
+        /iPad|iPhone|iPod/i.test(ua) ||
+        (
+          platform === 'MacIntel' &&
+          navigator.maxTouchPoints > 1
+        );
+
+      /*
+       * Bind immediately on every platform.
+       *
+       * Android / Chrome / Samsung can begin delivering sensor data
+       * straight away when the browser permits it, even if a modern
+       * implementation exposes requestPermission().
+       *
+       * iOS simply withholds sensor events until Apple's required
+       * permission has been granted, so the same listeners can safely
+       * remain attached before the prompt.
+       */
+      bindSensors();
+
+      const iosPermissionAPIAvailable =
+        isIOSLike &&
         Boolean(
           (Orientation &&
             typeof Orientation.requestPermission === 'function') ||
@@ -9448,10 +9581,7 @@
             typeof Motion.requestPermission === 'function')
         );
 
-      if (!needsExplicitPermission) {
-        // Android / Chrome / Samsung / browsers without iOS-style gating.
-        bindSensors();
-      } else {
+      if (iosPermissionAPIAvailable) {
         const activate = event => {
           if (permissionRequested) return;
 
@@ -9463,14 +9593,13 @@
           requestIOSMotion();
         };
 
-        // `click` is the most reliable iOS permission-gesture source.
+        // Apple's permission request must originate from a real user gesture.
         document.addEventListener(
           'click',
           activate,
           { capture: true, passive: true }
         );
 
-        // Also cover touch-only interactions that do not synthesize click.
         document.addEventListener(
           'touchend',
           activate,
