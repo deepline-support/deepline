@@ -7077,6 +7077,165 @@
       }
     }
 
+
+    /* =========================================================
+       MOBILE METALLIC MATERIAL — REFINED
+       Restore original price scale, keep /mo muted, soften the
+       reflective contrast, and use the same material on DEEPLINE.
+       ========================================================= */
+    @media (max-width: 960px), (hover: none) and (pointer: coarse) {
+      /* The wrapper keeps the original responsive price typography. */
+      #services .price strong.fx-price {
+        color: #f4f4ef !important;
+        -webkit-text-fill-color: #f4f4ef !important;
+        background: none !important;
+        filter: none !important;
+        animation: none !important;
+      }
+
+      /* IMPORTANT: generic legacy rules size every span inside a price
+         to ~.43em. Explicitly return the actual price span to 1em so the
+         original large card-price scale is preserved. */
+      #services .price strong.fx-price .price-metal {
+        --price-sheen-x: 50%;
+        --price-sheen-angle: 104deg;
+
+        display: inline-block !important;
+
+        font-size: 1em !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+        letter-spacing: inherit !important;
+
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+
+        background-image:
+          linear-gradient(
+            var(--price-sheen-angle),
+            #92928d 0%,
+            #aaa9a4 13%,
+            #d4d3ce 27%,
+            #f5f5f0 39%,
+            #ecece7 45%,
+            #aaa9a4 56%,
+            #c6c5c0 68%,
+            #f1f1ec 80%,
+            #c9c8c3 89%,
+            #90908b 100%
+          ) !important;
+
+        background-size: 300% 100% !important;
+        background-position: var(--price-sheen-x) 50% !important;
+        background-repeat: no-repeat !important;
+
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+
+        filter: contrast(1.035);
+        transition:
+          background-position 55ms linear,
+          filter 140ms ease !important;
+
+        will-change: background-position;
+      }
+
+      /* Restore the original secondary /mo treatment. */
+      #services .price strong.fx-price .price-suffix {
+        font-size: .43em !important;
+        font-weight: 420 !important;
+        line-height: inherit !important;
+        letter-spacing: 0 !important;
+
+        color: var(--muted) !important;
+        -webkit-text-fill-color: var(--muted) !important;
+
+        background: none !important;
+        filter: none !important;
+      }
+
+      /* The approximate-currency prefix stays part of the metal price. */
+      #services .price strong.fx-price .price-metal .fx-prefix {
+        color: inherit !important;
+        -webkit-text-fill-color: inherit !important;
+      }
+
+      html:not(.price-tilt-active)
+      #services .price strong.fx-price .price-metal {
+        animation:
+          deepline-subtle-metal-idle 7s
+          cubic-bezier(.45,0,.25,1)
+          infinite alternate;
+      }
+
+      html.price-tilt-active
+      #services .price strong.fx-price .price-metal {
+        animation: none !important;
+      }
+
+
+      /* Same exact reflective material on the main DEEPLINE wordmark. */
+      .wordmark .wordmark-motion {
+        --wordmark-sheen-x: 50%;
+        --wordmark-sheen-angle: 104deg;
+
+        position: relative !important;
+
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+        text-shadow: none !important;
+
+        background-image:
+          linear-gradient(
+            var(--wordmark-sheen-angle),
+            #92928d 0%,
+            #aaa9a4 13%,
+            #d4d3ce 27%,
+            #f5f5f0 39%,
+            #ecece7 45%,
+            #aaa9a4 56%,
+            #c6c5c0 68%,
+            #f1f1ec 80%,
+            #c9c8c3 89%,
+            #90908b 100%
+          ) !important;
+
+        background-size: 300% 100% !important;
+        background-position: var(--wordmark-sheen-x) 50% !important;
+        background-repeat: no-repeat !important;
+
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+
+        filter: contrast(1.035);
+        will-change: transform, opacity, background-position;
+
+        animation:
+          deepline-subtle-metal-idle 7s
+          cubic-bezier(.45,0,.25,1)
+          infinite alternate;
+      }
+
+      /* Remove the older bright white overlay sheen so there is only
+         one material system on the wordmark. */
+      .wordmark .wordmark-motion::after {
+        content: none !important;
+        display: none !important;
+      }
+
+      .wordmark .wordmark-motion.tilt-sheen-active {
+        animation: none !important;
+        transition:
+          background-position 55ms linear,
+          filter 140ms ease !important;
+      }
+    }
+
+    @keyframes deepline-subtle-metal-idle {
+      from { background-position: 34% 50%; }
+      to   { background-position: 66% 50%; }
+    }
+
   </style>
 </head>
 <body>
@@ -8959,11 +9118,20 @@
           );
         });
 
-        if (mark && window.innerWidth <= 960) {
+        if (
+          mark &&
+          (window.innerWidth <= 960 || touchDevice.matches)
+        ) {
           mark.classList.add('tilt-sheen-active');
+
           mark.style.setProperty(
             '--wordmark-sheen-x',
-            `${(50 + displayedTilt * 43).toFixed(2)}%`
+            `${sheenX.toFixed(2)}%`
+          );
+
+          mark.style.setProperty(
+            '--wordmark-sheen-angle',
+            `${sheenAngle.toFixed(2)}deg`
           );
         }
 
