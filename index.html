@@ -5870,6 +5870,52 @@
       }
     }
 
+
+    /* =========================================================
+       MOBILE SERVICE COPY → CARD STACK — FIXED RHYTHM
+       The first card always begins 56px beneath the actual bottom
+       of the active service information, irrespective of how much
+       text that service contains.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #global.mobile-context-spacing {
+        min-height: var(--mobile-context-height, 430px) !important;
+      }
+
+      #global.mobile-context-spacing + #services {
+        margin-top: 0 !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE COPY — TRUE Y-AXIS CENTRE BETWEEN CTA + CARD STACK
+       Applies to BOTH idle/default slides and service context copy.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #global.global {
+        height: var(--mobile-global-field-height, auto) !important;
+        min-height: var(--mobile-global-field-height, 430px) !important;
+      }
+
+      #global.global > .global-copy {
+        top: var(--mobile-copy-centre-y, 50%) !important;
+        bottom: auto !important;
+      }
+
+      /* Keep the existing optical X correction for the rotating slides. */
+      #global.global > .global-copy:not(.is-service-context) {
+        transform:
+          translateX(var(--copy-optical-x, 0px))
+          translateY(-50%) !important;
+      }
+
+      /* Service copy keeps its existing horizontal alignment; Y only moves. */
+      #global.global > .global-copy.is-service-context {
+        transform: translateY(-50%) !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -7655,6 +7701,246 @@
           mark.classList.add('tilt-sheen-active');
         }
       });
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const global = document.querySelector('#global.global');
+      const copy = global?.querySelector(':scope > .global-copy');
+      const content = copy?.querySelector('[data-global-content]');
+
+      if (!global || !copy || !content) return;
+
+      const MOBILE_CONTEXT_GAP = 56;
+      let raf = 0;
+
+      const syncMobileContextSpacing = () => {
+        cancelAnimationFrame(raf);
+
+        raf = requestAnimationFrame(() => {
+          if (
+            window.innerWidth > 960 ||
+            !copy.classList.contains('is-service-context')
+          ) {
+            global.classList.remove('mobile-context-spacing');
+            global.style.removeProperty('--mobile-context-height');
+            return;
+          }
+
+          // Wait one extra frame so newly injected service copy has its
+          // final wrapped height before calculating the section boundary.
+          requestAnimationFrame(() => {
+            if (
+              window.innerWidth > 960 ||
+              !copy.classList.contains('is-service-context')
+            ) {
+              global.classList.remove('mobile-context-spacing');
+              global.style.removeProperty('--mobile-context-height');
+              return;
+            }
+
+            const globalRect = global.getBoundingClientRect();
+            const copyRect = copy.getBoundingClientRect();
+
+            // Card stack begins at #global's bottom edge because its legacy
+            // mobile negative overlap is disabled only while service copy is open.
+            // Therefore: actual copy bottom + exactly 56px = global bottom.
+            const requiredHeight = Math.ceil(
+              (copyRect.bottom - globalRect.top) + MOBILE_CONTEXT_GAP
+            );
+
+            global.style.setProperty(
+              '--mobile-context-height',
+              `${Math.max(430, requiredHeight)}px`
+            );
+            global.classList.add('mobile-context-spacing');
+          });
+        });
+      };
+
+      const mutationObserver = new MutationObserver(syncMobileContextSpacing);
+      mutationObserver.observe(copy, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+
+      const resizeObserver = new ResizeObserver(syncMobileContextSpacing);
+      resizeObserver.observe(copy);
+      resizeObserver.observe(content);
+
+      window.addEventListener('resize', syncMobileContextSpacing, {
+        passive: true
+      });
+
+      if (document.fonts?.ready) {
+        document.fonts.ready
+          .then(syncMobileContextSpacing)
+          .catch(() => {});
+      }
+
+      syncMobileContextSpacing();
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const mobile = window.matchMedia('(max-width: 960px)');
+      const global = document.querySelector('#global.global');
+      const copy = global?.querySelector(':scope > .global-copy');
+      const content = copy?.querySelector('[data-global-content]');
+      const button = document.querySelector('.wordmark-intro .main-page-cta');
+      const services = document.querySelector('#services');
+
+      if (!global || !copy || !content || !button || !services) return;
+
+      const MIN_EDGE_CLEARANCE = 56;
+
+      let raf = 0;
+      let baseGlobalHeight = 430;
+      let initialized = false;
+
+      const readBaseGeometry = () => {
+        // Read the site's normal mobile global height with our inline override
+        // temporarily absent. This preserves the existing default composition.
+        const prior = global.style.getPropertyValue('--mobile-global-field-height');
+        global.style.removeProperty('--mobile-global-field-height');
+
+        const measured = global.getBoundingClientRect().height;
+        baseGlobalHeight = Math.max(430, Math.round(measured || 430));
+
+        if (prior) {
+          global.style.setProperty('--mobile-global-field-height', prior);
+        }
+
+        initialized = true;
+      };
+
+      const sync = () => {
+        cancelAnimationFrame(raf);
+
+        raf = requestAnimationFrame(() => {
+          if (!mobile.matches) {
+            global.style.removeProperty('--mobile-global-field-height');
+            global.style.removeProperty('--mobile-copy-centre-y');
+            return;
+          }
+
+          if (!initialized) readBaseGeometry();
+
+          // First establish the default field height so the flow offset between
+          // #global and #services can be measured without stale service sizing.
+          global.style.setProperty(
+            '--mobile-global-field-height',
+            `${baseGlobalHeight}px`
+          );
+
+          requestAnimationFrame(() => {
+            const initialGlobalRect = global.getBoundingClientRect();
+            const initialServicesRect = services.getBoundingClientRect();
+            const buttonRect = button.getBoundingClientRect();
+
+            // Preserve whatever intentional overlap/margin the existing mobile
+            // card stack has relative to #global.
+            const serviceFlowOffset =
+              initialServicesRect.top - initialGlobalRect.bottom;
+
+            const upperToGlobal =
+              initialGlobalRect.top - buttonRect.bottom;
+
+            const copyHeight = Math.ceil(copy.getBoundingClientRect().height);
+
+            let requiredGlobalHeight = baseGlobalHeight;
+
+            if (copy.classList.contains('is-service-context')) {
+              // To be exactly centred AND retain equal clear space either side:
+              //
+              // button.bottom
+              //   + 56px
+              //   + content height
+              //   + 56px
+              // services.top
+              //
+              // services.top = global.bottom + serviceFlowOffset
+              requiredGlobalHeight = Math.max(
+                baseGlobalHeight,
+                Math.ceil(
+                  copyHeight +
+                  (MIN_EDGE_CLEARANCE * 2) -
+                  upperToGlobal -
+                  serviceFlowOffset
+                )
+              );
+            }
+
+            global.style.setProperty(
+              '--mobile-global-field-height',
+              `${requiredGlobalHeight}px`
+            );
+
+            requestAnimationFrame(() => {
+              const finalGlobalRect = global.getBoundingClientRect();
+              const finalButtonRect = button.getBoundingClientRect();
+              const finalServicesRect = services.getBoundingClientRect();
+
+              // The requested axis is defined by the two actual rendered edges,
+              // not by section heights or guessed padding.
+              const fieldCentreViewportY =
+                (finalButtonRect.bottom + finalServicesRect.top) / 2;
+
+              const copyCentreInsideGlobal =
+                fieldCentreViewportY - finalGlobalRect.top;
+
+              global.style.setProperty(
+                '--mobile-copy-centre-y',
+                `${copyCentreInsideGlobal.toFixed(2)}px`
+              );
+            });
+          });
+        });
+      };
+
+      const mutations = new MutationObserver(sync);
+      mutations.observe(copy, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+
+      const resize = new ResizeObserver(sync);
+      resize.observe(content);
+
+      let lastWidth = window.innerWidth;
+
+      const handleResize = () => {
+        const width = window.innerWidth;
+
+        // iOS browser chrome changes viewport height during scroll. That must
+        // not make the content bob. Recalculate only for a real width change.
+        if (Math.abs(width - lastWidth) < 1 && mobile.matches) return;
+
+        lastWidth = width;
+        initialized = false;
+        sync();
+      };
+
+      window.addEventListener('resize', handleResize, { passive: true });
+
+      if (document.fonts?.ready) {
+        document.fonts.ready.then(() => {
+          initialized = false;
+          sync();
+        }).catch(() => {});
+      }
+
+      sync();
     })();
   </script>
 
