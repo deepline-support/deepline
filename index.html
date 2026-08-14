@@ -8057,7 +8057,7 @@
             <li>IT assistance</li>
             <li>Troubleshooting</li>
             <li>Software setup</li>
-            <li>Website/Platform maintenance</li>
+            <li>Website &amp; Platform maintenance</li>
             <li>Lightweight digital tasks & fixes</li>
           </ul>
           <div class="price"><small>SERVICE STARTING AT</small><strong class="fx-price" data-gbp="800" data-suffix="/mo"><span class="price-metal">£800</span><span class="price-suffix">/mo</span></strong></div>
@@ -8081,7 +8081,7 @@
           <p class="tagline mobile-tagline">Pure creation.</p>
           <ul>
             <li>Brand identity</li>
-            <li>UI / UX</li>
+            <li>UX &amp; UI</li>
             <li>Concept development</li>
             <li>Creative direction</li>
           </ul>
@@ -8256,10 +8256,17 @@
           const suffix = el.dataset.suffix || '';
           if (!Number.isFinite(gbp)) return;
 
+          const rawConverted =
+            currency === BASE
+              ? gbp
+              : gbp * rate;
+
           const converted =
             currency === BASE
               ? gbp
-              : Math.round(gbp * rate);
+              : (currency === 'USD' || currency === 'EUR')
+                ? Math.floor(rawConverted / 100) * 100
+                : Math.round(rawConverted);
 
           el.innerHTML =
             `<span class="price-metal">${formatAmount(currency, converted)}</span>` +
@@ -8792,7 +8799,7 @@
 
               <div class="context-subsection context-subsection-full">
                 <span class="context-emphasis context-emphasis-lead forge-lead">Comfortable in all conditions.</span>
-                <p class="context-detail">From the latest agentic intelligence and industry-standard platforms like Microsoft 365, to custom internal scripts and legacy software. Deepline operatives adapt to the systems you already use and build from there.</p>
+                <p class="context-detail">Whether it’s the latest agentic intelligence, industry-standard cloud platforms like Microsoft 365, custom internal scripts, or legacy software… Deepline operatives adapt to the systems you already use and build from there.</p>
               </div>
 
               <div class="context-section">
@@ -8810,10 +8817,9 @@
               <p class="service-context-intro">Creative direction, brand, interface and concept development for projects that need a strong idea, a coherent system and a considered final expression.</p>
 
               <div class="context-subsection context-subsection-full">
-                <p class="context-detail">From early-stage thinking through to visual and digital execution, Eden brings creative direction and practical delivery into the same process.</p>
+                <span class="context-emphasis context-emphasis-lead forge-lead">From first thought to finished form.</span>
+                <p class="context-detail">From early-stage thinking through to visual and digital execution, Deepliners bring creative direction and practical delivery into the same process.</p>
               </div>
-
-              <p class="context-emphasis context-emphasis-lead">From first thought to finished form.</p>
 
               <div class="context-section">
                 <span class="context-label">Best For</span>
