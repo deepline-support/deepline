@@ -6304,14 +6304,14 @@
 
       /* Until sensor permission becomes active, keep a very slow, restrained
          material drift so the reflective treatment is still visible. */
-      html:not(.price-tilt-active) #services .price strong.fx-price {
+      html:not(.price-tilt-disabled) #services .price strong.fx-price {
         animation:
           deepline-price-idle-sheen 6.8s
           cubic-bezier(.45,0,.25,1)
           infinite alternate;
       }
 
-      html.price-tilt-active #services .price strong.fx-price {
+      html.price-tilt-disabled #services .price strong.fx-price {
         animation: none !important;
         filter:
           drop-shadow(0 0 .01px rgba(255,255,255,.26))
@@ -6944,7 +6944,7 @@
         -webkit-text-fill-color: inherit !important;
       }
 
-      html:not(.price-tilt-active)
+      html:not(.price-tilt-disabled)
       #services .price strong.fx-price .price-metal {
         animation:
           deepline-price-idle-sheen-v3 6.4s
@@ -6952,7 +6952,7 @@
           infinite alternate;
       }
 
-      html.price-tilt-active
+      html.price-tilt-disabled
       #services .price strong.fx-price .price-metal {
         animation: none !important;
       }
@@ -7160,7 +7160,7 @@
         -webkit-text-fill-color: inherit !important;
       }
 
-      html:not(.price-tilt-active)
+      html:not(.price-tilt-disabled)
       #services .price strong.fx-price .price-metal {
         animation:
           deepline-subtle-metal-idle 7s
@@ -7168,7 +7168,7 @@
           infinite alternate;
       }
 
-      html.price-tilt-active
+      html.price-tilt-disabled
       #services .price strong.fx-price .price-metal {
         animation: none !important;
       }
@@ -7286,7 +7286,7 @@
       }
 
       /* ---------- PRICE: SENSOR ACTIVE ---------- */
-      html.price-tilt-active
+      html.price-tilt-disabled
       #services .price strong.fx-price .price-metal {
         color: transparent !important;
         -webkit-text-fill-color: transparent !important;
@@ -7731,6 +7731,95 @@
       .site-topbar .nav-cta {
         -webkit-tap-highlight-color: transparent;
       }
+    }
+
+
+    /* =========================================================
+       PURE WHITE WORDMARK + PRICES
+       All tilt, sheen, metallic, gradient and sensor-reactive visual
+       treatments are disabled across desktop and mobile.
+       ========================================================= */
+
+    .wordmark .wordmark-motion,
+    .topbar-wordmark {
+      color: #f4f4ef !important;
+      -webkit-text-fill-color: #f4f4ef !important;
+      background: none !important;
+      background-image: none !important;
+      background-clip: border-box !important;
+      -webkit-background-clip: border-box !important;
+      text-shadow: none !important;
+      filter: none !important;
+      animation: none !important;
+      transition: none !important;
+    }
+
+    .wordmark .wordmark-motion::before,
+    .wordmark .wordmark-motion::after {
+      content: none !important;
+      display: none !important;
+      background: none !important;
+      background-image: none !important;
+      animation: none !important;
+      filter: none !important;
+    }
+
+    #services .price,
+    #services .price strong,
+    #services .price strong.fx-price,
+    #services .price strong.fx-price .price-metal {
+      color: #f4f4ef !important;
+      -webkit-text-fill-color: #f4f4ef !important;
+      background: none !important;
+      background-image: none !important;
+      background-clip: border-box !important;
+      -webkit-background-clip: border-box !important;
+      text-shadow: none !important;
+      filter: none !important;
+      animation: none !important;
+      transition: none !important;
+    }
+
+    #services .price strong.fx-price .price-metal {
+      display: inline !important;
+      font-size: 1em !important;
+      font-weight: inherit !important;
+      line-height: inherit !important;
+      letter-spacing: inherit !important;
+    }
+
+    #services .price strong.fx-price .price-suffix {
+      background: none !important;
+      background-image: none !important;
+      filter: none !important;
+      animation: none !important;
+    }
+
+    html.price-tilt-disabled
+    #services .price strong.fx-price .price-metal,
+    .wordmark .wordmark-motion.tilt-sheen-active {
+      color: #f4f4ef !important;
+      -webkit-text-fill-color: #f4f4ef !important;
+      background: none !important;
+      background-image: none !important;
+      filter: none !important;
+      animation: none !important;
+      transition: none !important;
+    }
+
+
+    /* =========================================================
+       PRICE LABEL COLOUR RESTORE
+       Keep the price numeral pure white, but return the small
+       "SERVICE STARTING AT" / "PROJECTS FROM" labels to muted grey.
+       ========================================================= */
+    #services .price small {
+      color: var(--muted) !important;
+      -webkit-text-fill-color: var(--muted) !important;
+      background: none !important;
+      background-image: none !important;
+      text-shadow: none !important;
+      filter: none !important;
     }
 
   </style>
@@ -9633,298 +9722,7 @@
   </script>
 
 
-  <script>
-    (() => {
-      const mark = document.querySelector('.wordmark .wordmark-motion');
-
-      const getPriceMetals = () => [
-        ...document.querySelectorAll(
-          '#services .price strong.fx-price .price-metal'
-        )
-      ];
-
-      const touchDevice = window.matchMedia(
-        '(hover: none) and (pointer: coarse)'
-      );
-
-      let bound = false;
-      let permissionRequested = false;
-      let orientationLastSeen = 0;
-      let baseline = null;
-      let targetTilt = 0;
-      let displayedTilt = 0;
-      let raf = 0;
-
-      const clamp = (value, min, max) =>
-        Math.min(max, Math.max(min, value));
-
-      const currentScreenAngle = () => {
-        const modern = Number(window.screen?.orientation?.angle);
-
-        if (Number.isFinite(modern)) {
-          return ((modern % 360) + 360) % 360;
-        }
-
-        const legacy = Number(window.orientation);
-
-        return Number.isFinite(legacy)
-          ? ((legacy % 360) + 360) % 360
-          : 0;
-      };
-
-      const render = () => {
-        const delta = targetTilt - displayedTilt;
-        displayedTilt += delta * .24;
-
-        const sheenX = 50 + displayedTilt * 48;
-        const sheenAngle = 104 - displayedTilt * 14;
-
-        document.documentElement.classList.add('price-tilt-active');
-
-        getPriceMetals().forEach(price => {
-          price.style.setProperty(
-            '--price-sheen-x',
-            `${sheenX.toFixed(2)}%`
-          );
-
-          price.style.setProperty(
-            '--price-sheen-angle',
-            `${sheenAngle.toFixed(2)}deg`
-          );
-        });
-
-        if (
-          mark &&
-          (window.innerWidth <= 960 || touchDevice.matches)
-        ) {
-          mark.classList.add('tilt-sheen-active');
-
-          mark.style.setProperty(
-            '--wordmark-sheen-x',
-            `${sheenX.toFixed(2)}%`
-          );
-
-          mark.style.setProperty(
-            '--wordmark-sheen-angle',
-            `${sheenAngle.toFixed(2)}deg`
-          );
-        }
-
-        if (Math.abs(delta) > .002) {
-          raf = requestAnimationFrame(render);
-        } else {
-          raf = 0;
-        }
-      };
-
-      const setTilt = raw => {
-        if (!touchDevice.matches && window.innerWidth > 960) return;
-
-        if (baseline == null) baseline = raw;
-
-        // Use relative motion around the user's natural holding angle.
-        // 18° from baseline reaches full reflective travel.
-        const relative = raw - baseline;
-        targetTilt = clamp(relative / 18, -1, 1);
-
-        if (!raf) {
-          raf = requestAnimationFrame(render);
-        }
-      };
-
-      const readOrientationAxis = event => {
-        const gamma = Number(event.gamma);
-        const beta = Number(event.beta);
-
-        if (!Number.isFinite(gamma) && !Number.isFinite(beta)) return null;
-
-        const angle = currentScreenAngle();
-
-        if (angle === 90) {
-          return Number.isFinite(beta) ? beta : 0;
-        }
-
-        if (angle === 270) {
-          return Number.isFinite(beta) ? -beta : 0;
-        }
-
-        if (angle === 180) {
-          return Number.isFinite(gamma) ? -gamma : 0;
-        }
-
-        return Number.isFinite(gamma) ? gamma : 0;
-      };
-
-      const onOrientation = event => {
-        const axis = readOrientationAxis(event);
-        if (axis == null) return;
-
-        orientationLastSeen = performance.now();
-        setTilt(axis);
-      };
-
-      const onMotion = event => {
-        // Orientation is more stable when available; use gravity only as fallback.
-        if (performance.now() - orientationLastSeen < 300) return;
-
-        const gravity = event.accelerationIncludingGravity;
-        if (!gravity) return;
-
-        const x = Number(gravity.x);
-        const y = Number(gravity.y);
-
-        if (!Number.isFinite(x) || !Number.isFinite(y)) return;
-
-        const angle = currentScreenAngle();
-        let axis = x;
-
-        if (angle === 90) axis = -y;
-        else if (angle === 180) axis = -x;
-        else if (angle === 270) axis = y;
-
-        // Convert gravity axis to an approximate degree-like response.
-        setTilt(axis * 5.4);
-      };
-
-      const resetCalibration = () => {
-        baseline = null;
-        targetTilt = 0;
-        displayedTilt = 0;
-      };
-
-      const bindSensors = () => {
-        if (bound) return;
-        bound = true;
-
-        window.addEventListener(
-          'deviceorientation',
-          onOrientation,
-          { passive: true }
-        );
-
-        window.addEventListener(
-          'deviceorientationabsolute',
-          onOrientation,
-          { passive: true }
-        );
-
-        window.addEventListener(
-          'devicemotion',
-          onMotion,
-          { passive: true }
-        );
-
-        window.addEventListener(
-          'orientationchange',
-          resetCalibration,
-          { passive: true }
-        );
-      };
-
-      const requestIOSMotion = async () => {
-        if (permissionRequested) return;
-
-        const Orientation = window.DeviceOrientationEvent;
-        const Motion = window.DeviceMotionEvent;
-
-        const orientationPermission =
-          Orientation &&
-          typeof Orientation.requestPermission === 'function';
-
-        const motionPermission =
-          Motion &&
-          typeof Motion.requestPermission === 'function';
-
-        if (!orientationPermission && !motionPermission) {
-          bindSensors();
-          return;
-        }
-
-        permissionRequested = true;
-
-        try {
-          // Start both requests synchronously inside the same physical click.
-          const orientationRequest = orientationPermission
-            ? Orientation.requestPermission()
-            : Promise.resolve('granted');
-
-          const motionRequest = motionPermission
-            ? Motion.requestPermission()
-            : Promise.resolve('granted');
-
-          const results = await Promise.allSettled([
-            orientationRequest,
-            motionRequest
-          ]);
-
-          const granted = results.some(result =>
-            result.status === 'fulfilled' &&
-            result.value === 'granted'
-          );
-
-          const explicitlyDenied = results.some(result =>
-            result.status === 'fulfilled' &&
-            result.value === 'denied'
-          );
-
-          if (granted) {
-            resetCalibration();
-          } else if (!explicitlyDenied) {
-            // A browser/runtime failure is retryable on the next click.
-            permissionRequested = false;
-          }
-        } catch (_) {
-          permissionRequested = false;
-        }
-      };
-
-      const Orientation = window.DeviceOrientationEvent;
-      const Motion = window.DeviceMotionEvent;
-
-      /*
-       * Always attach listeners immediately.
-       * Browsers that expose sensor data without an explicit prompt can begin
-       * responding straight away. Browsers that gate the data simply deliver
-       * nothing until their permission API has been granted.
-       */
-      bindSensors();
-
-      const permissionAPIAvailable =
-        Boolean(
-          (Orientation &&
-            typeof Orientation.requestPermission === 'function') ||
-          (Motion &&
-            typeof Motion.requestPermission === 'function')
-        );
-
-      if (permissionAPIAvailable) {
-        const activate = event => {
-          if (permissionRequested) return;
-
-          const target = event.target;
-
-          // Keep the project's mailto action instantaneous.
-          if (target?.closest?.('a[href^="mailto:"]')) return;
-
-          requestIOSMotion();
-        };
-
-        /*
-         * A normal click is the most dependable user-activation source for
-         * WebKit's motion/orientation permission prompt. Because listeners are
-         * already bound, this does not delay Android-family sensor delivery.
-         */
-        document.addEventListener(
-          'click',
-          activate,
-          { capture: true, passive: true }
-        );
-      }
-
-      // Localised prices are rewritten after initial paint. No rebind is
-      // required because render() queries the current .price-metal nodes.
-    })();
-  </script>
+  
 
 
   <script>
