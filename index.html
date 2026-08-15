@@ -8144,6 +8144,25 @@
       }
     }
 
+
+    /* =========================================================
+       TOUCH PROJECT CTA — TRUE SINGLE-TAP BEHAVIOUR
+       Touch browsers can treat the first tap as :hover when a link has a
+       hover-driven pseudo-element transition. Disable that visual hover state
+       on coarse/no-hover devices; desktop hover behaviour is unchanged.
+       ========================================================= */
+    @media (hover: none), (pointer: coarse) {
+      .nav-cta:hover::before,
+      .nav-cta:active::before {
+        transform: scaleX(0) !important;
+      }
+
+      .nav-cta:hover::after,
+      .nav-cta:active::after {
+        color: var(--signal) !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -9200,6 +9219,11 @@
         }
       };
 
+      // Internal measurement data for the mobile service-text fitter.
+      // Copy remains owned by this context object; nothing is duplicated.
+      window.__deeplineServiceMeasureContexts =
+        Object.values(contexts).map(({ title, html }) => ({ title, html }));
+
       let activeKey = 'default';
       let activeSlide = 0;
       let typingTimer = 0;
@@ -9514,7 +9538,7 @@
               scheduleSlide();
             }
           }, 500);
-        }, 7800);
+        }, 9500);
       };
 
       const renderDefaultSlide = (index = 0, animate = false) => {
@@ -10356,20 +10380,12 @@
       const global = document.querySelector('#global.global');
       const copy = global?.querySelector(':scope > .global-copy');
       const content = copy?.querySelector('[data-global-content]');
-      const title = copy?.querySelector('[data-global-title]');
       const button = document.querySelector('.wordmark-intro .main-page-cta');
       const cardStack =
         document.querySelector('#services .services') ||
         document.querySelector('#services');
 
-      if (
-        !global ||
-        !copy ||
-        !content ||
-        !title ||
-        !button ||
-        !cardStack
-      ) return;
+      if (!global || !copy || !content || !button || !cardStack) return;
 
       let raf = 0;
       let settleRaf = 0;
@@ -10377,110 +10393,161 @@
       let lastWidth =
         document.documentElement.clientWidth || window.innerWidth;
 
-      const applyScale = scale => {
+      const scaleVars = [
+        '--mobile-service-title-size',
+        '--mobile-service-body-size',
+        '--mobile-service-lead-size',
+        '--mobile-service-label-size',
+        '--mobile-service-title-gap',
+        '--mobile-service-layout-gap',
+        '--mobile-service-lead-gap',
+        '--mobile-service-label-gap',
+        '--mobile-service-meta-gap',
+        '--mobile-service-bolt-size',
+        '--mobile-service-bolt-icon'
+      ];
+
+      const applyScaleTo = (element, scale) => {
         const s = Math.max(.86, Math.min(1.16, scale));
 
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-title-size',
           `${(26 * s).toFixed(2)}px`
         );
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-body-size',
           `${(13 * s).toFixed(2)}px`
         );
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-lead-size',
           `${(14 * s).toFixed(2)}px`
         );
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-label-size',
           `${Math.max(8, 9 * s).toFixed(2)}px`
         );
 
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-title-gap',
           `${(9 * s).toFixed(2)}px`
         );
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-layout-gap',
           `${(8 * s).toFixed(2)}px`
         );
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-lead-gap',
           `${(2 * s).toFixed(2)}px`
         );
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-label-gap',
           `${(3 * s).toFixed(2)}px`
         );
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-meta-gap',
           `${(14 * s).toFixed(2)}px`
         );
 
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-bolt-size',
           `${(15 * s).toFixed(2)}px`
         );
-        copy.style.setProperty(
+        element.style.setProperty(
           '--mobile-service-bolt-icon',
           `${(11 * s).toFixed(2)}px`
         );
       };
 
+      const applyScale = scale => {
+        applyScaleTo(copy, scale);
+      };
+
       const clearServiceVars = () => {
         [
           '--mobile-service-top',
-          '--mobile-service-title-size',
-          '--mobile-service-body-size',
-          '--mobile-service-lead-size',
-          '--mobile-service-label-size',
-          '--mobile-service-title-gap',
-          '--mobile-service-layout-gap',
-          '--mobile-service-lead-gap',
-          '--mobile-service-label-gap',
-          '--mobile-service-meta-gap',
-          '--mobile-service-bolt-size',
-          '--mobile-service-bolt-icon'
+          ...scaleVars
         ].forEach(name => copy.style.removeProperty(name));
       };
 
       /*
-       * Measure the FINAL service block, not the animated typewriter state.
-       *
-       * Previously the balancer measured `copy` while:
-       * - the service title was actively typing, and
-       * - a ResizeObserver was watching the same content that `applyScale()`
-       *   was resizing.
-       *
-       * Forge sits closest to a line-wrap threshold, so those two feedback
-       * sources could make it repeatedly rescale/reflow while being displayed.
-       *
-       * All service titles are a single line. Reserve that final line box
-       * explicitly and measure only the stable service-context layout below it.
+       * Measure every service at the SAME candidate scale in an invisible
+       * direct child of #global. Because the probe has the same structural
+       * classes as the real service copy, it receives the exact same mobile
+       * typography and spacing rules — including the approved subheading and
+       * BEST FOR spacing.
        */
-      const measureStableServiceHeight = () => {
+      const measureTallestServiceAtScale = scale => {
+        const contexts =
+          window.__deeplineServiceMeasureContexts || [];
+
+        if (!contexts.length) return 0;
+
+        const probe = document.createElement('div');
+        probe.className =
+          'global-copy is-service-context dl-service-measure-probe';
+        probe.setAttribute('aria-hidden', 'true');
+
+        probe.style.setProperty('position', 'absolute', 'important');
+        probe.style.setProperty('visibility', 'hidden', 'important');
+        probe.style.setProperty('pointer-events', 'none', 'important');
+        probe.style.setProperty('opacity', '0', 'important');
+        probe.style.setProperty('z-index', '-999', 'important');
+        probe.style.setProperty('top', '0px', 'important');
+        probe.style.setProperty('transform', 'none', 'important');
+
+        const probeTitle = document.createElement('h2');
+        const probeContent = document.createElement('div');
+        probeContent.setAttribute('data-global-content', '');
+
+        probe.append(probeTitle, probeContent);
+        global.appendChild(probe);
+
+        applyScaleTo(probe, scale);
+
+        let tallest = 0;
+
+        contexts.forEach(context => {
+          probeTitle.textContent = context.title;
+          probeContent.innerHTML = context.html;
+
+          const layout =
+            probeContent.querySelector('.service-context-layout');
+
+          if (!layout) return;
+
+          const titleRect =
+            probeTitle.getBoundingClientRect();
+
+          const layoutRect =
+            layout.getBoundingClientRect();
+
+          tallest = Math.max(
+            tallest,
+            layoutRect.bottom - titleRect.top
+          );
+        });
+
+        probe.remove();
+
+        return tallest;
+      };
+
+      const measureVisibleServiceHeight = () => {
         const layout =
           content.querySelector('.service-context-layout');
 
-        if (!layout) return 0;
+        const title =
+          copy.querySelector('[data-global-title]');
 
-        const copyStyle = getComputedStyle(copy);
+        if (!layout || !title) return 0;
 
-        const titleSize =
-          parseFloat(
-            copyStyle.getPropertyValue('--mobile-service-title-size')
-          ) || 26;
+        const titleRect =
+          title.getBoundingClientRect();
 
-        const titleGap =
-          parseFloat(
-            copyStyle.getPropertyValue('--mobile-service-title-gap')
-          ) || 9;
+        const layoutRect =
+          layout.getBoundingClientRect();
 
-        const titleLineHeight = titleSize * 1.02;
-        const layoutHeight = layout.getBoundingClientRect().height;
-
-        return titleLineHeight + titleGap + layoutHeight;
+        return layoutRect.bottom - titleRect.top;
       };
 
       const balanceServiceCopy = () => {
@@ -10496,18 +10563,19 @@
             return;
           }
 
-          /*
-           * Do not balance the outgoing/default slide during the first part
-           * of the service transition. Wait until the real service-context
-           * markup has actually been inserted by fadeContentTo().
-           */
+          // Wait until the real service-context HTML has been mounted.
           if (!content.querySelector('.service-context-layout')) {
             return;
           }
 
-          const buttonRect = button.getBoundingClientRect();
-          const stackRect = cardStack.getBoundingClientRect();
-          const globalRect = global.getBoundingClientRect();
+          const buttonRect =
+            button.getBoundingClientRect();
+
+          const stackRect =
+            cardStack.getBoundingClientRect();
+
+          const globalRect =
+            global.getBoundingClientRect();
 
           const availableHeight =
             stackRect.top - buttonRect.bottom;
@@ -10528,9 +10596,10 @@
           );
 
           /*
-           * Binary-search the largest stable scale. Nothing observed by this
-           * routine listens to the resulting size changes, so one service tap
-           * produces one deterministic sizing pass rather than a feedback loop.
+           * IMPORTANT:
+           * Fit the tallest of ALL THREE services, then use that exact scale
+           * for whichever card is selected. Forge can no longer become smaller
+           * than Overwatch/Eden simply because its copy wraps differently.
            */
           let low = .86;
           let high = 1.16;
@@ -10538,12 +10607,14 @@
 
           for (let i = 0; i < 9; i++) {
             const mid = (low + high) / 2;
-            applyScale(mid);
 
-            const textHeight =
-              measureStableServiceHeight();
+            const tallestHeight =
+              measureTallestServiceAtScale(mid);
 
-            if (textHeight <= maxTextHeight) {
+            if (
+              tallestHeight > 0 &&
+              tallestHeight <= maxTextHeight
+            ) {
               best = mid;
               low = mid;
             } else {
@@ -10560,11 +10631,12 @@
             ) return;
 
             const finalTextHeight =
-              measureStableServiceHeight();
+              measureVisibleServiceHeight();
 
             const freeSpace =
               availableHeight - finalTextHeight;
 
+            // Equal visual gap above and below the active service copy.
             const equalGap =
               Math.max(0, freeSpace / 2);
 
@@ -10583,13 +10655,9 @@
       };
 
       /*
-       * Observe ONLY the events that genuinely require a new fit:
-       * - service/default mode class changes
-       * - replacement of the service content block
-       *
-       * Do not observe characterData (the title typewriter) and do not use
-       * ResizeObserver on the content being scaled. That removes the Forge
-       * reflow/scaling feedback loop.
+       * Re-fit only when service/default mode changes, service body content
+       * is replaced, fonts settle, or layout WIDTH changes.
+       * No ResizeObserver feedback loop and no typewriter character tracking.
        */
       const classObserver =
         new MutationObserver(balanceServiceCopy);
@@ -10610,7 +10678,6 @@
         const width =
           document.documentElement.clientWidth || window.innerWidth;
 
-        // Ignore height-only browser-toolbar changes.
         if (
           mobile.matches &&
           Math.abs(width - lastWidth) < 1
@@ -10635,6 +10702,80 @@
       balanceServiceCopy();
     })();
 </script>
+
+
+  <script>
+    (() => {
+      const projectLinks = [
+        ...document.querySelectorAll(
+          '.nav-cta[href^="mailto:"], .main-page-cta[href^="mailto:"]'
+        )
+      ];
+
+      if (!projectLinks.length) return;
+
+      projectLinks.forEach(link => {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let tracking = false;
+        let suppressSyntheticClick = false;
+
+        link.addEventListener('touchstart', event => {
+          if (event.touches.length !== 1) {
+            tracking = false;
+            return;
+          }
+
+          const touch = event.touches[0];
+          touchStartX = touch.clientX;
+          touchStartY = touch.clientY;
+          tracking = true;
+        }, { passive: true });
+
+        link.addEventListener('touchend', event => {
+          if (
+            !tracking ||
+            event.changedTouches.length !== 1
+          ) {
+            tracking = false;
+            return;
+          }
+
+          const touch = event.changedTouches[0];
+          const dx = touch.clientX - touchStartX;
+          const dy = touch.clientY - touchStartY;
+
+          tracking = false;
+
+          // Treat only a genuine tap as activation; a drag/scroll gesture
+          // over the button is left alone.
+          if (
+            Math.hypot(dx, dy) > 12
+          ) return;
+
+          event.preventDefault();
+
+          suppressSyntheticClick = true;
+          window.setTimeout(() => {
+            suppressSyntheticClick = false;
+          }, 700);
+
+          window.location.href = link.href;
+        }, { passive: false });
+
+        link.addEventListener('touchcancel', () => {
+          tracking = false;
+        }, { passive: true });
+
+        // iOS may dispatch a synthetic click after touchend. Suppress only
+        // that duplicate so the mail composer cannot be invoked twice.
+        link.addEventListener('click', event => {
+          if (!suppressSyntheticClick) return;
+          event.preventDefault();
+        });
+      });
+    })();
+  </script>
 
 </body>
 </html>
