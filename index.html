@@ -10866,23 +10866,27 @@
       };
 
       /*
-       * A successful mailto launch hands focus away from the page.
-       * Use that real handoff signal to release the visual fill rather than
-       * releasing it on touchend.
+       * Keep the fill latched after the mail action is triggered.
+       * Do NOT clear it on blur / visibilitychange / pagehide because those
+       * can happen immediately as the mail prompt opens.
+       *
+       * Instead, clear it only on the NEXT screen interaction after the
+       * original tap has completed. Capture phase runs before link handlers,
+       * so the first tap sees no latched state; the following tap/touch does.
        */
-      window.addEventListener('blur', clearTopbarPressedState, {
-        passive: true
-      });
-
-      window.addEventListener('pagehide', clearTopbarPressedState, {
-        passive: true
-      });
-
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
+      document.addEventListener('pointerdown', () => {
+        if (
+          projectLinks.some(link =>
+            link.closest('.site-topbar') &&
+            link.classList.contains('is-touch-pressed')
+          )
+        ) {
           clearTopbarPressedState();
         }
-      }, { passive: true });
+      }, {
+        capture: true,
+        passive: true
+      });
     })();
   </script>
 
