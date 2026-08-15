@@ -7953,36 +7953,37 @@
 
 
     /* =========================================================
-       PORTRAIT TOUCH — HARD STOP AT PAGE BOUNDARIES
-       Use one explicit scroll container in portrait mobile layouts.
-       Vertical touch movement is handled and clamped by JS below, so there
-       is no native document/WebView rubber-band path at the page edges.
-       Landscape is deliberately left on the site's existing native model.
+       PORTRAIT — TRUE HARD PAGE BOUNDARY
+       Keep native scrolling/momentum, but make main#top the only scroll
+       surface and explicitly suppress any gesture that tries to move past
+       its real top or bottom. No spring, transform, rebound or custom physics.
        ========================================================= */
-    html.portrait-touch-scroll-shell,
-    html.portrait-touch-scroll-shell body {
+    html.portrait-boundary-lock,
+    html.portrait-boundary-lock body {
       width: 100% !important;
       height: 100% !important;
       min-height: 0 !important;
       max-height: 100% !important;
       overflow: hidden !important;
+
       overscroll-behavior: none !important;
+      overscroll-behavior-x: none !important;
       overscroll-behavior-y: none !important;
       overscroll-behavior-block: none !important;
     }
 
-    html.portrait-touch-scroll-shell body {
+    html.portrait-boundary-lock body {
       position: fixed !important;
       inset: 0 !important;
       margin: 0 !important;
     }
 
-    html.portrait-touch-scroll-shell main#top {
+    html.portrait-boundary-lock main#top {
       position: absolute !important;
-      inset: 0 auto auto 0 !important;
+      inset: 0 !important;
 
       width: 100% !important;
-      height: var(--portrait-scroll-h, 100svh) !important;
+      height: var(--portrait-boundary-height, 100svh) !important;
       min-height: 0 !important;
       max-height: none !important;
 
@@ -7990,25 +7991,39 @@
       overflow-y: auto !important;
 
       overscroll-behavior: none !important;
+      overscroll-behavior-x: none !important;
       overscroll-behavior-y: none !important;
       overscroll-behavior-block: none !important;
 
       /*
-       * Prevent the browser from performing its own touch-pan / rubber-band
-       * animation. The script below translates vertical touch deltas directly
-       * into clamped scrollTop values.
+       * Native vertical panning remains enabled. The capture-phase boundary
+       * guard below only cancels a gesture once there is literally nowhere
+       * further to scroll.
        */
-      touch-action: none !important;
+      touch-action: pan-y !important;
       -webkit-overflow-scrolling: auto !important;
 
       scroll-behavior: auto !important;
       overflow-anchor: none !important;
+      transform: none !important;
     }
 
     @supports (overflow: clip) {
-      html.portrait-touch-scroll-shell main#top {
+      html.portrait-boundary-lock main#top {
         overflow-x: clip !important;
       }
+    }
+
+    /*
+     * Do not let a transform/animation on the final document blocks create
+     * the appearance of a rubber-band at the bottom edge.
+     */
+    html.portrait-boundary-lock #services,
+    html.portrait-boundary-lock .site-copyright {
+      transform: none !important;
+      translate: none !important;
+      animation-name: none !important;
+      transition-property: none !important;
     }
 
   </style>
@@ -10323,11 +10338,15 @@
 
 
 
+
   <script>
     (() => {
-      const portraitMobile = window.matchMedia(
-        '(max-width: 960px) and (orientation: portrait)'
-      );
+      /*
+       * The reported problem is portrait geometry, not a specific browser.
+       * Use portrait orientation directly so physical phones, tablets and
+       * Responsively/device emulation all take the same path.
+       */
+      const portrait = window.matchMedia('(orientation: portrait)');
 
       const root = document.documentElement;
       const main = document.querySelector('main#top');
@@ -10342,76 +10361,33 @@
         window.innerWidth ||
         0;
 
-      let inertiaFrame = 0;
-      let gestureActive = false;
-      let gestureAxis = '';
-      let startX = 0;
-      let startY = 0;
-      let lastY = 0;
-      let lastTime = 0;
-      let velocity = 0;
+      let touchStartY = 0;
+      let pointerStartY = 0;
+      let pointerTracking = false;
 
-      const shellActive = () =>
-        root.classList.contains('portrait-touch-scroll-shell');
+      const active = () =>
+        root.classList.contains('portrait-boundary-lock');
 
       const maxScroll = () =>
         Math.max(0, main.scrollHeight - main.clientHeight);
 
-      const clampScroll = value =>
-        Math.max(0, Math.min(maxScroll(), value));
+      const atTop = () =>
+        main.scrollTop <= 0.5;
 
-      const stopInertia = () => {
-        if (!inertiaFrame) return;
-        cancelAnimationFrame(inertiaFrame);
-        inertiaFrame = 0;
+      const atBottom = () =>
+        main.scrollTop >= maxScroll() - 0.5;
+
+      const pinToBoundary = () => {
+        const max = maxScroll();
+
+        if (main.scrollTop < 0) {
+          main.scrollTop = 0;
+        } else if (main.scrollTop > max) {
+          main.scrollTop = max;
+        }
       };
 
-      const runInertia = initialVelocity => {
-        stopInertia();
-
-        let v = Math.max(-42, Math.min(42, initialVelocity));
-        let previous = performance.now();
-
-        const step = now => {
-          const dt = Math.min(32, now - previous);
-          previous = now;
-
-          const limit = maxScroll();
-          const before = main.scrollTop;
-          const next = Math.max(
-            0,
-            Math.min(limit, before - (v * dt))
-          );
-
-          main.scrollTop = next;
-
-          /*
-           * Hard boundary: end momentum the instant the real scroll range
-           * ends. No overshoot, spring, transform or bounce-back phase.
-           */
-          if (
-            next <= 0 ||
-            next >= limit - 0.5 ||
-            next === before
-          ) {
-            inertiaFrame = 0;
-            return;
-          }
-
-          v *= Math.pow(0.925, dt / 16.67);
-
-          if (Math.abs(v) < 0.025) {
-            inertiaFrame = 0;
-            return;
-          }
-
-          inertiaFrame = requestAnimationFrame(step);
-        };
-
-        inertiaFrame = requestAnimationFrame(step);
-      };
-
-      const readStableHeight = () => {
+      const captureStableHeight = () => {
         const measured =
           window.innerHeight ||
           document.documentElement.clientHeight ||
@@ -10422,36 +10398,28 @@
         lockedHeight = Math.round(measured);
 
         root.style.setProperty(
-          '--portrait-scroll-h',
+          '--portrait-boundary-height',
           `${lockedHeight}px`
         );
       };
 
       const syncMode = () => {
-        stopInertia();
+        if (portrait.matches) {
+          if (!lockedHeight) captureStableHeight();
 
-        if (portraitMobile.matches) {
-          if (!lockedHeight) readStableHeight();
-
-          root.classList.add('portrait-touch-scroll-shell');
-
-          /*
-           * Clamp immediately in case orientation/viewport geometry changed
-           * while the user was already near the previous bottom boundary.
-           */
-          main.scrollTop = clampScroll(main.scrollTop);
+          root.classList.add('portrait-boundary-lock');
+          pinToBoundary();
           return;
         }
 
-        root.classList.remove('portrait-touch-scroll-shell');
-        root.style.removeProperty('--portrait-scroll-h');
+        root.classList.remove('portrait-boundary-lock');
+        root.style.removeProperty('--portrait-boundary-height');
         lockedHeight = 0;
       };
 
       /*
-       * Mobile browser chrome often emits height-only resize events while
-       * scrolling. Ignore them. Rebuild only when the layout width changes,
-       * which indicates an actual rotation / viewport-mode change.
+       * Ignore height-only changes caused by collapsing/expanding mobile
+       * browser UI. Re-capture only after a genuine width/orientation change.
        */
       const onResize = () => {
         const width =
@@ -10470,7 +10438,7 @@
 
       window.addEventListener('resize', onResize, { passive: true });
 
-      portraitMobile.addEventListener?.('change', () => {
+      portrait.addEventListener?.('change', () => {
         lastWidth =
           document.documentElement.clientWidth ||
           window.innerWidth ||
@@ -10481,141 +10449,169 @@
       });
 
       /*
-       * Portrait touch scroller
-       * -----------------------
-       * touch-action:none prevents native rubber-band behaviour.
-       * Vertical movement is applied directly to scrollTop and clamped.
-       * Horizontal gestures stay untouched for the site's slideshow swipe.
+       * TOUCH
+       * Always observe the gesture. As soon as the scroller reaches an edge,
+       * cancel only movement that points beyond that edge. This also covers a
+       * gesture that STARTS above the bottom and reaches it mid-swipe.
        */
-      main.addEventListener(
+      document.addEventListener(
         'touchstart',
         event => {
-          if (
-            !shellActive() ||
-            event.touches.length !== 1
-          ) {
-            return;
-          }
-
-          stopInertia();
-
-          const touch = event.touches[0];
-          const now = performance.now();
-
-          gestureActive = true;
-          gestureAxis = '';
-          startX = touch.clientX;
-          startY = touch.clientY;
-          lastY = touch.clientY;
-          lastTime = now;
-          velocity = 0;
+          if (!active() || event.touches.length !== 1) return;
+          touchStartY = event.touches[0].clientY;
         },
         {
+          capture: true,
           passive: true
         }
       );
 
-      main.addEventListener(
+      document.addEventListener(
         'touchmove',
         event => {
-          if (
-            !gestureActive ||
-            !shellActive() ||
-            event.touches.length !== 1
-          ) {
-            return;
-          }
+          if (!active() || event.touches.length !== 1) return;
 
-          const touch = event.touches[0];
-          const dx = touch.clientX - startX;
-          const dy = touch.clientY - startY;
+          const currentY = event.touches[0].clientY;
+          const deltaY = currentY - touchStartY;
 
-          if (!gestureAxis) {
-            if (Math.max(Math.abs(dx), Math.abs(dy)) < 5) return;
+          const pushingPastTop =
+            deltaY > 0 && atTop();
 
-            gestureAxis =
-              Math.abs(dx) > Math.abs(dy) * 1.15
-                ? 'horizontal'
-                : 'vertical';
-          }
+          const pushingPastBottom =
+            deltaY < 0 && atBottom();
 
-          if (gestureAxis === 'horizontal') {
+          if (!pushingPastTop && !pushingPastBottom) {
+            touchStartY = currentY;
             return;
           }
 
           /*
-           * Always consume a vertical touch gesture while this shell is
-           * active — including when already sitting exactly at the bottom.
-           * This is what prevents the browser from starting any edge effect.
+           * This is the hard stop. The event never reaches the browser's
+           * overscroll/rubber-band path.
            */
           event.preventDefault();
-
-          const now = performance.now();
-          const dt = Math.max(1, now - lastTime);
-          const frameDy = touch.clientY - lastY;
-
-          main.scrollTop = clampScroll(
-            main.scrollTop - frameDy
-          );
-
-          const instantVelocity = frameDy / dt;
-
-          velocity =
-            (velocity * 0.72) +
-            (instantVelocity * 0.28);
-
-          lastY = touch.clientY;
-          lastTime = now;
+          event.stopImmediatePropagation();
+          pinToBoundary();
+          touchStartY = currentY;
         },
         {
+          capture: true,
           passive: false
         }
       );
 
-      const finishGesture = () => {
-        if (!gestureActive) return;
+      /*
+       * WHEEL / TRACKPAD
+       * Responsively and some device-emulation layers translate a simulated
+       * touch swipe into wheel deltas rather than DOM TouchEvents. Block those
+       * at the same real boundaries as well.
+       */
+      document.addEventListener(
+        'wheel',
+        event => {
+          if (!active()) return;
 
-        const wasVertical = gestureAxis === 'vertical';
+          const pushingPastTop =
+            event.deltaY < 0 && atTop();
 
-        gestureActive = false;
-        gestureAxis = '';
+          const pushingPastBottom =
+            event.deltaY > 0 && atBottom();
 
-        if (
-          wasVertical &&
-          Math.abs(velocity) > 0.06 &&
-          main.scrollTop > 0 &&
-          main.scrollTop < maxScroll()
-        ) {
-          runInertia(velocity);
-        } else {
-          stopInertia();
-        }
-      };
+          if (!pushingPastTop && !pushingPastBottom) return;
 
-      main.addEventListener(
-        'touchend',
-        finishGesture,
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          pinToBoundary();
+        },
         {
+          capture: true,
+          passive: false
+        }
+      );
+
+      /*
+       * POINTER-BASED TOUCH EMULATION
+       * Some embedded/emulated device shells emit PointerEvents instead of
+       * TouchEvents. Catch those too. This does not affect ordinary taps.
+       */
+      document.addEventListener(
+        'pointerdown',
+        event => {
+          if (!active() || !event.isPrimary) return;
+
+          pointerTracking =
+            event.pointerType === 'touch' ||
+            event.pointerType === 'pen';
+
+          if (!pointerTracking) return;
+
+          pointerStartY = event.clientY;
+        },
+        {
+          capture: true,
           passive: true
         }
       );
 
-      main.addEventListener(
-        'touchcancel',
-        () => {
-          gestureActive = false;
-          gestureAxis = '';
-          velocity = 0;
-          stopInertia();
+      document.addEventListener(
+        'pointermove',
+        event => {
+          if (
+            !active() ||
+            !pointerTracking ||
+            !event.isPrimary
+          ) {
+            return;
+          }
+
+          const deltaY = event.clientY - pointerStartY;
+
+          const pushingPastTop =
+            deltaY > 0 && atTop();
+
+          const pushingPastBottom =
+            deltaY < 0 && atBottom();
+
+          if (!pushingPastTop && !pushingPastBottom) {
+            pointerStartY = event.clientY;
+            return;
+          }
+
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          pinToBoundary();
+          pointerStartY = event.clientY;
         },
         {
+          capture: true,
+          passive: false
+        }
+      );
+
+      const endPointer = () => {
+        pointerTracking = false;
+      };
+
+      document.addEventListener(
+        'pointerup',
+        endPointer,
+        {
+          capture: true,
+          passive: true
+        }
+      );
+
+      document.addEventListener(
+        'pointercancel',
+        endPointer,
+        {
+          capture: true,
           passive: true
         }
       );
 
       /*
-       * Topbar visibility must follow main#top because window itself no
-       * longer scrolls in portrait mobile mode.
+       * Keep the topbar tied to the actual portrait scroller.
        */
       if (topbar && wordmark) {
         let revealY = 0;
@@ -10631,7 +10627,7 @@
         };
 
         const applyTopbar = () => {
-          if (!shellActive()) return;
+          if (!active()) return;
 
           topbar.classList.toggle(
             'is-visible',
@@ -10644,6 +10640,7 @@
 
           raf = requestAnimationFrame(() => {
             raf = 0;
+            pinToBoundary();
             applyTopbar();
           });
         };
@@ -10653,7 +10650,11 @@
           applyTopbar();
         });
 
-        main.addEventListener('scroll', onMainScroll, { passive: true });
+        main.addEventListener(
+          'scroll',
+          onMainScroll,
+          { passive: true }
+        );
 
         if (document.fonts?.ready) {
           document.fonts.ready
@@ -10666,18 +10667,16 @@
       }
 
       /*
-       * Existing service-card behaviour calls window.scrollTo(0).
-       * Mirror it onto the portrait scroll container.
+       * Existing service-card behaviour calls window.scrollTo(0). Mirror it
+       * onto the portrait scroll surface.
        */
       main.addEventListener('click', event => {
         if (
-          !shellActive() ||
+          !active() ||
           !event.target?.closest?.('.service[data-context]')
         ) {
           return;
         }
-
-        stopInertia();
 
         requestAnimationFrame(() => {
           main.scrollTop = 0;
