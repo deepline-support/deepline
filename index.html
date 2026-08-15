@@ -8174,19 +8174,63 @@
 
     @media (hover: none), (pointer: coarse) {
       .site-topbar .nav-cta.is-touch-pressed {
-        background: #fff !important;
+        /* Keep the base dark while the pseudo-element performs the fill. */
+        background: rgba(255,255,255,.04) !important;
         color: #000 !important;
       }
 
       .site-topbar .nav-cta.is-touch-pressed span {
+        position: relative !important;
+        z-index: 2 !important;
         color: #000 !important;
         -webkit-text-fill-color: #000 !important;
       }
 
-      /* Keep the hover pseudo disabled on touch so first-tap navigation
-         remains reliable; the pressed class supplies the visual fill. */
+      /* Smooth touch fill: white travels left -> right beneath the label. */
       .site-topbar .nav-cta.is-touch-pressed::before {
-        transform: scaleX(0) !important;
+        z-index: 1 !important;
+        transform: scaleX(1) !important;
+        transform-origin: left center !important;
+        mix-blend-mode: normal !important;
+        transition: transform .24s cubic-bezier(.4,0,.2,1) !important;
+      }
+    }
+
+
+    /* =========================================================
+       WIDE TOUCH DEVICES — KEEP NATIVE VERTICAL SCROLLING
+       The one-screen desktop lock is width-based, so Android tablets,
+       landscape phones, WebViews or "desktop site" mode can cross 961px
+       and inherit overflow:hidden. On coarse/no-hover devices, explicitly
+       restore the normal document scroller while leaving fine-pointer
+       desktop behaviour untouched.
+       ========================================================= */
+    @media (min-width: 961px) and (hover: none),
+           (min-width: 961px) and (pointer: coarse) {
+      html {
+        height: auto !important;
+        min-height: 100% !important;
+        max-height: none !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        touch-action: pan-y !important;
+      }
+
+      body {
+        height: auto !important;
+        min-height: 100% !important;
+        max-height: none !important;
+        overflow-x: hidden !important;
+        overflow-y: visible !important;
+        touch-action: pan-y !important;
+      }
+
+      main#top {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+        touch-action: pan-y !important;
       }
     }
 
