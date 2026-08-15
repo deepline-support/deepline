@@ -7953,34 +7953,36 @@
 
 
     /* =========================================================
-       ANDROID PORTRAIT — FULLY CLAMPED TOUCH SCROLLER
-       DuckDuckGo uses Android WebView, whose native overscroll can still
-       stretch/bounce at a scroll boundary. In portrait Android only, remove
-       touch scrolling from the native WebView path and clamp it ourselves.
-       Landscape and all other browsers keep their existing/native scrolling.
+       PORTRAIT TOUCH — HARD STOP AT PAGE BOUNDARIES
+       Use one explicit scroll container in portrait mobile layouts.
+       Vertical touch movement is handled and clamped by JS below, so there
+       is no native document/WebView rubber-band path at the page edges.
+       Landscape is deliberately left on the site's existing native model.
        ========================================================= */
-    html.android-portrait-scroll-shell,
-    html.android-portrait-scroll-shell body {
+    html.portrait-touch-scroll-shell,
+    html.portrait-touch-scroll-shell body {
       width: 100% !important;
       height: 100% !important;
       min-height: 0 !important;
       max-height: 100% !important;
       overflow: hidden !important;
       overscroll-behavior: none !important;
+      overscroll-behavior-y: none !important;
+      overscroll-behavior-block: none !important;
     }
 
-    html.android-portrait-scroll-shell body {
+    html.portrait-touch-scroll-shell body {
       position: fixed !important;
       inset: 0 !important;
       margin: 0 !important;
     }
 
-    html.android-portrait-scroll-shell main#top {
+    html.portrait-touch-scroll-shell main#top {
       position: absolute !important;
       inset: 0 auto auto 0 !important;
 
       width: 100% !important;
-      height: var(--android-portrait-scroll-h, 100svh) !important;
+      height: var(--portrait-scroll-h, 100svh) !important;
       min-height: 0 !important;
       max-height: none !important;
 
@@ -7992,8 +7994,9 @@
       overscroll-behavior-block: none !important;
 
       /*
-       * Critical: disable compositor/native touch panning in the affected
-       * environment. JS below performs a clamped scrollTop update instead.
+       * Prevent the browser from performing its own touch-pan / rubber-band
+       * animation. The script below translates vertical touch deltas directly
+       * into clamped scrollTop values.
        */
       touch-action: none !important;
       -webkit-overflow-scrolling: auto !important;
@@ -8003,7 +8006,7 @@
     }
 
     @supports (overflow: clip) {
-      html.android-portrait-scroll-shell main#top {
+      html.portrait-touch-scroll-shell main#top {
         overflow-x: clip !important;
       }
     }
@@ -10319,19 +10322,17 @@
 
 
 
+
   <script>
     (() => {
-      const android =
-        /Android/i.test(navigator.userAgent || '') &&
-        window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-
-      if (!android) return;
+      const portraitMobile = window.matchMedia(
+        '(max-width: 960px) and (orientation: portrait)'
+      );
 
       const root = document.documentElement;
       const main = document.querySelector('main#top');
       const topbar = document.querySelector('.site-topbar');
       const wordmark = document.querySelector('.wordmark');
-      const portrait = window.matchMedia('(orientation: portrait)');
 
       if (!main) return;
 
@@ -10350,20 +10351,19 @@
       let lastTime = 0;
       let velocity = 0;
 
-      const clampScroll = value => {
-        const max = Math.max(
-          0,
-          main.scrollHeight - main.clientHeight
-        );
+      const shellActive = () =>
+        root.classList.contains('portrait-touch-scroll-shell');
 
-        return Math.max(0, Math.min(max, value));
-      };
+      const maxScroll = () =>
+        Math.max(0, main.scrollHeight - main.clientHeight);
+
+      const clampScroll = value =>
+        Math.max(0, Math.min(maxScroll(), value));
 
       const stopInertia = () => {
-        if (inertiaFrame) {
-          cancelAnimationFrame(inertiaFrame);
-          inertiaFrame = 0;
-        }
+        if (!inertiaFrame) return;
+        cancelAnimationFrame(inertiaFrame);
+        inertiaFrame = 0;
       };
 
       const runInertia = initialVelocity => {
@@ -10376,18 +10376,23 @@
           const dt = Math.min(32, now - previous);
           previous = now;
 
+          const limit = maxScroll();
           const before = main.scrollTop;
-          const next = clampScroll(
-            before - (v * dt)
+          const next = Math.max(
+            0,
+            Math.min(limit, before - (v * dt))
           );
 
           main.scrollTop = next;
 
-          // Stop instantly at a real boundary: never hand an unconsumed
-          // delta back to the native WebView.
+          /*
+           * Hard boundary: end momentum the instant the real scroll range
+           * ends. No overshoot, spring, transform or bounce-back phase.
+           */
           if (
             next <= 0 ||
-            next >= main.scrollHeight - main.clientHeight - 0.5
+            next >= limit - 0.5 ||
+            next === before
           ) {
             inertiaFrame = 0;
             return;
@@ -10412,36 +10417,48 @@
           document.documentElement.clientHeight ||
           0;
 
-        if (measured > 0) {
-          lockedHeight = Math.round(measured);
-          root.style.setProperty(
-            '--android-portrait-scroll-h',
-            `${lockedHeight}px`
-          );
-        }
+        if (measured <= 0) return;
+
+        lockedHeight = Math.round(measured);
+
+        root.style.setProperty(
+          '--portrait-scroll-h',
+          `${lockedHeight}px`
+        );
       };
 
       const syncMode = () => {
         stopInertia();
 
-        if (portrait.matches) {
+        if (portraitMobile.matches) {
           if (!lockedHeight) readStableHeight();
-          root.classList.add('android-portrait-scroll-shell');
+
+          root.classList.add('portrait-touch-scroll-shell');
+
+          /*
+           * Clamp immediately in case orientation/viewport geometry changed
+           * while the user was already near the previous bottom boundary.
+           */
           main.scrollTop = clampScroll(main.scrollTop);
-        } else {
-          root.classList.remove('android-portrait-scroll-shell');
-          root.style.removeProperty('--android-portrait-scroll-h');
-          lockedHeight = 0;
+          return;
         }
+
+        root.classList.remove('portrait-touch-scroll-shell');
+        root.style.removeProperty('--portrait-scroll-h');
+        lockedHeight = 0;
       };
 
+      /*
+       * Mobile browser chrome often emits height-only resize events while
+       * scrolling. Ignore them. Rebuild only when the layout width changes,
+       * which indicates an actual rotation / viewport-mode change.
+       */
       const onResize = () => {
         const width =
           document.documentElement.clientWidth ||
           window.innerWidth ||
           0;
 
-        // Ignore portrait address-bar / navigation-bar height changes.
         if (Math.abs(width - lastWidth) < 2) return;
 
         lastWidth = width;
@@ -10453,30 +10470,28 @@
 
       window.addEventListener('resize', onResize, { passive: true });
 
-      portrait.addEventListener?.('change', () => {
+      portraitMobile.addEventListener?.('change', () => {
         lastWidth =
           document.documentElement.clientWidth ||
           window.innerWidth ||
           0;
+
         lockedHeight = 0;
         syncMode();
       });
 
       /*
-       * Custom vertical touch scroller.
-       *
-       * Because main#top has touch-action:none in portrait Android, the
-       * WebView never receives native vertical panning/overscroll. We update
-       * scrollTop directly and clamp every frame to [0, maxScroll].
-       *
-       * Horizontal gestures are deliberately left alone so the site's
-       * existing slide-swipe code can continue to read the same touch events.
+       * Portrait touch scroller
+       * -----------------------
+       * touch-action:none prevents native rubber-band behaviour.
+       * Vertical movement is applied directly to scrollTop and clamped.
+       * Horizontal gestures stay untouched for the site's slideshow swipe.
        */
       main.addEventListener(
         'touchstart',
         event => {
           if (
-            !root.classList.contains('android-portrait-scroll-shell') ||
+            !shellActive() ||
             event.touches.length !== 1
           ) {
             return;
@@ -10505,7 +10520,7 @@
         event => {
           if (
             !gestureActive ||
-            !root.classList.contains('android-portrait-scroll-shell') ||
+            !shellActive() ||
             event.touches.length !== 1
           ) {
             return;
@@ -10528,6 +10543,11 @@
             return;
           }
 
+          /*
+           * Always consume a vertical touch gesture while this shell is
+           * active — including when already sitting exactly at the bottom.
+           * This is what prevents the browser from starting any edge effect.
+           */
           event.preventDefault();
 
           const now = performance.now();
@@ -10539,6 +10559,7 @@
           );
 
           const instantVelocity = frameDy / dt;
+
           velocity =
             (velocity * 0.72) +
             (instantVelocity * 0.28);
@@ -10555,11 +10576,19 @@
         if (!gestureActive) return;
 
         const wasVertical = gestureAxis === 'vertical';
+
         gestureActive = false;
         gestureAxis = '';
 
-        if (wasVertical && Math.abs(velocity) > 0.06) {
+        if (
+          wasVertical &&
+          Math.abs(velocity) > 0.06 &&
+          main.scrollTop > 0 &&
+          main.scrollTop < maxScroll()
+        ) {
           runInertia(velocity);
+        } else {
+          stopInertia();
         }
       };
 
@@ -10584,8 +10613,10 @@
         }
       );
 
-      // Mirror the existing topbar visibility against the actual portrait
-      // Android scroller rather than window.scrollY.
+      /*
+       * Topbar visibility must follow main#top because window itself no
+       * longer scrolls in portrait mobile mode.
+       */
       if (topbar && wordmark) {
         let revealY = 0;
         let raf = 0;
@@ -10600,11 +10631,12 @@
         };
 
         const applyTopbar = () => {
-          const visible =
-            root.classList.contains('android-portrait-scroll-shell') &&
-            main.scrollTop >= revealY;
+          if (!shellActive()) return;
 
-          topbar.classList.toggle('is-visible', visible);
+          topbar.classList.toggle(
+            'is-visible',
+            main.scrollTop >= revealY
+          );
         };
 
         const onMainScroll = () => {
@@ -10633,11 +10665,13 @@
         }
       }
 
-      // Existing service-card code calls window.scrollTo(0). Mirror that on
-      // the Android portrait scroll container after the card click completes.
+      /*
+       * Existing service-card behaviour calls window.scrollTo(0).
+       * Mirror it onto the portrait scroll container.
+       */
       main.addEventListener('click', event => {
         if (
-          !root.classList.contains('android-portrait-scroll-shell') ||
+          !shellActive() ||
           !event.target?.closest?.('.service[data-context]')
         ) {
           return;
