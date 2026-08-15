@@ -10831,12 +10831,11 @@
 
           event.preventDefault();
 
-          if (link.closest('.site-topbar')) {
-            window.setTimeout(() => {
-              link.classList.remove('is-touch-pressed');
-            }, 120);
-          }
-
+          /*
+           * Keep the topbar fill latched after finger release.
+           * It is cleared only when the mailto handoff actually causes the
+           * page to lose focus / visibility (or the page is being hidden).
+           */
           suppressSyntheticClick = true;
           window.setTimeout(() => {
             suppressSyntheticClick = false;
@@ -10857,6 +10856,33 @@
           event.preventDefault();
         });
       });
+
+      const clearTopbarPressedState = () => {
+        projectLinks.forEach(link => {
+          if (link.closest('.site-topbar')) {
+            link.classList.remove('is-touch-pressed');
+          }
+        });
+      };
+
+      /*
+       * A successful mailto launch hands focus away from the page.
+       * Use that real handoff signal to release the visual fill rather than
+       * releasing it on touchend.
+       */
+      window.addEventListener('blur', clearTopbarPressedState, {
+        passive: true
+      });
+
+      window.addEventListener('pagehide', clearTopbarPressedState, {
+        passive: true
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          clearTopbarPressedState();
+        }
+      }, { passive: true });
     })();
   </script>
 
