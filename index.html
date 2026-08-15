@@ -7537,7 +7537,14 @@
       }
 
       #global.global {
-        overflow-x: hidden !important;
+        /*
+         * IMPORTANT: do not set overflow-x:hidden here.
+         * A non-visible value on one axis can make the other axis compute
+         * as scrollable, which turned #global into the nested "globe scroller".
+         * Horizontal clipping is already handled by the page/root and the
+         * globe-stage itself.
+         */
+        overflow: visible !important;
       }
 
       .site-copyright {
@@ -7576,8 +7583,9 @@
     }
 
     /* =========================================================
-       GLOBE — VISUAL LAYER ONLY
-       Keep the globe visible but remove any separate scroll/touch behaviour.
+       GLOBE — PURE VISUAL LAYER / NEVER A SCROLLER
+       `overflow: clip` is deliberately used instead of `hidden` where
+       supported because clip does not establish a scroll container.
        ========================================================= */
     .globe-stage,
     .globe-stage *,
@@ -7589,14 +7597,31 @@
       user-select: none !important;
       -webkit-user-select: none !important;
       overscroll-behavior: none !important;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    .globe-stage,
+    #globe,
+    #globe canvas {
+      overflow: hidden !important;
+    }
+
+    @supports (overflow: clip) {
+      .globe-stage,
+      #globe,
+      #globe canvas {
+        overflow: clip !important;
+      }
     }
 
     .globe-stage {
-      overflow: hidden !important;
-      scrollbar-width: none !important;
+      contain: paint !important;
     }
 
-    .globe-stage::-webkit-scrollbar {
+    .globe-stage::-webkit-scrollbar,
+    #globe::-webkit-scrollbar,
+    #globe canvas::-webkit-scrollbar {
       display: none !important;
       width: 0 !important;
       height: 0 !important;
@@ -7684,6 +7709,60 @@
     @media (max-width: 390px) {
       #global.global {
         scroll-margin-top: 76px;
+      }
+    }
+
+
+    @media (max-width: 960px) {
+      #global.global > .shell {
+        pointer-events: none !important;
+        touch-action: none !important;
+        overscroll-behavior: none !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+      }
+
+      #global.global > .shell::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+      }
+    }
+
+
+    /* =========================================================
+       GLOBE AREA — ABSOLUTELY NO NESTED SCROLL CONTAINER
+       #global and its shell remain visible/non-scrollable; only the visual
+       artwork itself is clipped. The document is the sole vertical scroller.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #global.global,
+      #global.global > .shell {
+        overflow: visible !important;
+        overflow-x: visible !important;
+        overflow-y: visible !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+      }
+
+      .globe-stage,
+      #globe,
+      #globe canvas {
+        overflow: clip !important;
+        overflow-x: clip !important;
+        overflow-y: clip !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+      }
+
+      #global.global::-webkit-scrollbar,
+      #global.global > .shell::-webkit-scrollbar,
+      .globe-stage::-webkit-scrollbar,
+      #globe::-webkit-scrollbar,
+      #globe canvas::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
       }
     }
 
