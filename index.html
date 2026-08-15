@@ -5539,63 +5539,6 @@
     }
 
 
-    /* =========================================================
-       VIEWPORT / ZOOM CONTAINMENT
-       Preserve normal browser zoom, but prevent layout overflow
-       and overscroll into empty canvas beyond the real page.
-       ========================================================= */
-    html,
-    body {
-      width: 100% !important;
-      max-width: 100% !important;
-      min-width: 0 !important;
-      overflow-x: hidden !important;
-      overscroll-behavior-x: none !important;
-      overscroll-behavior-y: none !important;
-    }
-
-    @supports (overflow: clip) {
-      html,
-      body {
-        overflow-x: clip !important;
-      }
-    }
-
-    body {
-      position: relative;
-    }
-
-    main#top,
-    #global,
-    #services,
-    #services .services,
-    #services .service,
-    .wordmark-intro,
-    .global-copy {
-      max-width: 100% !important;
-      min-width: 0 !important;
-    }
-
-    main#top,
-    #global,
-    #services {
-      overflow-x: clip !important;
-    }
-
-    /* Allow vertical page movement and pinch zoom, but don't let the
-       browser treat sideways drags as document panning. Horizontal
-       slide swipes are handled by the touch listener above. */
-    @media (max-width: 960px) {
-      html,
-      body {
-        touch-action: pan-y pinch-zoom;
-      }
-
-      #global {
-        touch-action: pan-y pinch-zoom;
-      }
-    }
-
 
     /* =========================================================
        MOBILE FINAL CARD — REMOVE DUPLICATE BOTTOM RULE
@@ -5868,77 +5811,6 @@
     }
 
 
-    /* =========================================================
-       MOBILE WORDMARK — METALLIC / TILT-REACTIVE SHEEN
-       ========================================================= */
-    @media (max-width: 960px) {
-      .wordmark .wordmark-motion {
-        position: relative !important;
-        color: #d0d0ca !important;
-        text-shadow:
-          0 1px 0 rgba(255,255,255,.10),
-          0 -1px 0 rgba(0,0,0,.42) !important;
-        isolation: isolate;
-      }
-
-      .wordmark .wordmark-motion::after {
-        content: "DEEPLINE";
-        position: absolute;
-        inset: 0;
-        z-index: 2;
-        pointer-events: none;
-
-        font: inherit;
-        font-weight: inherit;
-        line-height: inherit;
-        letter-spacing: inherit;
-        white-space: inherit;
-
-        color: transparent;
-        -webkit-text-fill-color: transparent;
-        -webkit-background-clip: text;
-        background-clip: text;
-
-        background-image:
-          linear-gradient(
-            105deg,
-            rgba(255,255,255,0) 0%,
-            rgba(255,255,255,.06) 34%,
-            rgba(255,255,255,.34) 43%,
-            rgba(255,255,255,1) 50%,
-            rgba(255,255,255,.42) 57%,
-            rgba(255,255,255,.08) 66%,
-            rgba(255,255,255,0) 100%
-          );
-        background-size: 235% 100%;
-        background-position: var(--wordmark-sheen-x, 50%) 50%;
-
-        opacity: .94;
-        mix-blend-mode: screen;
-        filter: blur(.08px);
-
-        animation:
-          deepline-mobile-sheen-idle 5.8s
-          cubic-bezier(.45,0,.25,1)
-          infinite alternate;
-      }
-
-      .wordmark .wordmark-motion.tilt-sheen-active::after {
-        animation: none !important;
-        transition:
-          background-position 110ms linear,
-          opacity 180ms ease !important;
-      }
-    }
-
-    @keyframes deepline-mobile-sheen-idle {
-      0%, 18%   { background-position: 8% 50%; opacity: .62; }
-      48%, 58%  { background-position: 54% 50%; opacity: .98; }
-      100%      { background-position: 94% 50%; opacity: .70; }
-    }
-
-
-
 
     /* =========================================================
        MOBILE CARD SELECTION INDICATOR — NO CUSTOM CURSOR
@@ -6146,244 +6018,8 @@
     }
 
 
-    /* =========================================================
-       TOUCH DEVICES — HARD CONTENT BOUNDARIES
-       Portrait and landscape use the same containment rules.
-       ========================================================= */
-    @media (hover: none) and (pointer: coarse) {
-      html,
-      body {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-
-        margin: 0 !important;
-        padding: 0 !important;
-
-        overflow-x: hidden !important;
-        overscroll-behavior: none !important;
-
-        /* Vertical page movement only. Prevent pinch-generated free panning
-           into empty VisualViewport space on iOS / touch browsers. */
-        touch-action: pan-y !important;
-      }
-
-      @supports (overflow: clip) {
-        html,
-        body {
-          overflow-x: clip !important;
-        }
-      }
-
-      body {
-        min-height: 100dvh !important;
-        position: relative !important;
-      }
-
-      main#top {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-        margin: 0 !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        overflow-x: clip !important;
-      }
-
-      /* Decorative/oversized layers must never participate in document
-         overflow. Their visible artwork remains clipped to its real section. */
-      .wordmark-intro,
-      #global.global,
-      #global.global .shell,
-      #services,
-      #services .services,
-      #services .service,
-      .site-copyright {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        overflow-x: clip !important;
-      }
-
-      #global.global {
-        /* The globe is deliberately oversized; prevent that visual layer from
-           increasing either the horizontal or vertical document boundary. */
-        overflow: hidden !important;
-      }
-
-      .wordmark-intro {
-        overflow: hidden !important;
-      }
-
-      #services .service {
-        overflow: hidden !important;
-      }
-
-      .site-copyright {
-        /* Copyright is the literal final block of the mobile document. */
-        margin-bottom: 0 !important;
-        padding-bottom: 0 !important;
-        flex-shrink: 0 !important;
-      }
-    }
-
-    /* Landscape phones can exceed the old 960px breakpoint. Keep them
-       contained as touch devices rather than allowing desktop geometry
-       to create an off-screen pannable canvas. */
-    @media (hover: none) and (pointer: coarse) and (orientation: landscape) {
-      html,
-      body,
-      main#top {
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-        overscroll-behavior: none !important;
-      }
-
-      @supports (overflow: clip) {
-        html,
-        body,
-        main#top {
-          overflow-x: clip !important;
-        }
-      }
-    }
 
 
-    /* =========================================================
-       TOUCH PRICE MATERIAL — TILT-REACTIVE METALLIC SHEEN
-       Stronger tonal contrast so the reflective effect is unmistakable,
-       while remaining monochrome and consistent with Deepline.
-       ========================================================= */
-    @media (hover: none) and (pointer: coarse) {
-      #services .price strong.fx-price {
-        --price-sheen-x: 50%;
-        --price-sheen-angle: 104deg;
-
-        color: transparent !important;
-        -webkit-text-fill-color: transparent !important;
-
-        background-image:
-          linear-gradient(
-            var(--price-sheen-angle),
-            #72726e 0%,
-            #9b9b96 12%,
-            #d4d4cf 25%,
-            #ffffff 38%,
-            #f7f7f2 43%,
-            #858580 54%,
-            #b8b8b3 66%,
-            #ffffff 79%,
-            #c9c9c4 88%,
-            #6f6f6b 100%
-          ) !important;
-
-        background-size: 320% 100% !important;
-        background-position: var(--price-sheen-x) 50% !important;
-        background-repeat: no-repeat !important;
-
-        -webkit-background-clip: text !important;
-        background-clip: text !important;
-
-        filter:
-          drop-shadow(0 0 .01px rgba(255,255,255,.20))
-          contrast(1.06);
-
-        transition:
-          background-position 70ms linear,
-          filter 160ms ease !important;
-
-        will-change: background-position;
-      }
-
-      #services .price strong.fx-price span,
-      #services .price strong.fx-price .fx-prefix {
-        color: inherit !important;
-        -webkit-text-fill-color: inherit !important;
-      }
-
-      /* Until sensor permission becomes active, keep a very slow, restrained
-         material drift so the reflective treatment is still visible. */
-      html:not(.price-tilt-disabled) #services .price strong.fx-price {
-        animation:
-          deepline-price-idle-sheen 6.8s
-          cubic-bezier(.45,0,.25,1)
-          infinite alternate;
-      }
-
-      html.price-tilt-disabled #services .price strong.fx-price {
-        animation: none !important;
-        filter:
-          drop-shadow(0 0 .01px rgba(255,255,255,.26))
-          contrast(1.08);
-      }
-    }
-
-    @keyframes deepline-price-idle-sheen {
-      from { background-position: 34% 50%; }
-      to   { background-position: 66% 50%; }
-    }
-
-
-    /* =========================================================
-       MOBILE SCROLL + SWIPE STABILITY
-       ========================================================= */
-    @media (hover: none) and (pointer: coarse) {
-      html,
-      body {
-        overscroll-behavior-x: none !important;
-        overscroll-behavior-y: none !important;
-      }
-
-      main#top {
-        overflow-x: clip !important;
-        overflow-y: visible !important;
-      }
-
-      .site-copyright {
-        margin-bottom: 0 !important;
-        padding-bottom: 0 !important;
-      }
-    }
-
-    @media (max-width: 960px) {
-      #global.global > .global-copy:not(.is-service-context) {
-        left: 50% !important;
-        right: auto !important;
-        width: min(940px, calc(100% - (var(--pad) * 2))) !important;
-        max-width: calc(100% - (var(--pad) * 2)) !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        transform: translate(-50%, -50%) !important;
-      }
-
-      #global.global > .global-copy:not(.is-service-context) .homepage-slide {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin-inline: auto !important;
-      }
-    }
-
-
-    /* =========================================================
-       CROSS-BROWSER MOBILE SCROLL STABILITY
-       Android Chrome / Pixel Chrome / Samsung Internet / iOS Safari
-       ========================================================= */
-    @media (hover: none) and (pointer: coarse) {
-      html,
-      body {
-        overscroll-behavior-x: none !important;
-        overscroll-behavior-y: none !important;
-        overflow-anchor: none !important;
-      }
-
-      main#top,
-      #global.global,
-      #services,
-      .site-copyright {
-        overflow-anchor: none !important;
-      }
-    }
 
 
     /* =========================================================
@@ -7561,34 +7197,6 @@
     }
 
 
-    /* =========================================================
-       MOBILE SCROLL — NATIVE / STABLE
-       No JS touchmove cancellation; no scroll-time viewport reflow.
-       ========================================================= */
-    @media (hover: none) and (pointer: coarse) {
-      html,
-      body {
-        touch-action: pan-y !important;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      main#top,
-      #global.global,
-      #services,
-      .site-copyright {
-        overflow-anchor: none !important;
-      }
-
-      /* Fixed blurred chrome gets an isolated compositing layer so it does
-         not repeatedly invalidate the scrolling page beneath it. */
-      .site-topbar {
-        transform: translateZ(0) !important;
-        -webkit-transform: translateZ(0) !important;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-      }
-    }
-
 
     /* =========================================================
        DESKTOP FIRST DEFAULT SLIDE — EXACT REFERENCE LINE BREAKS
@@ -7823,56 +7431,6 @@
     }
 
 
-    /* =========================================================
-       ANDROID / DUCKDUCKGO MOBILE SCROLL STABILITY
-       Keep the normal document height independent of the browser's
-       collapsing/expanding toolbar. Desktop is untouched.
-       ========================================================= */
-    @media (max-width: 960px) {
-      html {
-        height: auto !important;
-        min-height: 100% !important;
-        max-height: none !important;
-        overflow-y: auto !important;
-      }
-
-      body {
-        height: auto !important;
-        min-height: 100% !important;
-        max-height: none !important;
-        overflow-y: visible !important;
-      }
-
-      @supports (height: 100svh) {
-        body {
-          min-height: 100svh !important;
-        }
-      }
-
-      main#top {
-        height: auto !important;
-        min-height: 0 !important;
-        max-height: none !important;
-        overflow-y: visible !important;
-      }
-    }
-
-    @media (hover: none) and (pointer: coarse) {
-      /*
-       * backdrop-filter on a fixed element forces continuous recompositing
-       * of the moving page underneath it in Android WebView-family browsers.
-       * Keep the same dark/translucent topbar appearance without live blur.
-       */
-      .site-topbar {
-        background: rgba(5,5,5,.94) !important;
-        -webkit-backdrop-filter: none !important;
-        backdrop-filter: none !important;
-        will-change: auto !important;
-        contain: layout paint !important;
-      }
-    }
-
-
 
     /* =========================================================
        EMBEDDED BAHNSCHRIFT WORDMARK
@@ -7934,96 +7492,57 @@
 
 
     /* =========================================================
-       ANDROID BOTTOM-EDGE OVERSCROLL LOCK
-       CSS handles normal boundary behaviour. A tiny Android-only JS guard
-       supplements browsers/WebViews that still animate the root past its end.
+       SIMPLE PAGE SCROLLING
+       One normal document scroller. No custom touch physics, fixed-body
+       shells, JS boundary interception or dynamic viewport-height tricks.
        ========================================================= */
-    @media (hover: none) and (pointer: coarse) {
+    html {
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scroll-behavior: auto;
+      overscroll-behavior-x: none;
+      overscroll-behavior-y: none;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow-x: hidden;
+      overflow-y: visible;
+      overscroll-behavior-x: none;
+      overscroll-behavior-y: none;
+    }
+
+    main#top {
+      width: 100%;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    @media (max-width: 960px) {
       html,
-      body,
-      main#top,
+      body {
+        touch-action: pan-y;
+      }
+
+      .wordmark-intro,
+      #global.global,
       #services,
       .site-copyright {
-        overscroll-behavior: none !important;
-        overscroll-behavior-x: none !important;
-        overscroll-behavior-y: none !important;
-        overscroll-behavior-block: none !important;
+        max-width: 100%;
+        box-sizing: border-box;
       }
-    }
 
-
-    /* =========================================================
-       PORTRAIT — TRUE HARD PAGE BOUNDARY
-       Keep native scrolling/momentum, but make main#top the only scroll
-       surface and explicitly suppress any gesture that tries to move past
-       its real top or bottom. No spring, transform, rebound or custom physics.
-       ========================================================= */
-    html.portrait-boundary-lock,
-    html.portrait-boundary-lock body {
-      width: 100% !important;
-      height: 100% !important;
-      min-height: 0 !important;
-      max-height: 100% !important;
-      overflow: hidden !important;
-
-      overscroll-behavior: none !important;
-      overscroll-behavior-x: none !important;
-      overscroll-behavior-y: none !important;
-      overscroll-behavior-block: none !important;
-    }
-
-    html.portrait-boundary-lock body {
-      position: fixed !important;
-      inset: 0 !important;
-      margin: 0 !important;
-    }
-
-    html.portrait-boundary-lock main#top {
-      position: absolute !important;
-      inset: 0 !important;
-
-      width: 100% !important;
-      height: var(--portrait-boundary-height, 100svh) !important;
-      min-height: 0 !important;
-      max-height: none !important;
-
-      overflow-x: hidden !important;
-      overflow-y: auto !important;
-
-      overscroll-behavior: none !important;
-      overscroll-behavior-x: none !important;
-      overscroll-behavior-y: none !important;
-      overscroll-behavior-block: none !important;
-
-      /*
-       * Native vertical panning remains enabled. The capture-phase boundary
-       * guard below only cancels a gesture once there is literally nowhere
-       * further to scroll.
-       */
-      touch-action: pan-y !important;
-      -webkit-overflow-scrolling: auto !important;
-
-      scroll-behavior: auto !important;
-      overflow-anchor: none !important;
-      transform: none !important;
-    }
-
-    @supports (overflow: clip) {
-      html.portrait-boundary-lock main#top {
-        overflow-x: clip !important;
+      #global.global {
+        overflow-x: hidden !important;
       }
-    }
 
-    /*
-     * Do not let a transform/animation on the final document blocks create
-     * the appearance of a rubber-band at the bottom edge.
-     */
-    html.portrait-boundary-lock #services,
-    html.portrait-boundary-lock .site-copyright {
-      transform: none !important;
-      translate: none !important;
-      animation-name: none !important;
-      transition-property: none !important;
+      .site-copyright {
+        margin-bottom: 0 !important;
+      }
     }
 
   </style>
@@ -8272,15 +7791,6 @@
         activateMobileIndicator(event.target);
       }, { passive: true });
 
-      // Do NOT retarget on pointermove. On touchscreens pointermove is also
-      // emitted while scrolling; ignoring it is what keeps a selected target
-      // locked until the user physically taps elsewhere.
-      document.addEventListener('pointermove', event => {
-        if (
-          window.innerWidth > 960 ||
-          event.pointerType === 'mouse'
-        ) return;
-      }, { passive: true });
 
       if (!window.PointerEvent) {
         document.addEventListener('touchstart', event => {
@@ -8922,41 +8432,6 @@
       else if (visible) startLoop();
     });
 
-    // On touch devices, give native scrolling the rendering budget.
-    // Stop before the first scroll frame, then resume only after movement settles.
-    if (touchPointer) {
-      let scrollResumeTimer = 0;
-
-      const suspendForTouchScroll = () => {
-        stopLoop();
-        window.clearTimeout(scrollResumeTimer);
-      };
-
-      const resumeAfterTouchScroll = () => {
-        window.clearTimeout(scrollResumeTimer);
-
-        scrollResumeTimer = window.setTimeout(() => {
-          if (visible && !document.hidden) startLoop();
-        }, 240);
-      };
-
-      window.addEventListener('touchstart', suspendForTouchScroll, {
-        passive: true
-      });
-
-      window.addEventListener('scroll', () => {
-        suspendForTouchScroll();
-        resumeAfterTouchScroll();
-      }, { passive: true });
-
-      window.addEventListener('touchend', resumeAfterTouchScroll, {
-        passive: true
-      });
-
-      window.addEventListener('touchcancel', resumeAfterTouchScroll, {
-        passive: true
-      });
-    }
 
     window.addEventListener('pagehide', () => {
       destroyed = true;
@@ -10330,358 +9805,6 @@
       }
 
       syncDesktopDefaultCopyCentre();
-    })();
-  </script>
-
-
-
-
-
-
-
-  <script>
-    (() => {
-      /*
-       * The reported problem is portrait geometry, not a specific browser.
-       * Use portrait orientation directly so physical phones, tablets and
-       * Responsively/device emulation all take the same path.
-       */
-      const portrait = window.matchMedia('(orientation: portrait)');
-
-      const root = document.documentElement;
-      const main = document.querySelector('main#top');
-      const topbar = document.querySelector('.site-topbar');
-      const wordmark = document.querySelector('.wordmark');
-
-      if (!main) return;
-
-      let lockedHeight = 0;
-      let lastWidth =
-        document.documentElement.clientWidth ||
-        window.innerWidth ||
-        0;
-
-      let touchStartY = 0;
-      let pointerStartY = 0;
-      let pointerTracking = false;
-
-      const active = () =>
-        root.classList.contains('portrait-boundary-lock');
-
-      const maxScroll = () =>
-        Math.max(0, main.scrollHeight - main.clientHeight);
-
-      const atTop = () =>
-        main.scrollTop <= 0.5;
-
-      const atBottom = () =>
-        main.scrollTop >= maxScroll() - 0.5;
-
-      const pinToBoundary = () => {
-        const max = maxScroll();
-
-        if (main.scrollTop < 0) {
-          main.scrollTop = 0;
-        } else if (main.scrollTop > max) {
-          main.scrollTop = max;
-        }
-      };
-
-      const captureStableHeight = () => {
-        const measured =
-          window.innerHeight ||
-          document.documentElement.clientHeight ||
-          0;
-
-        if (measured <= 0) return;
-
-        lockedHeight = Math.round(measured);
-
-        root.style.setProperty(
-          '--portrait-boundary-height',
-          `${lockedHeight}px`
-        );
-      };
-
-      const syncMode = () => {
-        if (portrait.matches) {
-          if (!lockedHeight) captureStableHeight();
-
-          root.classList.add('portrait-boundary-lock');
-          pinToBoundary();
-          return;
-        }
-
-        root.classList.remove('portrait-boundary-lock');
-        root.style.removeProperty('--portrait-boundary-height');
-        lockedHeight = 0;
-      };
-
-      /*
-       * Ignore height-only changes caused by collapsing/expanding mobile
-       * browser UI. Re-capture only after a genuine width/orientation change.
-       */
-      const onResize = () => {
-        const width =
-          document.documentElement.clientWidth ||
-          window.innerWidth ||
-          0;
-
-        if (Math.abs(width - lastWidth) < 2) return;
-
-        lastWidth = width;
-        lockedHeight = 0;
-        syncMode();
-      };
-
-      syncMode();
-
-      window.addEventListener('resize', onResize, { passive: true });
-
-      portrait.addEventListener?.('change', () => {
-        lastWidth =
-          document.documentElement.clientWidth ||
-          window.innerWidth ||
-          0;
-
-        lockedHeight = 0;
-        syncMode();
-      });
-
-      /*
-       * TOUCH
-       * Always observe the gesture. As soon as the scroller reaches an edge,
-       * cancel only movement that points beyond that edge. This also covers a
-       * gesture that STARTS above the bottom and reaches it mid-swipe.
-       */
-      document.addEventListener(
-        'touchstart',
-        event => {
-          if (!active() || event.touches.length !== 1) return;
-          touchStartY = event.touches[0].clientY;
-        },
-        {
-          capture: true,
-          passive: true
-        }
-      );
-
-      document.addEventListener(
-        'touchmove',
-        event => {
-          if (!active() || event.touches.length !== 1) return;
-
-          const currentY = event.touches[0].clientY;
-          const deltaY = currentY - touchStartY;
-
-          const pushingPastTop =
-            deltaY > 0 && atTop();
-
-          const pushingPastBottom =
-            deltaY < 0 && atBottom();
-
-          if (!pushingPastTop && !pushingPastBottom) {
-            touchStartY = currentY;
-            return;
-          }
-
-          /*
-           * This is the hard stop. The event never reaches the browser's
-           * overscroll/rubber-band path.
-           */
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          pinToBoundary();
-          touchStartY = currentY;
-        },
-        {
-          capture: true,
-          passive: false
-        }
-      );
-
-      /*
-       * WHEEL / TRACKPAD
-       * Responsively and some device-emulation layers translate a simulated
-       * touch swipe into wheel deltas rather than DOM TouchEvents. Block those
-       * at the same real boundaries as well.
-       */
-      document.addEventListener(
-        'wheel',
-        event => {
-          if (!active()) return;
-
-          const pushingPastTop =
-            event.deltaY < 0 && atTop();
-
-          const pushingPastBottom =
-            event.deltaY > 0 && atBottom();
-
-          if (!pushingPastTop && !pushingPastBottom) return;
-
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          pinToBoundary();
-        },
-        {
-          capture: true,
-          passive: false
-        }
-      );
-
-      /*
-       * POINTER-BASED TOUCH EMULATION
-       * Some embedded/emulated device shells emit PointerEvents instead of
-       * TouchEvents. Catch those too. This does not affect ordinary taps.
-       */
-      document.addEventListener(
-        'pointerdown',
-        event => {
-          if (!active() || !event.isPrimary) return;
-
-          pointerTracking =
-            event.pointerType === 'touch' ||
-            event.pointerType === 'pen';
-
-          if (!pointerTracking) return;
-
-          pointerStartY = event.clientY;
-        },
-        {
-          capture: true,
-          passive: true
-        }
-      );
-
-      document.addEventListener(
-        'pointermove',
-        event => {
-          if (
-            !active() ||
-            !pointerTracking ||
-            !event.isPrimary
-          ) {
-            return;
-          }
-
-          const deltaY = event.clientY - pointerStartY;
-
-          const pushingPastTop =
-            deltaY > 0 && atTop();
-
-          const pushingPastBottom =
-            deltaY < 0 && atBottom();
-
-          if (!pushingPastTop && !pushingPastBottom) {
-            pointerStartY = event.clientY;
-            return;
-          }
-
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          pinToBoundary();
-          pointerStartY = event.clientY;
-        },
-        {
-          capture: true,
-          passive: false
-        }
-      );
-
-      const endPointer = () => {
-        pointerTracking = false;
-      };
-
-      document.addEventListener(
-        'pointerup',
-        endPointer,
-        {
-          capture: true,
-          passive: true
-        }
-      );
-
-      document.addEventListener(
-        'pointercancel',
-        endPointer,
-        {
-          capture: true,
-          passive: true
-        }
-      );
-
-      /*
-       * Keep the topbar tied to the actual portrait scroller.
-       */
-      if (topbar && wordmark) {
-        let revealY = 0;
-        let raf = 0;
-
-        const measureReveal = () => {
-          const mainRect = main.getBoundingClientRect();
-          const markRect = wordmark.getBoundingClientRect();
-
-          revealY =
-            (markRect.bottom - mainRect.top) +
-            main.scrollTop;
-        };
-
-        const applyTopbar = () => {
-          if (!active()) return;
-
-          topbar.classList.toggle(
-            'is-visible',
-            main.scrollTop >= revealY
-          );
-        };
-
-        const onMainScroll = () => {
-          if (raf) return;
-
-          raf = requestAnimationFrame(() => {
-            raf = 0;
-            pinToBoundary();
-            applyTopbar();
-          });
-        };
-
-        requestAnimationFrame(() => {
-          measureReveal();
-          applyTopbar();
-        });
-
-        main.addEventListener(
-          'scroll',
-          onMainScroll,
-          { passive: true }
-        );
-
-        if (document.fonts?.ready) {
-          document.fonts.ready
-            .then(() => {
-              measureReveal();
-              applyTopbar();
-            })
-            .catch(() => {});
-        }
-      }
-
-      /*
-       * Existing service-card behaviour calls window.scrollTo(0). Mirror it
-       * onto the portrait scroll surface.
-       */
-      main.addEventListener('click', event => {
-        if (
-          !active() ||
-          !event.target?.closest?.('.service[data-context]')
-        ) {
-          return;
-        }
-
-        requestAnimationFrame(() => {
-          main.scrollTop = 0;
-        });
-      });
     })();
   </script>
 
