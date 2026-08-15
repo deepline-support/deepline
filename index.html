@@ -7822,6 +7822,116 @@
       filter: none !important;
     }
 
+
+    /* =========================================================
+       ANDROID / DUCKDUCKGO MOBILE SCROLL STABILITY
+       Keep the normal document height independent of the browser's
+       collapsing/expanding toolbar. Desktop is untouched.
+       ========================================================= */
+    @media (max-width: 960px) {
+      html {
+        height: auto !important;
+        min-height: 100% !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+      }
+
+      body {
+        height: auto !important;
+        min-height: 100% !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+      }
+
+      @supports (height: 100svh) {
+        body {
+          min-height: 100svh !important;
+        }
+      }
+
+      main#top {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+      }
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      /*
+       * backdrop-filter on a fixed element forces continuous recompositing
+       * of the moving page underneath it in Android WebView-family browsers.
+       * Keep the same dark/translucent topbar appearance without live blur.
+       */
+      .site-topbar {
+        background: rgba(5,5,5,.94) !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        will-change: auto !important;
+        contain: layout paint !important;
+      }
+    }
+
+
+
+    /* =========================================================
+       EMBEDDED BAHNSCHRIFT WORDMARK
+       Self-contained WOFF2 generated from the user-supplied
+       Bahnschrift 400 EOT. Only the DEEPLINE glyphs are embedded.
+       ========================================================= */
+    @font-face {
+      font-family: "Deepline Bahnschrift";
+      src: url("data:font/woff2;base64,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") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    .wordmark,
+    .wordmark *,
+    .wordmark-motion,
+    .wordmark-motion *,
+    .topbar-wordmark {
+      font-family: "Deepline Bahnschrift", Bahnschrift, sans-serif !important;
+      font-style: normal !important;
+      font-weight: 400 !important;
+      font-stretch: normal !important;
+      font-synthesis: none !important;
+    }
+
+
+    /* =========================================================
+       EMBEDDED WORDMARK — RESTORE ORIGINAL MOBILE POSITIONING
+       The mobile intro centres the wordmark with CSS Grid. Do not use
+       translate(-50%, -50%) here: that moves the already-centred element.
+       Desktop positioning is untouched.
+       ========================================================= */
+    @media (max-width: 960px) {
+      .wordmark {
+        position: static !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: auto !important;
+        margin: 0 !important;
+        transform: translateX(.065em) !important;
+        transform-origin: center center !important;
+      }
+
+      .topbar-wordmark {
+        display: inline-flex !important;
+        transform: translateX(.065em) !important;
+        transform-origin: left center !important;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .wordmark,
+      .topbar-wordmark {
+        transform: translateX(.04em) !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -7940,12 +8050,27 @@
             'mobile-card-indicator-active',
             !!target
           );
+
+          // There is no free-roaming cursor on mobile. Only run the cursor
+          // animation while an actual service card is selected.
+          if (target && !raf) {
+            raf = requestAnimationFrame(frame);
+          } else if (!target && raf) {
+            cancelAnimationFrame(raf);
+            raf = 0;
+          }
         }
 
         if (!target) spinStart = performance.now();
       }
 
       function frame(now) {
+        // Mobile has no free cursor. Stop completely when no card is selected.
+        if (window.innerWidth <= 960 && !target) {
+          raf = 0;
+          return;
+        }
+
         if (
           window.innerWidth <= 960 &&
           target &&
@@ -8107,7 +8232,12 @@
 
       // The overlay is already in the DOM and visible before we suppress the system cursor.
       document.documentElement.classList.add('deepline-cursor-live');
-      raf = requestAnimationFrame(frame);
+
+      // Desktop keeps the continuously animated custom cursor. Mobile starts
+      // its much smaller card-indicator loop only after a service-card tap.
+      if (window.innerWidth > 960) {
+        raf = requestAnimationFrame(frame);
+      }
     })();
   </script>
 
@@ -8673,6 +8803,10 @@
       }
     }
 
+    const touchPointer = window.matchMedia(
+      '(hover: none) and (pointer: coarse)'
+    ).matches;
+
     const observer = new IntersectionObserver((entries) => {
       visible = entries[0]?.isIntersecting ?? false;
       if (visible) {
@@ -8681,7 +8815,12 @@
       } else {
         stopLoop();
       }
-    }, { rootMargin: '500px 0px', threshold: 0 });
+    }, {
+      // On mobile, stop the WebGL render loop much sooner once the globe
+      // leaves the viewport so the card-stack scroll has the main thread/GPU.
+      rootMargin: touchPointer ? '120px 0px' : '500px 0px',
+      threshold: 0
+    });
     observer.observe(stage);
 
     document.addEventListener('visibilitychange', () => {
@@ -8690,18 +8829,39 @@
     });
 
     // On touch devices, give native scrolling the rendering budget.
-    // Rotation resumes shortly after scrolling settles.
-    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+    // Stop before the first scroll frame, then resume only after movement settles.
+    if (touchPointer) {
       let scrollResumeTimer = 0;
 
-      window.addEventListener('scroll', () => {
+      const suspendForTouchScroll = () => {
         stopLoop();
+        window.clearTimeout(scrollResumeTimer);
+      };
+
+      const resumeAfterTouchScroll = () => {
         window.clearTimeout(scrollResumeTimer);
 
         scrollResumeTimer = window.setTimeout(() => {
           if (visible && !document.hidden) startLoop();
-        }, 180);
+        }, 240);
+      };
+
+      window.addEventListener('touchstart', suspendForTouchScroll, {
+        passive: true
+      });
+
+      window.addEventListener('scroll', () => {
+        suspendForTouchScroll();
+        resumeAfterTouchScroll();
       }, { passive: true });
+
+      window.addEventListener('touchend', resumeAfterTouchScroll, {
+        passive: true
+      });
+
+      window.addEventListener('touchcancel', resumeAfterTouchScroll, {
+        passive: true
+      });
     }
 
     window.addEventListener('pagehide', () => {
