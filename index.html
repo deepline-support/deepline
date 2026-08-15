@@ -7971,6 +7971,179 @@
       }
     }
 
+
+    /* =========================================================
+       MOBILE SERVICE TEXT — BALANCED BETWEEN CTA + CARD STACK
+       JS only writes typography/position variables. It never changes
+       #global height or #services position, so the cards remain locked.
+       Text alignment is deliberately untouched.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #global.global > .global-copy.is-service-context {
+        top: var(--mobile-service-top, 30px) !important;
+        bottom: auto !important;
+        left: var(--pad) !important;
+        right: var(--pad) !important;
+        width: auto !important;
+        max-width: none !important;
+        padding: 0 !important;
+        transform: none !important;
+      }
+
+      #global.global > .global-copy.is-service-context h2 {
+        margin: 0 0 var(--mobile-service-title-gap, 9px) !important;
+        font-size: var(--mobile-service-title-size, 26px) !important;
+        line-height: 1.02 !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .service-context-layout {
+        display: grid !important;
+        gap: var(--mobile-service-layout-gap, 8px) !important;
+        width: 100% !important;
+        max-width: none !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .service-context-intro,
+      #global.global > .global-copy.is-service-context
+      .context-section p,
+      #global.global > .global-copy.is-service-context
+      .context-detail,
+      #global.global > .global-copy.is-service-context
+      .context-emphasis,
+      #global.global > .global-copy.is-service-context
+      .context-meta-value,
+      #global.global > .global-copy.is-service-context
+      .context-closing {
+        font-size: var(--mobile-service-body-size, 13px) !important;
+        line-height: var(--mobile-service-body-line, 1.34) !important;
+        letter-spacing: 0 !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .context-emphasis.context-emphasis-lead,
+      #global.global > .global-copy.is-service-context
+      .context-emphasis.context-emphasis-lead.forge-lead {
+        margin: 0 0 var(--mobile-service-lead-gap, 2px) !important;
+        font-size: var(--mobile-service-lead-size, 14px) !important;
+        line-height: 1.28 !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .context-section,
+      #global.global > .global-copy.is-service-context
+      .context-subsection {
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .context-label,
+      #global.global > .global-copy.is-service-context
+      .context-meta-label {
+        display: block !important;
+        margin: 0 0 var(--mobile-service-label-gap, 3px) !important;
+        padding: 0 !important;
+        font-size: var(--mobile-service-label-size, 9px) !important;
+        line-height: 1.1 !important;
+        letter-spacing: .08em !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .context-meta-row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: var(--mobile-service-meta-gap, 14px) !important;
+        margin: 1px 0 0 !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .context-meta {
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .context-meta-value {
+        gap: 6px !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .response-bolt {
+        flex: 0 0 var(--mobile-service-bolt-size, 15px) !important;
+        width: var(--mobile-service-bolt-size, 15px) !important;
+        height: var(--mobile-service-bolt-size, 15px) !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .response-bolt svg {
+        width: var(--mobile-service-bolt-icon, 11px) !important;
+        height: var(--mobile-service-bolt-icon, 11px) !important;
+      }
+    }
+
+
+    /* =========================================================
+       MOBILE SERVICE COPY — EXACT INTERNAL SPACING CONSISTENCY
+       Only spacing is changed here.
+       ========================================================= */
+    @media (max-width: 960px) {
+      /*
+       * OVERWATCH:
+       * "Keep operations moving." is a direct grid child, so its paragraph
+       * gap equals: lead margin + service-context grid gap.
+       *
+       * FORGE / EDEN:
+       * Their lead + paragraph live inside .context-subsection, so reproduce
+       * that exact same total distance explicitly.
+       */
+      #global.global > .global-copy.is-service-context
+      .context-subsection
+      .context-emphasis.context-emphasis-lead,
+      #global.global > .global-copy.is-service-context
+      .context-subsection
+      .context-emphasis.context-emphasis-lead.forge-lead {
+        margin-top: 0 !important;
+        margin-bottom:
+          calc(
+            var(--mobile-service-layout-gap, 8px) +
+            var(--mobile-service-lead-gap, 2px)
+          )
+          !important;
+      }
+
+      /*
+       * BEST FOR:
+       * Use one identical spacing model in all three service contexts:
+       * - preceding content -> BEST FOR section = the shared grid gap
+       * - BEST FOR label -> paragraph = the shared label gap
+       */
+      #global.global > .global-copy.is-service-context
+      .service-context-layout > .context-section {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .service-context-layout > .context-section > .context-label {
+        display: block !important;
+        margin-top: 0 !important;
+        margin-bottom: var(--mobile-service-label-gap, 3px) !important;
+        padding: 0 !important;
+      }
+
+      #global.global > .global-copy.is-service-context
+      .service-context-layout > .context-section > p {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -10173,6 +10346,219 @@
       }
 
       syncDesktopDefaultCopyCentre();
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const mobile = window.matchMedia('(max-width: 960px)');
+      const global = document.querySelector('#global.global');
+      const copy = global?.querySelector(':scope > .global-copy');
+      const content = copy?.querySelector('[data-global-content]');
+      const button = document.querySelector('.wordmark-intro .main-page-cta');
+      const cardStack =
+        document.querySelector('#services .services') ||
+        document.querySelector('#services');
+
+      if (!global || !copy || !content || !button || !cardStack) return;
+
+      let raf = 0;
+      let lastWidth =
+        document.documentElement.clientWidth || window.innerWidth;
+
+      const applyScale = scale => {
+        const s = Math.max(.86, Math.min(1.16, scale));
+
+        copy.style.setProperty(
+          '--mobile-service-title-size',
+          `${(26 * s).toFixed(2)}px`
+        );
+        copy.style.setProperty(
+          '--mobile-service-body-size',
+          `${(13 * s).toFixed(2)}px`
+        );
+        copy.style.setProperty(
+          '--mobile-service-lead-size',
+          `${(14 * s).toFixed(2)}px`
+        );
+        copy.style.setProperty(
+          '--mobile-service-label-size',
+          `${Math.max(8, 9 * s).toFixed(2)}px`
+        );
+
+        copy.style.setProperty(
+          '--mobile-service-title-gap',
+          `${(9 * s).toFixed(2)}px`
+        );
+        copy.style.setProperty(
+          '--mobile-service-layout-gap',
+          `${(8 * s).toFixed(2)}px`
+        );
+        copy.style.setProperty(
+          '--mobile-service-lead-gap',
+          `${(2 * s).toFixed(2)}px`
+        );
+        copy.style.setProperty(
+          '--mobile-service-label-gap',
+          `${(3 * s).toFixed(2)}px`
+        );
+        copy.style.setProperty(
+          '--mobile-service-meta-gap',
+          `${(14 * s).toFixed(2)}px`
+        );
+
+        copy.style.setProperty(
+          '--mobile-service-bolt-size',
+          `${(15 * s).toFixed(2)}px`
+        );
+        copy.style.setProperty(
+          '--mobile-service-bolt-icon',
+          `${(11 * s).toFixed(2)}px`
+        );
+      };
+
+      const clearServiceVars = () => {
+        [
+          '--mobile-service-top',
+          '--mobile-service-title-size',
+          '--mobile-service-body-size',
+          '--mobile-service-lead-size',
+          '--mobile-service-label-size',
+          '--mobile-service-title-gap',
+          '--mobile-service-layout-gap',
+          '--mobile-service-lead-gap',
+          '--mobile-service-label-gap',
+          '--mobile-service-meta-gap',
+          '--mobile-service-bolt-size',
+          '--mobile-service-bolt-icon'
+        ].forEach(name => copy.style.removeProperty(name));
+      };
+
+      const balanceServiceCopy = () => {
+        cancelAnimationFrame(raf);
+
+        raf = requestAnimationFrame(() => {
+          if (
+            !mobile.matches ||
+            !copy.classList.contains('is-service-context')
+          ) {
+            clearServiceVars();
+            return;
+          }
+
+          // These are the two literal visual boundaries requested:
+          // main CTA bottom and the actual card-stack top.
+          const buttonRect = button.getBoundingClientRect();
+          const stackRect = cardStack.getBoundingClientRect();
+          const globalRect = global.getBoundingClientRect();
+
+          const availableHeight = stackRect.top - buttonRect.bottom;
+          if (availableHeight <= 0) return;
+
+          // Preserve a meaningful minimum gap on smaller/shorter displays,
+          // but allow the typography to grow on roomier screens.
+          const viewportWidth =
+            document.documentElement.clientWidth || window.innerWidth;
+
+          const minGap = Math.max(
+            24,
+            Math.min(34, viewportWidth * .075)
+          );
+
+          const maxTextHeight = Math.max(
+            120,
+            availableHeight - (minGap * 2)
+          );
+
+          // Find the largest scale that fits inside the fixed field.
+          let low = .86;
+          let high = 1.16;
+          let best = low;
+
+          for (let i = 0; i < 9; i++) {
+            const mid = (low + high) / 2;
+            applyScale(mid);
+
+            // Reading the block height here cannot move the cards because
+            // neither #global nor #services height is changed by this pass.
+            const textHeight = copy.getBoundingClientRect().height;
+
+            if (textHeight <= maxTextHeight) {
+              best = mid;
+              low = mid;
+            } else {
+              high = mid;
+            }
+          }
+
+          applyScale(best);
+
+          requestAnimationFrame(() => {
+            const finalTextHeight =
+              copy.getBoundingClientRect().height;
+
+            const freeSpace =
+              availableHeight - finalTextHeight;
+
+            // Equal visual gap above and below by construction.
+            const equalGap = Math.max(0, freeSpace / 2);
+
+            const desiredTopViewport =
+              buttonRect.bottom + equalGap;
+
+            const localTop =
+              desiredTopViewport - globalRect.top;
+
+            copy.style.setProperty(
+              '--mobile-service-top',
+              `${localTop.toFixed(2)}px`
+            );
+          });
+        });
+      };
+
+      const mutations = new MutationObserver(balanceServiceCopy);
+      mutations.observe(copy, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ['class']
+      });
+
+      const resize = new ResizeObserver(() => {
+        if (copy.classList.contains('is-service-context')) {
+          balanceServiceCopy();
+        }
+      });
+      resize.observe(content);
+
+      const handleResize = () => {
+        const width =
+          document.documentElement.clientWidth || window.innerWidth;
+
+        // Ignore height-only browser-toolbar changes so this never becomes
+        // a scroll-reactive layout loop.
+        if (mobile.matches && Math.abs(width - lastWidth) < 1) return;
+
+        lastWidth = width;
+        balanceServiceCopy();
+      };
+
+      window.addEventListener(
+        'resize',
+        handleResize,
+        { passive: true }
+      );
+
+      if (document.fonts?.ready) {
+        document.fonts.ready
+          .then(balanceServiceCopy)
+          .catch(() => {});
+      }
+
+      balanceServiceCopy();
     })();
   </script>
 
