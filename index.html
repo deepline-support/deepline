@@ -8163,6 +8163,33 @@
       }
     }
 
+
+    /* =========================================================
+       TOPBAR — ABSOLUTE TOP LAYER + TOUCH PRESS FILL
+       Only topbar stacking and its touch-pressed visual state are changed.
+       ========================================================= */
+    .site-topbar {
+      z-index: 2147483646 !important;
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      .site-topbar .nav-cta.is-touch-pressed {
+        background: #fff !important;
+        color: #000 !important;
+      }
+
+      .site-topbar .nav-cta.is-touch-pressed span {
+        color: #000 !important;
+        -webkit-text-fill-color: #000 !important;
+      }
+
+      /* Keep the hover pseudo disabled on touch so first-tap navigation
+         remains reliable; the pressed class supplies the visual fill. */
+      .site-topbar .nav-cta.is-touch-pressed::before {
+        transform: scaleX(0) !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -10723,6 +10750,7 @@
         link.addEventListener('touchstart', event => {
           if (event.touches.length !== 1) {
             tracking = false;
+            link.classList.remove('is-touch-pressed');
             return;
           }
 
@@ -10730,6 +10758,10 @@
           touchStartX = touch.clientX;
           touchStartY = touch.clientY;
           tracking = true;
+
+          if (link.closest('.site-topbar')) {
+            link.classList.add('is-touch-pressed');
+          }
         }, { passive: true });
 
         link.addEventListener('touchend', event => {
@@ -10755,6 +10787,12 @@
 
           event.preventDefault();
 
+          if (link.closest('.site-topbar')) {
+            window.setTimeout(() => {
+              link.classList.remove('is-touch-pressed');
+            }, 120);
+          }
+
           suppressSyntheticClick = true;
           window.setTimeout(() => {
             suppressSyntheticClick = false;
@@ -10765,6 +10803,7 @@
 
         link.addEventListener('touchcancel', () => {
           tracking = false;
+          link.classList.remove('is-touch-pressed');
         }, { passive: true });
 
         // iOS may dispatch a synthetic click after touchend. Suppress only
