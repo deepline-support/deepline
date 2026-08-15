@@ -4,6 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 
+  <script>
+    (() => {
+      if (/Android/i.test(navigator.userAgent || '')) {
+        document.documentElement.classList.add('deepline-android-scroll');
+      }
+    })();
+  </script>
+
+
   <!-- Search -->
   <title>Deepline</title>
   <meta name="description" content="Independent forward-deployed technical and creative practice providing technical support, automation and creative direction for small businesses and NGOs." />
@@ -8232,6 +8241,68 @@
         overflow: visible !important;
         touch-action: pan-y !important;
       }
+    }
+
+
+    /* =========================================================
+       ANDROID / DUCKDUCKGO — HARD NATIVE SCROLL GUARANTEE
+       Cursor visibility is unrelated to page panning. The actual risks here
+       are the legacy desktop overflow lock and decorative-layer
+       `touch-action:none` rules. Android gets an explicit native pan-y path
+       regardless of how the browser reports hover/pointer capabilities.
+       ========================================================= */
+    html.deepline-android-scroll {
+      height: auto !important;
+      min-height: 100% !important;
+      max-height: none !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      touch-action: pan-y !important;
+      overscroll-behavior-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html.deepline-android-scroll body {
+      height: auto !important;
+      min-height: 100% !important;
+      max-height: none !important;
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      touch-action: pan-y !important;
+      overscroll-behavior-y: auto !important;
+    }
+
+    html.deepline-android-scroll main#top {
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      overflow: visible !important;
+      touch-action: pan-y !important;
+      overscroll-behavior-y: auto !important;
+    }
+
+    /*
+     * The globe is decorative. It should never suppress the browser's native
+     * vertical pan gesture. Keep pointer-events disabled, but explicitly allow
+     * pan-y through every visual/global layer on Android.
+     */
+    html.deepline-android-scroll #global.global,
+    html.deepline-android-scroll #global.global > .shell,
+    html.deepline-android-scroll .globe-stage,
+    html.deepline-android-scroll .globe-stage *,
+    html.deepline-android-scroll #globe,
+    html.deepline-android-scroll #globe canvas,
+    html.deepline-android-scroll .globe-fallback,
+    html.deepline-android-scroll #services,
+    html.deepline-android-scroll #services .services,
+    html.deepline-android-scroll #services .service {
+      touch-action: pan-y !important;
+      overscroll-behavior-y: auto !important;
+    }
+
+    html.deepline-android-scroll #global.global,
+    html.deepline-android-scroll #global.global > .shell {
+      overflow-y: visible !important;
     }
 
   </style>
