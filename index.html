@@ -10356,14 +10356,24 @@
       const global = document.querySelector('#global.global');
       const copy = global?.querySelector(':scope > .global-copy');
       const content = copy?.querySelector('[data-global-content]');
+      const title = copy?.querySelector('[data-global-title]');
       const button = document.querySelector('.wordmark-intro .main-page-cta');
       const cardStack =
         document.querySelector('#services .services') ||
         document.querySelector('#services');
 
-      if (!global || !copy || !content || !button || !cardStack) return;
+      if (
+        !global ||
+        !copy ||
+        !content ||
+        !title ||
+        !button ||
+        !cardStack
+      ) return;
 
       let raf = 0;
+      let settleRaf = 0;
+
       let lastWidth =
         document.documentElement.clientWidth || window.innerWidth;
 
@@ -10435,8 +10445,47 @@
         ].forEach(name => copy.style.removeProperty(name));
       };
 
+      /*
+       * Measure the FINAL service block, not the animated typewriter state.
+       *
+       * Previously the balancer measured `copy` while:
+       * - the service title was actively typing, and
+       * - a ResizeObserver was watching the same content that `applyScale()`
+       *   was resizing.
+       *
+       * Forge sits closest to a line-wrap threshold, so those two feedback
+       * sources could make it repeatedly rescale/reflow while being displayed.
+       *
+       * All service titles are a single line. Reserve that final line box
+       * explicitly and measure only the stable service-context layout below it.
+       */
+      const measureStableServiceHeight = () => {
+        const layout =
+          content.querySelector('.service-context-layout');
+
+        if (!layout) return 0;
+
+        const copyStyle = getComputedStyle(copy);
+
+        const titleSize =
+          parseFloat(
+            copyStyle.getPropertyValue('--mobile-service-title-size')
+          ) || 26;
+
+        const titleGap =
+          parseFloat(
+            copyStyle.getPropertyValue('--mobile-service-title-gap')
+          ) || 9;
+
+        const titleLineHeight = titleSize * 1.02;
+        const layoutHeight = layout.getBoundingClientRect().height;
+
+        return titleLineHeight + titleGap + layoutHeight;
+      };
+
       const balanceServiceCopy = () => {
         cancelAnimationFrame(raf);
+        cancelAnimationFrame(settleRaf);
 
         raf = requestAnimationFrame(() => {
           if (
@@ -10447,17 +10496,24 @@
             return;
           }
 
-          // These are the two literal visual boundaries requested:
-          // main CTA bottom and the actual card-stack top.
+          /*
+           * Do not balance the outgoing/default slide during the first part
+           * of the service transition. Wait until the real service-context
+           * markup has actually been inserted by fadeContentTo().
+           */
+          if (!content.querySelector('.service-context-layout')) {
+            return;
+          }
+
           const buttonRect = button.getBoundingClientRect();
           const stackRect = cardStack.getBoundingClientRect();
           const globalRect = global.getBoundingClientRect();
 
-          const availableHeight = stackRect.top - buttonRect.bottom;
+          const availableHeight =
+            stackRect.top - buttonRect.bottom;
+
           if (availableHeight <= 0) return;
 
-          // Preserve a meaningful minimum gap on smaller/shorter displays,
-          // but allow the typography to grow on roomier screens.
           const viewportWidth =
             document.documentElement.clientWidth || window.innerWidth;
 
@@ -10471,7 +10527,11 @@
             availableHeight - (minGap * 2)
           );
 
-          // Find the largest scale that fits inside the fixed field.
+          /*
+           * Binary-search the largest stable scale. Nothing observed by this
+           * routine listens to the resulting size changes, so one service tap
+           * produces one deterministic sizing pass rather than a feedback loop.
+           */
           let low = .86;
           let high = 1.16;
           let best = low;
@@ -10480,9 +10540,8 @@
             const mid = (low + high) / 2;
             applyScale(mid);
 
-            // Reading the block height here cannot move the cards because
-            // neither #global nor #services height is changed by this pass.
-            const textHeight = copy.getBoundingClientRect().height;
+            const textHeight =
+              measureStableServiceHeight();
 
             if (textHeight <= maxTextHeight) {
               best = mid;
@@ -10494,15 +10553,20 @@
 
           applyScale(best);
 
-          requestAnimationFrame(() => {
+          settleRaf = requestAnimationFrame(() => {
+            if (
+              !copy.classList.contains('is-service-context') ||
+              !content.querySelector('.service-context-layout')
+            ) return;
+
             const finalTextHeight =
-              copy.getBoundingClientRect().height;
+              measureStableServiceHeight();
 
             const freeSpace =
               availableHeight - finalTextHeight;
 
-            // Equal visual gap above and below by construction.
-            const equalGap = Math.max(0, freeSpace / 2);
+            const equalGap =
+              Math.max(0, freeSpace / 2);
 
             const desiredTopViewport =
               buttonRect.bottom + equalGap;
@@ -10518,29 +10582,39 @@
         });
       };
 
-      const mutations = new MutationObserver(balanceServiceCopy);
-      mutations.observe(copy, {
-        childList: true,
-        subtree: true,
-        characterData: true,
+      /*
+       * Observe ONLY the events that genuinely require a new fit:
+       * - service/default mode class changes
+       * - replacement of the service content block
+       *
+       * Do not observe characterData (the title typewriter) and do not use
+       * ResizeObserver on the content being scaled. That removes the Forge
+       * reflow/scaling feedback loop.
+       */
+      const classObserver =
+        new MutationObserver(balanceServiceCopy);
+
+      classObserver.observe(copy, {
         attributes: true,
         attributeFilter: ['class']
       });
 
-      const resize = new ResizeObserver(() => {
-        if (copy.classList.contains('is-service-context')) {
-          balanceServiceCopy();
-        }
+      const contentObserver =
+        new MutationObserver(balanceServiceCopy);
+
+      contentObserver.observe(content, {
+        childList: true
       });
-      resize.observe(content);
 
       const handleResize = () => {
         const width =
           document.documentElement.clientWidth || window.innerWidth;
 
-        // Ignore height-only browser-toolbar changes so this never becomes
-        // a scroll-reactive layout loop.
-        if (mobile.matches && Math.abs(width - lastWidth) < 1) return;
+        // Ignore height-only browser-toolbar changes.
+        if (
+          mobile.matches &&
+          Math.abs(width - lastWidth) < 1
+        ) return;
 
         lastWidth = width;
         balanceServiceCopy();
@@ -10560,7 +10634,7 @@
 
       balanceServiceCopy();
     })();
-  </script>
+</script>
 
 </body>
 </html>
