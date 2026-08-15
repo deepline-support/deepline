@@ -7932,6 +7932,25 @@
       }
     }
 
+
+    /* =========================================================
+       ANDROID BOTTOM-EDGE OVERSCROLL LOCK
+       CSS handles normal boundary behaviour. A tiny Android-only JS guard
+       supplements browsers/WebViews that still animate the root past its end.
+       ========================================================= */
+    @media (hover: none) and (pointer: coarse) {
+      html,
+      body,
+      main#top,
+      #services,
+      .site-copyright {
+        overscroll-behavior: none !important;
+        overscroll-behavior-x: none !important;
+        overscroll-behavior-y: none !important;
+        overscroll-behavior-block: none !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -10236,6 +10255,112 @@
       }
 
       syncDesktopDefaultCopyCentre();
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const isAndroid = /Android/i.test(navigator.userAgent || '');
+      const coarseTouch = window.matchMedia(
+        '(hover: none) and (pointer: coarse)'
+      ).matches;
+
+      if (!isAndroid || !coarseTouch) return;
+
+      const doc = document.documentElement;
+      let startY = 0;
+      let guardingBottom = false;
+
+      const atBottom = () => {
+        const scrollTop =
+          window.scrollY ||
+          doc.scrollTop ||
+          document.body.scrollTop ||
+          0;
+
+        const viewportHeight =
+          doc.clientHeight ||
+          window.innerHeight ||
+          0;
+
+        const scrollHeight = Math.max(
+          doc.scrollHeight,
+          document.body.scrollHeight
+        );
+
+        return (
+          scrollHeight - (scrollTop + viewportHeight)
+        ) <= 2;
+      };
+
+      const blockBottomOverscroll = event => {
+        if (
+          !guardingBottom ||
+          event.touches.length !== 1
+        ) return;
+
+        const currentY = event.touches[0].clientY;
+
+        // Finger moving upward at the bottom would try to move the document
+        // past its final scroll position. Suppress only that impossible move.
+        if (currentY < startY && atBottom()) {
+          event.preventDefault();
+        }
+      };
+
+      const stopGuard = () => {
+        if (!guardingBottom) return;
+
+        guardingBottom = false;
+
+        document.removeEventListener(
+          'touchmove',
+          blockBottomOverscroll,
+          { capture: true }
+        );
+      };
+
+      document.addEventListener(
+        'touchstart',
+        event => {
+          if (event.touches.length !== 1 || !atBottom()) return;
+
+          startY = event.touches[0].clientY;
+          guardingBottom = true;
+
+          document.addEventListener(
+            'touchmove',
+            blockBottomOverscroll,
+            {
+              capture: true,
+              passive: false
+            }
+          );
+        },
+        {
+          capture: true,
+          passive: true
+        }
+      );
+
+      document.addEventListener(
+        'touchend',
+        stopGuard,
+        {
+          capture: true,
+          passive: true
+        }
+      );
+
+      document.addEventListener(
+        'touchcancel',
+        stopGuard,
+        {
+          capture: true,
+          passive: true
+        }
+      );
     })();
   </script>
 
