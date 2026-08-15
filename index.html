@@ -7953,11 +7953,11 @@
 
 
     /* =========================================================
-       ANDROID PORTRAIT — ISOLATED SCROLL VIEWPORT
-       Portrait Android/DuckDuckGo is the only affected environment.
-       Move scrolling off the document root and onto main#top so browser
-       chrome resizing cannot stretch/reflow the root at the bottom edge.
-       Landscape and every non-Android layout keep the existing scroll model.
+       ANDROID PORTRAIT — FULLY CLAMPED TOUCH SCROLLER
+       DuckDuckGo uses Android WebView, whose native overscroll can still
+       stretch/bounce at a scroll boundary. In portrait Android only, remove
+       touch scrolling from the native WebView path and clamp it ourselves.
+       Landscape and all other browsers keep their existing/native scrolling.
        ========================================================= */
     html.android-portrait-scroll-shell,
     html.android-portrait-scroll-shell body {
@@ -7991,7 +7991,11 @@
       overscroll-behavior-y: none !important;
       overscroll-behavior-block: none !important;
 
-      touch-action: pan-y !important;
+      /*
+       * Critical: disable compositor/native touch panning in the affected
+       * environment. JS below performs a clamped scrollTop update instead.
+       */
+      touch-action: none !important;
       -webkit-overflow-scrolling: auto !important;
 
       scroll-behavior: auto !important;
@@ -10314,6 +10318,7 @@
 
 
 
+
   <script>
     (() => {
       const android =
@@ -10336,9 +10341,72 @@
         window.innerWidth ||
         0;
 
+      let inertiaFrame = 0;
+      let gestureActive = false;
+      let gestureAxis = '';
+      let startX = 0;
+      let startY = 0;
+      let lastY = 0;
+      let lastTime = 0;
+      let velocity = 0;
+
+      const clampScroll = value => {
+        const max = Math.max(
+          0,
+          main.scrollHeight - main.clientHeight
+        );
+
+        return Math.max(0, Math.min(max, value));
+      };
+
+      const stopInertia = () => {
+        if (inertiaFrame) {
+          cancelAnimationFrame(inertiaFrame);
+          inertiaFrame = 0;
+        }
+      };
+
+      const runInertia = initialVelocity => {
+        stopInertia();
+
+        let v = Math.max(-42, Math.min(42, initialVelocity));
+        let previous = performance.now();
+
+        const step = now => {
+          const dt = Math.min(32, now - previous);
+          previous = now;
+
+          const before = main.scrollTop;
+          const next = clampScroll(
+            before - (v * dt)
+          );
+
+          main.scrollTop = next;
+
+          // Stop instantly at a real boundary: never hand an unconsumed
+          // delta back to the native WebView.
+          if (
+            next <= 0 ||
+            next >= main.scrollHeight - main.clientHeight - 0.5
+          ) {
+            inertiaFrame = 0;
+            return;
+          }
+
+          v *= Math.pow(0.925, dt / 16.67);
+
+          if (Math.abs(v) < 0.025) {
+            inertiaFrame = 0;
+            return;
+          }
+
+          inertiaFrame = requestAnimationFrame(step);
+        };
+
+        inertiaFrame = requestAnimationFrame(step);
+      };
+
       const readStableHeight = () => {
-        // Capture one portrait viewport height and keep it fixed while the
-        // browser's address/navigation bars collapse or expand.
         const measured =
           window.innerHeight ||
           document.documentElement.clientHeight ||
@@ -10354,9 +10422,12 @@
       };
 
       const syncMode = () => {
+        stopInertia();
+
         if (portrait.matches) {
           if (!lockedHeight) readStableHeight();
           root.classList.add('android-portrait-scroll-shell');
+          main.scrollTop = clampScroll(main.scrollTop);
         } else {
           root.classList.remove('android-portrait-scroll-shell');
           root.style.removeProperty('--android-portrait-scroll-h');
@@ -10364,14 +10435,13 @@
         }
       };
 
-      // Recalculate only for a genuine width/orientation change.
-      // Height-only changes are Android browser chrome and are ignored.
       const onResize = () => {
         const width =
           document.documentElement.clientWidth ||
           window.innerWidth ||
           0;
 
+        // Ignore portrait address-bar / navigation-bar height changes.
         if (Math.abs(width - lastWidth) < 2) return;
 
         lastWidth = width;
@@ -10392,8 +10462,130 @@
         syncMode();
       });
 
-      // The existing topbar logic watches window.scrollY. In portrait Android,
-      // main#top is now the scroller, so mirror the same visibility decision.
+      /*
+       * Custom vertical touch scroller.
+       *
+       * Because main#top has touch-action:none in portrait Android, the
+       * WebView never receives native vertical panning/overscroll. We update
+       * scrollTop directly and clamp every frame to [0, maxScroll].
+       *
+       * Horizontal gestures are deliberately left alone so the site's
+       * existing slide-swipe code can continue to read the same touch events.
+       */
+      main.addEventListener(
+        'touchstart',
+        event => {
+          if (
+            !root.classList.contains('android-portrait-scroll-shell') ||
+            event.touches.length !== 1
+          ) {
+            return;
+          }
+
+          stopInertia();
+
+          const touch = event.touches[0];
+          const now = performance.now();
+
+          gestureActive = true;
+          gestureAxis = '';
+          startX = touch.clientX;
+          startY = touch.clientY;
+          lastY = touch.clientY;
+          lastTime = now;
+          velocity = 0;
+        },
+        {
+          passive: true
+        }
+      );
+
+      main.addEventListener(
+        'touchmove',
+        event => {
+          if (
+            !gestureActive ||
+            !root.classList.contains('android-portrait-scroll-shell') ||
+            event.touches.length !== 1
+          ) {
+            return;
+          }
+
+          const touch = event.touches[0];
+          const dx = touch.clientX - startX;
+          const dy = touch.clientY - startY;
+
+          if (!gestureAxis) {
+            if (Math.max(Math.abs(dx), Math.abs(dy)) < 5) return;
+
+            gestureAxis =
+              Math.abs(dx) > Math.abs(dy) * 1.15
+                ? 'horizontal'
+                : 'vertical';
+          }
+
+          if (gestureAxis === 'horizontal') {
+            return;
+          }
+
+          event.preventDefault();
+
+          const now = performance.now();
+          const dt = Math.max(1, now - lastTime);
+          const frameDy = touch.clientY - lastY;
+
+          main.scrollTop = clampScroll(
+            main.scrollTop - frameDy
+          );
+
+          const instantVelocity = frameDy / dt;
+          velocity =
+            (velocity * 0.72) +
+            (instantVelocity * 0.28);
+
+          lastY = touch.clientY;
+          lastTime = now;
+        },
+        {
+          passive: false
+        }
+      );
+
+      const finishGesture = () => {
+        if (!gestureActive) return;
+
+        const wasVertical = gestureAxis === 'vertical';
+        gestureActive = false;
+        gestureAxis = '';
+
+        if (wasVertical && Math.abs(velocity) > 0.06) {
+          runInertia(velocity);
+        }
+      };
+
+      main.addEventListener(
+        'touchend',
+        finishGesture,
+        {
+          passive: true
+        }
+      );
+
+      main.addEventListener(
+        'touchcancel',
+        () => {
+          gestureActive = false;
+          gestureAxis = '';
+          velocity = 0;
+          stopInertia();
+        },
+        {
+          passive: true
+        }
+      );
+
+      // Mirror the existing topbar visibility against the actual portrait
+      // Android scroller rather than window.scrollY.
       if (topbar && wordmark) {
         let revealY = 0;
         let raf = 0;
@@ -10441,9 +10633,8 @@
         }
       }
 
-      // Existing service-card code calls window.scrollTo(0).
-      // In portrait Android the page itself no longer scrolls, so mirror that
-      // action on the real scroll container after the card's own click handler.
+      // Existing service-card code calls window.scrollTo(0). Mirror that on
+      // the Android portrait scroll container after the card click completes.
       main.addEventListener('click', event => {
         if (
           !root.classList.contains('android-portrait-scroll-shell') ||
@@ -10452,61 +10643,12 @@
           return;
         }
 
+        stopInertia();
+
         requestAnimationFrame(() => {
-          main.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: 'auto'
-          });
+          main.scrollTop = 0;
         });
       });
-
-      // If DuckDuckGo/WebView still attempts an element-level overscroll
-      // animation, suppress only the impossible movement past the two ends.
-      let touchStartY = 0;
-
-      main.addEventListener(
-        'touchstart',
-        event => {
-          if (
-            !root.classList.contains('android-portrait-scroll-shell') ||
-            event.touches.length !== 1
-          ) {
-            return;
-          }
-
-          touchStartY = event.touches[0].clientY;
-        },
-        { passive: true }
-      );
-
-      main.addEventListener(
-        'touchmove',
-        event => {
-          if (
-            !root.classList.contains('android-portrait-scroll-shell') ||
-            event.touches.length !== 1
-          ) {
-            return;
-          }
-
-          const currentY = event.touches[0].clientY;
-          const movingPastBottom =
-            currentY < touchStartY &&
-            main.scrollTop + main.clientHeight >= main.scrollHeight - 1;
-
-          const movingPastTop =
-            currentY > touchStartY &&
-            main.scrollTop <= 0;
-
-          if (movingPastBottom || movingPastTop) {
-            event.preventDefault();
-          }
-        },
-        {
-          passive: false
-        }
-      );
     })();
   </script>
 
