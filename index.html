@@ -7602,6 +7602,91 @@
       height: 0 !important;
     }
 
+
+    /* =========================================================
+       MOBILE CARD SNAP — RESTORED WITHOUT MOBILE CURSOR PHYSICS
+       Four static brackets are attached to the selected card. No RAF,
+       no getBoundingClientRect loop and no scroll listener is required.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #services .service {
+        position: relative !important;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        -webkit-tap-highlight-color: transparent !important;
+      }
+
+      #services .service .mobile-card-snap {
+        position: absolute;
+        inset: 0;
+        z-index: 30;
+        display: block;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 140ms ease;
+      }
+
+      #services .service.mobile-card-selected .mobile-card-snap {
+        opacity: 1;
+      }
+
+      #services .service .mobile-card-snap i {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-color: #f4f4ef;
+        border-style: solid;
+        border-width: 0;
+      }
+
+      #services .service .mobile-card-snap .tl {
+        left: 7px;
+        top: 7px;
+        border-left-width: 1px;
+        border-top-width: 1px;
+      }
+
+      #services .service .mobile-card-snap .tr {
+        right: 7px;
+        top: 7px;
+        border-right-width: 1px;
+        border-top-width: 1px;
+      }
+
+      #services .service .mobile-card-snap .br {
+        right: 7px;
+        bottom: 7px;
+        border-right-width: 1px;
+        border-bottom-width: 1px;
+      }
+
+      #services .service .mobile-card-snap .bl {
+        left: 7px;
+        bottom: 7px;
+        border-left-width: 1px;
+        border-bottom-width: 1px;
+      }
+
+      /* Keep the legacy mobile custom cursor hidden. */
+      .dl-cursor,
+      html.mobile-card-indicator-active .dl-cursor.is-target {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+
+      /* The service text field is the jump target; account for the fixed topbar. */
+      #global.global {
+        scroll-margin-top: 82px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      #global.global {
+        scroll-margin-top: 76px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -8536,6 +8621,7 @@
   </script>
 <script>
     (() => {
+      const global = document.querySelector('#global.global');
       const copy = document.querySelector('.global-copy');
       const title = copy?.querySelector('[data-global-title]');
       const content = copy?.querySelector('[data-global-content]');
@@ -9090,7 +9176,21 @@
       cards.forEach(card => {
         const key = card.dataset.context;
 
-        // Service-context interaction is desktop-only.
+        // Lightweight mobile snap indicator. It is attached to the card
+        // itself, so there is no mobile cursor RAF or scroll-time geometry read.
+        if (!card.querySelector('.mobile-card-snap')) {
+          const snap = document.createElement('span');
+          snap.className = 'mobile-card-snap';
+          snap.setAttribute('aria-hidden', 'true');
+          snap.innerHTML = `
+            <i class="tl"></i>
+            <i class="tr"></i>
+            <i class="br"></i>
+            <i class="bl"></i>
+          `;
+          card.appendChild(snap);
+        }
+
         card.addEventListener('pointerenter', event => {
           if (
             window.innerWidth < 961 ||
@@ -9131,6 +9231,30 @@
           ) return;
 
           scheduleDefaultRestore();
+        });
+
+        card.addEventListener('click', () => {
+          if (window.innerWidth >= 961) return;
+
+          cards.forEach(item => {
+            item.classList.toggle(
+              'mobile-card-selected',
+              item === card
+            );
+          });
+
+          enterCard(key);
+
+          // Jump to the existing text field only. The globe stays a passive
+          // visual background and receives no independent scrolling/touch.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              global?.scrollIntoView({
+                behavior: 'auto',
+                block: 'start'
+              });
+            });
+          });
         });
       });
     })();
@@ -9449,6 +9573,25 @@
           }
 
           if (!initialized) readBaseGeometry();
+
+          // Mobile service context uses one stable field height. Do not derive
+          // document height from ResizeObserver measurements while it is open.
+          // This keeps the cardstack/end-of-page geometry fixed after selection.
+          if (copy.classList.contains('is-service-context')) {
+            const serviceFieldHeight = Math.max(baseGlobalHeight, 620);
+
+            global.style.setProperty(
+              '--mobile-global-field-height',
+              `${serviceFieldHeight}px`
+            );
+
+            global.style.setProperty(
+              '--mobile-copy-centre-y',
+              `${serviceFieldHeight / 2}px`
+            );
+
+            return;
+          }
 
           // First establish the default field height so the flow offset between
           // #global and #services can be measured without stale service sizing.
