@@ -7545,6 +7545,63 @@
       }
     }
 
+
+    /* =========================================================
+       MOBILE CARDSTACK — STATIC / PASSIVE
+       Cards are visual content only on mobile. No card-driven context state,
+       page-height mutation, cursor snapping or automatic globe jump.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #services,
+      #services .services,
+      #services .service {
+        touch-action: pan-y !important;
+        overscroll-behavior: none !important;
+      }
+
+      #services .service {
+        pointer-events: none !important;
+        cursor: default !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+      }
+
+      .dl-cursor,
+      html.mobile-card-indicator-active .dl-cursor.is-target {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+    }
+
+    /* =========================================================
+       GLOBE — VISUAL LAYER ONLY
+       Keep the globe visible but remove any separate scroll/touch behaviour.
+       ========================================================= */
+    .globe-stage,
+    .globe-stage *,
+    #globe,
+    #globe canvas,
+    .globe-fallback {
+      pointer-events: none !important;
+      touch-action: none !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      overscroll-behavior: none !important;
+    }
+
+    .globe-stage {
+      overflow: hidden !important;
+      scrollbar-width: none !important;
+    }
+
+    .globe-stage::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
   </style>
 </head>
 <body>
@@ -7762,54 +7819,6 @@
         snapTo(detectTarget(node));
       }, { passive: true });
 
-      const activateMobileIndicator = (node) => {
-        if (window.innerWidth > 960) return;
-
-        // START A PROJECT controls must never show the mobile snap indicator.
-        if (
-          node?.closest?.('.main-page-cta, .site-topbar .nav-cta')
-        ) {
-          snapTo(null);
-          document.documentElement.classList.remove(
-            'mobile-card-indicator-active'
-          );
-          return;
-        }
-
-        const nextTarget = detectTarget(node);
-
-        // Mobile snap remains card-only.
-        snapTo(nextTarget);
-      };
-
-      document.addEventListener('pointerdown', event => {
-        if (
-          window.innerWidth > 960 ||
-          event.pointerType === 'mouse'
-        ) return;
-
-        activateMobileIndicator(event.target);
-      }, { passive: true });
-
-
-      if (!window.PointerEvent) {
-        document.addEventListener('touchstart', event => {
-          if (
-            window.innerWidth > 960 ||
-            event.touches.length !== 1
-          ) return;
-
-          const touch = event.touches[0];
-          const node = document.elementFromPoint(
-            touch.clientX,
-            touch.clientY
-          );
-
-          activateMobileIndicator(node);
-        }, { passive: true });
-
-        // Deliberately no touchmove targeting on mobile.
-      }
 
       // The main copy is replaced dynamically as slides rotate and service
       // hover content changes. Re-evaluate the target after each mutation so
@@ -9037,67 +9046,6 @@
         }
       });
 
-      // Mobile swipe navigation for the default rotating slides.
-      // Horizontal intent must be clear so normal vertical scrolling
-      // and pinch-zoom gestures are left alone.
-      let swipeStartX = 0;
-      let swipeStartY = 0;
-      let swipeStartTime = 0;
-      let swipeTracking = false;
-
-      const swipeSurface = document.querySelector('#global');
-
-      swipeSurface?.addEventListener('touchstart', event => {
-        if (
-          window.innerWidth > 960 ||
-          activeKey !== 'default' ||
-          event.touches.length !== 1
-        ) {
-          swipeTracking = false;
-          return;
-        }
-
-        const touch = event.touches[0];
-        swipeStartX = touch.clientX;
-        swipeStartY = touch.clientY;
-        swipeStartTime = performance.now();
-        swipeTracking = true;
-      }, { passive: true });
-
-      swipeSurface?.addEventListener('touchend', event => {
-        if (
-          !swipeTracking ||
-          window.innerWidth > 960 ||
-          activeKey !== 'default' ||
-          event.changedTouches.length !== 1
-        ) {
-          swipeTracking = false;
-          return;
-        }
-
-        const touch = event.changedTouches[0];
-        const dx = touch.clientX - swipeStartX;
-        const dy = touch.clientY - swipeStartY;
-        const elapsed = performance.now() - swipeStartTime;
-
-        swipeTracking = false;
-
-        const horizontal = Math.abs(dx);
-        const vertical = Math.abs(dy);
-
-        if (
-          elapsed <= 800 &&
-          horizontal >= 44 &&
-          horizontal > vertical * 1.25
-        ) {
-          // Swipe left = next. Swipe right = previous.
-          moveDefaultSlide(dx < 0 ? 1 : -1);
-        }
-      }, { passive: true });
-
-      swipeSurface?.addEventListener('touchcancel', () => {
-        swipeTracking = false;
-      }, { passive: true });
 
       const enterCard = key => {
         if (!contexts[key]) return;
@@ -9142,48 +9090,48 @@
       cards.forEach(card => {
         const key = card.dataset.context;
 
-        card.addEventListener('pointerenter', () => enterCard(key));
-        card.addEventListener('pointerleave', scheduleDefaultRestore);
-        card.addEventListener('mouseenter', () => enterCard(key));
-        card.addEventListener('mouseleave', scheduleDefaultRestore);
-        card.addEventListener('focusin', () => enterCard(key));
-        card.addEventListener('focusout', event => {
-          if (!card.contains(event.relatedTarget)) {
-            scheduleDefaultRestore();
-          }
-        });
+        // Service-context interaction is desktop-only.
+        card.addEventListener('pointerenter', event => {
+          if (
+            window.innerWidth < 961 ||
+            event.pointerType === 'touch'
+          ) return;
 
-        card.addEventListener('click', () => {
-          if (window.innerWidth >= 961) return;
-
-          // Explicitly activate the tapped service, then jump the viewport
-          // to the top so the corresponding information is immediately visible.
           enterCard(key);
-
-          requestAnimationFrame(() => {
-            window.scrollTo({
-              top: 0,
-              left: 0,
-              behavior: 'auto'
-            });
-          });
         });
-      });
 
-      // Mobile dismissal:
-      // once service information is open, a tap anywhere outside that
-      // information restores the normal rotating homepage slides.
-      // Service cards are exempt so tapping another card can switch context.
-      document.addEventListener('click', event => {
-        if (window.innerWidth >= 961 || activeKey === 'default') return;
+        card.addEventListener('pointerleave', event => {
+          if (
+            window.innerWidth < 961 ||
+            event.pointerType === 'touch'
+          ) return;
 
-        const serviceInfo = event.target?.closest?.('.service-context-layout');
-        const serviceCard = event.target?.closest?.('.service[data-context]');
+          scheduleDefaultRestore();
+        });
 
-        if (serviceInfo || serviceCard) return;
+        card.addEventListener('mouseenter', () => {
+          if (window.innerWidth < 961) return;
+          enterCard(key);
+        });
 
-        clearDefaultRestore();
-        restoreDefault();
+        card.addEventListener('mouseleave', () => {
+          if (window.innerWidth < 961) return;
+          scheduleDefaultRestore();
+        });
+
+        card.addEventListener('focusin', () => {
+          if (window.innerWidth < 961) return;
+          enterCard(key);
+        });
+
+        card.addEventListener('focusout', event => {
+          if (
+            window.innerWidth < 961 ||
+            card.contains(event.relatedTarget)
+          ) return;
+
+          scheduleDefaultRestore();
+        });
       });
     })();
   </script>
@@ -9454,111 +9402,7 @@
   
 
 
-  <script>
-    (() => {
-      const global = document.querySelector('#global.global');
-      const copy = global?.querySelector(':scope > .global-copy');
-      const content = copy?.querySelector('[data-global-content]');
-
-      if (!global || !copy || !content) return;
-
-      const MOBILE_CONTEXT_GAP = 56;
-      let raf = 0;
-
-      const syncMobileContextSpacing = () => {
-        cancelAnimationFrame(raf);
-
-        raf = requestAnimationFrame(() => {
-          if (
-            window.innerWidth > 960 ||
-            !copy.classList.contains('is-service-context')
-          ) {
-            global.classList.remove('mobile-context-spacing');
-            global.style.removeProperty('--mobile-context-height');
-            return;
-          }
-
-          // Wait one extra frame so newly injected service copy has its
-          // final wrapped height before calculating the section boundary.
-          requestAnimationFrame(() => {
-            if (
-              window.innerWidth > 960 ||
-              !copy.classList.contains('is-service-context')
-            ) {
-              global.classList.remove('mobile-context-spacing');
-              global.style.removeProperty('--mobile-context-height');
-              return;
-            }
-
-            const globalRect = global.getBoundingClientRect();
-            const copyRect = copy.getBoundingClientRect();
-
-            // Card stack begins at #global's bottom edge because its legacy
-            // mobile negative overlap is disabled only while service copy is open.
-            // Therefore: actual copy bottom + exactly 56px = global bottom.
-            const requiredHeight = Math.ceil(
-              (copyRect.bottom - globalRect.top) + MOBILE_CONTEXT_GAP
-            );
-
-            global.style.setProperty(
-              '--mobile-context-height',
-              `${Math.max(430, requiredHeight)}px`
-            );
-            global.classList.add('mobile-context-spacing');
-          });
-        });
-      };
-
-      const mutationObserver = new MutationObserver(syncMobileContextSpacing);
-      mutationObserver.observe(copy, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-        attributes: true,
-        attributeFilter: ['class', 'style']
-      });
-
-      const resizeObserver = new ResizeObserver(syncMobileContextSpacing);
-      resizeObserver.observe(copy);
-      resizeObserver.observe(content);
-
-      let lastLayoutWidth =
-        document.documentElement.clientWidth || window.innerWidth;
-
-      const handleContextViewportResize = () => {
-        const width =
-          document.documentElement.clientWidth || window.innerWidth;
-
-        // Mobile browsers on both Android and iOS change viewport HEIGHT
-        // as their address/tool bars collapse or expand during scrolling.
-        // That is not a layout-width change and must never resize the
-        // service-content field or alter the document height mid-scroll.
-        if (
-          window.innerWidth <= 960 &&
-          Math.abs(width - lastLayoutWidth) < 1
-        ) {
-          return;
-        }
-
-        lastLayoutWidth = width;
-        syncMobileContextSpacing();
-      };
-
-      window.addEventListener(
-        'resize',
-        handleContextViewportResize,
-        { passive: true }
-      );
-
-      if (document.fonts?.ready) {
-        document.fonts.ready
-          .then(syncMobileContextSpacing)
-          .catch(() => {});
-      }
-
-      syncMobileContextSpacing();
-    })();
-  </script>
+  
 
 
   <script>
