@@ -7766,6 +7766,32 @@
       }
     }
 
+
+    /* =========================================================
+       MOBILE SERVICE CONTEXT — ZERO LAYOUT SHIFT
+       Opening a card may replace the text, but it may not alter the height
+       or flow position of #global / #services.
+       ========================================================= */
+    @media (max-width: 960px) {
+      #global.global.mobile-context-spacing {
+        min-height: var(--mobile-global-field-height, 430px) !important;
+        height: var(--mobile-global-field-height, 430px) !important;
+      }
+
+      #global.global + #services,
+      #global.global.mobile-context-spacing + #services {
+        /* Preserve the site's existing card-stack overlap/position. */
+        margin-top: -68px !important;
+      }
+    }
+
+    @media (max-width: 680px) {
+      #global.global + #services,
+      #global.global.mobile-context-spacing + #services {
+        margin-top: -68px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -9212,6 +9238,67 @@
       });
 
 
+      // Lightweight mobile swipe navigation for DEFAULT slides only.
+      // No touchmove listener is used, so normal vertical scrolling remains
+      // completely native and uninterrupted.
+      const swipeSurface = document.querySelector('#global');
+      let swipeStartX = 0;
+      let swipeStartY = 0;
+      let swipeStartTime = 0;
+      let swipeTracking = false;
+
+      swipeSurface?.addEventListener('touchstart', event => {
+        if (
+          window.innerWidth > 960 ||
+          activeKey !== 'default' ||
+          event.touches.length !== 1
+        ) {
+          swipeTracking = false;
+          return;
+        }
+
+        const touch = event.touches[0];
+        swipeStartX = touch.clientX;
+        swipeStartY = touch.clientY;
+        swipeStartTime = performance.now();
+        swipeTracking = true;
+      }, { passive: true });
+
+      swipeSurface?.addEventListener('touchend', event => {
+        if (
+          !swipeTracking ||
+          window.innerWidth > 960 ||
+          activeKey !== 'default' ||
+          event.changedTouches.length !== 1
+        ) {
+          swipeTracking = false;
+          return;
+        }
+
+        const touch = event.changedTouches[0];
+        const dx = touch.clientX - swipeStartX;
+        const dy = touch.clientY - swipeStartY;
+        const elapsed = performance.now() - swipeStartTime;
+
+        swipeTracking = false;
+
+        const horizontal = Math.abs(dx);
+        const vertical = Math.abs(dy);
+
+        if (
+          elapsed <= 850 &&
+          horizontal >= 42 &&
+          horizontal > vertical * 1.25
+        ) {
+          moveDefaultSlide(dx < 0 ? 1 : -1);
+        }
+      }, { passive: true });
+
+      swipeSurface?.addEventListener('touchcancel', () => {
+        swipeTracking = false;
+      }, { passive: true });
+
+
       const enterCard = key => {
         if (!contexts[key]) return;
 
@@ -9234,6 +9321,11 @@
 
       const restoreDefault = () => {
         clearDefaultRestore();
+
+        cards.forEach(card => {
+          card.classList.remove('mobile-card-selected');
+        });
+
         if (activeKey === 'default') return;
 
         activeKey = 'default';
@@ -9335,6 +9427,38 @@
             });
           });
         });
+      });
+
+      // Mobile dismissal:
+      // when a service is selected, tapping anywhere outside its text area
+      // restores the default rotating slides. Service cards themselves are
+      // exempt so tapping another card can switch selection.
+      document.addEventListener('click', event => {
+        if (
+          window.innerWidth >= 961 ||
+          activeKey === 'default'
+        ) {
+          return;
+        }
+
+        const serviceText = event.target?.closest?.(
+          '.service-context-layout'
+        );
+
+        const serviceCard = event.target?.closest?.(
+          '.service[data-context]'
+        );
+
+        // Project CTAs are real navigation actions, not "tap off" targets.
+        // Exempt them from the service-context dismissal so the browser can
+        // execute the mailto link on the very first tap.
+        const projectCta = event.target?.closest?.(
+          '.main-page-cta, .site-topbar .nav-cta'
+        );
+
+        if (serviceText || serviceCard || projectCta) return;
+
+        restoreDefault();
       });
     })();
   </script>
@@ -9653,20 +9777,19 @@
 
           if (!initialized) readBaseGeometry();
 
-          // Mobile service context uses one stable field height. Do not derive
-          // document height from ResizeObserver measurements while it is open.
-          // This keeps the cardstack/end-of-page geometry fixed after selection.
+          // Service context must NEVER change the vertical geometry of the
+          // page. Keep exactly the same global field height that was present
+          // before the card was tapped, so #services stays at the same Y
+          // position and the card stack does not drop.
           if (copy.classList.contains('is-service-context')) {
-            const serviceFieldHeight = Math.max(baseGlobalHeight, 620);
-
             global.style.setProperty(
               '--mobile-global-field-height',
-              `${serviceFieldHeight}px`
+              `${baseGlobalHeight}px`
             );
 
             global.style.setProperty(
               '--mobile-copy-centre-y',
-              `${serviceFieldHeight / 2}px`
+              `${baseGlobalHeight / 2}px`
             );
 
             return;
