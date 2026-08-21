@@ -8405,6 +8405,331 @@
       height: 0 !important;
     }
 
+
+    /* =========================================================
+       OPENING ATMOSPHERE — REMOVE SECTION SEAMS
+       Keep the globe canvas clipped/non-scrollable, but restore the visual
+       continuity that previously came from the globe glow bleeding behind the
+       wordmark. The atmosphere is now painted independently of the canvas so
+       there is no hard clipping line and no nested scroller.
+       ========================================================= */
+
+    /* No physical section rule between the wordmark and globe field. */
+    .wordmark-intro,
+    #global.global {
+      border-top: 0 !important;
+      border-bottom: 0 !important;
+    }
+
+    /*
+     * The old dark ::after overlay ended exactly at the wordmark section edge,
+     * which is what produces the full-width horizontal shading break. Remove
+     * that section-bounded layer.
+     */
+    .wordmark-intro::after {
+      content: none !important;
+      display: none !important;
+    }
+
+    /*
+     * Let the subtle crosshatch continue a little way into the globe field
+     * instead of terminating on a single horizontal pixel row.
+     */
+    .wordmark-intro::before {
+      top: 0 !important;
+      bottom: -120px !important;
+      height: auto !important;
+    }
+
+    /*
+     * Recreate the soft globe/ambient light as a non-interactive backdrop on
+     * the GLOBAL SECTION rather than by allowing the globe canvas to overflow.
+     *
+     * It extends upward behind the wordmark and downward past the globe, with
+     * fully transparent ends, so neither boundary can form a visible seam.
+     * Because #global itself remains overflow:visible and this pseudo-element
+     * is not a scroll container, the document stays the only vertical scroller.
+     */
+    #global.global::before {
+      content: "" !important;
+      position: absolute !important;
+      left: -8vw !important;
+      right: -8vw !important;
+      top: -240px !important;
+      bottom: -110px !important;
+      z-index: 0 !important;
+      pointer-events: none !important;
+      background:
+        radial-gradient(
+          ellipse 58% 50% at 50% 47%,
+          rgba(255,255,255,.055) 0%,
+          rgba(255,255,255,.026) 30%,
+          rgba(255,255,255,.010) 52%,
+          rgba(255,255,255,0) 76%
+        ),
+        radial-gradient(
+          ellipse 80% 68% at 50% 55%,
+          rgba(131,200,255,.016) 0%,
+          rgba(131,200,255,.006) 48%,
+          rgba(131,200,255,0) 78%
+        ) !important;
+      opacity: .9 !important;
+    }
+
+    /*
+     * Keep all real globe artwork clipped. This is intentionally separate
+     * from the atmospheric backdrop above.
+     */
+    .globe-stage,
+    #globe,
+    #globe canvas {
+      overflow: clip !important;
+      overflow-x: clip !important;
+      overflow-y: clip !important;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    .globe-stage {
+      contain: paint !important;
+    }
+
+    .globe-stage::-webkit-scrollbar,
+    #globe::-webkit-scrollbar,
+    #globe canvas::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    @media (max-width: 960px) {
+      .wordmark-intro::before {
+        bottom: -90px !important;
+      }
+
+      #global.global::before {
+        left: -18vw !important;
+        right: -18vw !important;
+        top: -180px !important;
+        bottom: -90px !important;
+        background:
+          radial-gradient(
+            ellipse 72% 48% at 50% 45%,
+            rgba(255,255,255,.050) 0%,
+            rgba(255,255,255,.022) 32%,
+            rgba(255,255,255,.008) 54%,
+            rgba(255,255,255,0) 78%
+          ),
+          radial-gradient(
+            ellipse 92% 68% at 50% 54%,
+            rgba(131,200,255,.014) 0%,
+            rgba(131,200,255,.005) 50%,
+            rgba(131,200,255,0) 80%
+          ) !important;
+      }
+    }
+
+
+    /* =========================================================
+       OPENING ATMOSPHERE — ONE CONTINUOUS LAYER
+       The previous attempts painted atmosphere separately on the wordmark
+       section and on #global. Even with transparent gradients, that creates
+       a compositing boundary exactly where those two sections meet.
+
+       This final pass uses ONE absolute, non-interactive backdrop spanning
+       from the top of the opening through to the service-card boundary.
+       There is therefore no wordmark/global paint boundary to become visible.
+       The actual globe remains clipped and cannot become a nested scroller.
+       ========================================================= */
+
+    main#top {
+      position: relative !important;
+    }
+
+    /* Disable every section-local atmosphere layer. */
+    .wordmark-intro::before,
+    .wordmark-intro::after,
+    #global.global::before {
+      content: none !important;
+      display: none !important;
+    }
+
+    .opening-atmosphere {
+      position: absolute !important;
+      left: 0 !important;
+      right: 0 !important;
+      top: 0 !important;
+      height: var(--opening-atmosphere-height, 720px) !important;
+      z-index: 0 !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+      contain: paint !important;
+    }
+
+    /* Continuous subtle crosshatch — strongest behind the wordmark,
+       then feathered away rather than ending on a horizontal edge. */
+    .opening-atmosphere::before {
+      content: "" !important;
+      position: absolute !important;
+      inset: 0 !important;
+      pointer-events: none !important;
+      background-image:
+        linear-gradient(rgba(244,244,239,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(244,244,239,.05) 1px, transparent 1px)
+        !important;
+      background-size: 44px 44px, 44px 44px !important;
+      background-position: center top !important;
+      opacity: .24 !important;
+      -webkit-mask-image:
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,.95) 0%,
+          rgba(0,0,0,.82) 22%,
+          rgba(0,0,0,.36) 44%,
+          rgba(0,0,0,0) 66%
+        ) !important;
+      mask-image:
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,.95) 0%,
+          rgba(0,0,0,.82) 22%,
+          rgba(0,0,0,.36) 44%,
+          rgba(0,0,0,0) 66%
+        ) !important;
+    }
+
+    /* One uninterrupted soft-light field behind BOTH sections. */
+    .opening-atmosphere::after {
+      content: "" !important;
+      position: absolute !important;
+      inset: -18% -10% -12% !important;
+      pointer-events: none !important;
+      background:
+        radial-gradient(
+          ellipse 58% 52% at 50% 49%,
+          rgba(255,255,255,.058) 0%,
+          rgba(255,255,255,.032) 26%,
+          rgba(255,255,255,.014) 47%,
+          rgba(255,255,255,.004) 63%,
+          rgba(255,255,255,0) 79%
+        ),
+        radial-gradient(
+          ellipse 76% 62% at 50% 54%,
+          rgba(131,200,255,.016) 0%,
+          rgba(131,200,255,.007) 45%,
+          rgba(131,200,255,0) 78%
+        ) !important;
+      opacity: .92 !important;
+    }
+
+    /* Opening content stays above the shared atmosphere. */
+    .wordmark-intro,
+    #global.global,
+    #services {
+      position: relative !important;
+    }
+
+    .wordmark-intro {
+      z-index: 6 !important;
+      background: transparent !important;
+      border-top: 0 !important;
+      border-bottom: 0 !important;
+    }
+
+    #global.global {
+      z-index: 1 !important;
+      background: transparent !important;
+      border-top: 0 !important;
+      border-bottom: 0 !important;
+    }
+
+    #services {
+      z-index: 10 !important;
+    }
+
+    /* The real globe artwork remains clipped/non-scrollable. */
+    .globe-stage,
+    #globe,
+    #globe canvas {
+      overflow: clip !important;
+      overflow-x: clip !important;
+      overflow-y: clip !important;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    .globe-stage {
+      contain: paint !important;
+    }
+
+    .globe-stage::-webkit-scrollbar,
+    #globe::-webkit-scrollbar,
+    #globe canvas::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    @media (max-width: 960px) {
+      .opening-atmosphere::before {
+        opacity: .22 !important;
+        -webkit-mask-image:
+          linear-gradient(
+            to bottom,
+            rgba(0,0,0,.94) 0%,
+            rgba(0,0,0,.76) 24%,
+            rgba(0,0,0,.28) 46%,
+            rgba(0,0,0,0) 67%
+          ) !important;
+        mask-image:
+          linear-gradient(
+            to bottom,
+            rgba(0,0,0,.94) 0%,
+            rgba(0,0,0,.76) 24%,
+            rgba(0,0,0,.28) 46%,
+            rgba(0,0,0,0) 67%
+          ) !important;
+      }
+
+      .opening-atmosphere::after {
+        inset: -12% -22% -10% !important;
+        background:
+          radial-gradient(
+            ellipse 72% 50% at 50% 48%,
+            rgba(255,255,255,.052) 0%,
+            rgba(255,255,255,.026) 28%,
+            rgba(255,255,255,.010) 50%,
+            rgba(255,255,255,.003) 65%,
+            rgba(255,255,255,0) 80%
+          ),
+          radial-gradient(
+            ellipse 92% 66% at 50% 54%,
+            rgba(131,200,255,.014) 0%,
+            rgba(131,200,255,.005) 48%,
+            rgba(131,200,255,0) 80%
+          ) !important;
+      }
+    }
+
+
+    /* =========================================================
+       GLOBE TOP SEAM — REMOVE THE CLIPPED STAGE GLOW
+       The remaining horizontal line is not the shared atmosphere layer.
+       It comes from `.globe-stage::before`: a large radial glow that starts
+       inside the globe stage and is then clipped by `contain: paint` exactly
+       at the top edge of #global. That produces a perfectly straight,
+       full-width luminance change.
+
+       The shared `.opening-atmosphere` already supplies the same ambient light
+       continuously across the wordmark + globe region, so this redundant
+       stage-local glow is removed. The actual globe remains unchanged.
+       ========================================================= */
+    .globe-stage::before {
+      content: none !important;
+      display: none !important;
+      background: none !important;
+    }
+
   </style>
 </head>
 <body>
@@ -8660,6 +8985,7 @@
 
 
   <main id="top">
+    <div class="opening-atmosphere" aria-hidden="true"></div>
     <section class="wordmark-intro" aria-label="Deepline">
       <a class="main-page-cta nav-cta cursor-target" href="mailto:deploy@deepline.support?subject=Project"><span>START A PROJECT ↗</span></a>
       <h1 class="wordmark"><span class="wordmark-motion">DEEPLINE</span></h1>
@@ -11058,6 +11384,61 @@
         capture: true,
         passive: true
       });
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const main = document.querySelector('main#top');
+      const atmosphere = main?.querySelector('.opening-atmosphere');
+      const services = document.querySelector('#services');
+
+      if (!main || !atmosphere || !services) return;
+
+      let raf = 0;
+      let lastWidth =
+        document.documentElement.clientWidth || window.innerWidth;
+
+      const measure = () => {
+        cancelAnimationFrame(raf);
+
+        raf = requestAnimationFrame(() => {
+          const mainRect = main.getBoundingClientRect();
+          const serviceRect = services.getBoundingClientRect();
+
+          const height = Math.max(
+            1,
+            serviceRect.top - mainRect.top
+          );
+
+          main.style.setProperty(
+            '--opening-atmosphere-height',
+            `${height.toFixed(2)}px`
+          );
+        });
+      };
+
+      const onResize = () => {
+        const width =
+          document.documentElement.clientWidth || window.innerWidth;
+
+        // Browser toolbar height changes do not alter the section boundary.
+        if (Math.abs(width - lastWidth) < 1) return;
+
+        lastWidth = width;
+        measure();
+      };
+
+      window.addEventListener('resize', onResize, { passive: true });
+
+      if (document.fonts?.ready) {
+        document.fonts.ready
+          .then(measure)
+          .catch(() => {});
+      }
+
+      measure();
     })();
   </script>
 
