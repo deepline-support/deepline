@@ -6,6 +6,27 @@
 
   <script>
     (() => {
+      const ua = navigator.userAgent || '';
+      const isIOS =
+        /iPad|iPhone|iPod/.test(ua) ||
+        (
+          navigator.platform === 'MacIntel' &&
+          navigator.maxTouchPoints > 1
+        );
+
+      const isWebKitSafari =
+        /WebKit/i.test(ua) &&
+        !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(ua);
+
+      if (isIOS && isWebKitSafari) {
+        document.documentElement.classList.add('deepline-ios-safari');
+      }
+    })();
+  </script>
+
+
+  <script>
+    (() => {
       if (/Android/i.test(navigator.userAgent || '')) {
         document.documentElement.classList.add('deepline-android-scroll');
       }
@@ -8728,6 +8749,26 @@
       content: none !important;
       display: none !important;
       background: none !important;
+    }
+
+
+    /* =========================================================
+       iOS SAFARI — HIDE VERTICAL SCROLLBAR, KEEP NATIVE SCROLLING
+       This affects scrollbar chrome only. The page still uses the native
+       document scroller and touch panning exactly as before.
+       ========================================================= */
+    html.deepline-ios-safari,
+    html.deepline-ios-safari body {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    html.deepline-ios-safari::-webkit-scrollbar,
+    html.deepline-ios-safari body::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
     }
 
   </style>
