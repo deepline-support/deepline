@@ -8771,6 +8771,24 @@
       background: transparent !important;
     }
 
+
+    /* =========================================================
+       iOS SAFARI — HIDE HORIZONTAL SCROLLBAR TOO
+       Preserve native vertical scrolling while preventing any horizontal
+       scrollbar/scroll indicator from being rendered.
+       ========================================================= */
+    html.deepline-ios-safari,
+    html.deepline-ios-safari body {
+      overflow-x: hidden !important;
+    }
+
+    html.deepline-ios-safari::-webkit-scrollbar:horizontal,
+    html.deepline-ios-safari body::-webkit-scrollbar:horizontal {
+      display: none !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
+
   </style>
 </head>
 <body>
